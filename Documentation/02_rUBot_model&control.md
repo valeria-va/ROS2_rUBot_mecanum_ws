@@ -53,7 +53,7 @@ ros2 launch robot_description display.launch.xml
     - add "RobotModel"
     - select the robot Description topic to /robot_description
     - add TFs
-- save config to rviz folder as "urdf_config.rviz"
+- save config to rviz folder as "urdf_base_config.rviz"
 
 > Perhaps you will have to install:
 >
@@ -65,7 +65,7 @@ The same launch file can be done in python. You can see the syntax in "display.l
 - compile the ws
 - open a new terminal and type
 ```shell
-roslaunch robot_description display.launch.py
+ros2 launch robot_description display.launch.py
 ```
 >You will see the same as before
 

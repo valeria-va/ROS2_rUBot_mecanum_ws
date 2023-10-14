@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
+        - /RobotModel1/Description Topic1
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz_common/Selection
@@ -75,6 +76,15 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_link_optical:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         caster_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -107,9 +117,15 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
+        camera_link:
+          Value: true
+        camera_link_optical:
+          Value: true
         caster_wheel_link:
           Value: true
         left_wheel_link:
+          Value: true
+        odom:
           Value: true
         right_wheel_link:
           Value: true
@@ -119,10 +135,14 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        base_footprint:
-          base_link:
-            caster_wheel_link:
-              {}
+        odom:
+          base_footprint:
+            base_link:
+              camera_link:
+                camera_link_optical:
+                  {}
+              caster_wheel_link:
+                {}
             left_wheel_link:
               {}
             right_wheel_link:
@@ -132,7 +152,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -211,5 +231,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 60
-  Y: 60
+  X: 2216
+  Y: 123
