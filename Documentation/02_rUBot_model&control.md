@@ -2,7 +2,7 @@
 The objective of this section is to simulate the rUBot behaviour in virtual environment.
 
 The objectives of this section are:
-- Create a new "robot_description" package with 
+- Create a new "robot_description" package
 - Create a complete robot model
 - Spawn the robot model in a proper virtual world in gazebo environment
 
