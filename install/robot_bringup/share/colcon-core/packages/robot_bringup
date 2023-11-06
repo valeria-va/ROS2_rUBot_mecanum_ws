@@ -1,1 +1,1 @@
-gazebo_ros:robot_description:robot_state_publisher
+gazebo_ros:joint_state_publisher:robot_description:robot_state_publisher:ros2launch:rviz2
