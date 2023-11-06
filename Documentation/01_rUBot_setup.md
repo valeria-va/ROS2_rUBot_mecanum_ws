@@ -5,6 +5,8 @@ The objectives of this section are:
 - Setup the rUBot mecanum in raspberrypi4 for real control
 - Install needed interfaces
 
+Webgraphy:
+- https://github.com/AntoBrandi/Arduino-Bot/tree/humble
 
 ## **1. Setup the rUBot mecanum in virtual environment for simulation**
 
