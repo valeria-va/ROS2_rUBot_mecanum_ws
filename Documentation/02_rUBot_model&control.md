@@ -30,11 +30,25 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY urdf launch rviz
+  DIRECTORY urdf launch rviz meshes
   DESTINATION share/${PROJECT_NAME}/
 )
 
 ament_package()
+```
+- Include the dependencies on package.xml file:
+```xml
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
 ```
 - move to the ws and compile again
 - You can see the installed directories in "~/ROS2_rUBot_ws/install/robot_description/share/robot_description/" folders
@@ -127,6 +141,7 @@ install(
 
 ament_package()
 ```
+
 - create a new "my_robot_gazebo.launch.xml"
 ```xml
 <launch>
@@ -152,12 +167,18 @@ ament_package()
 </launch>
 ```
 - Because of we have used other packages, these have to be included in "package.xml" file:
+
 ```xml
-...
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
   <exec_depend>robot_description</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
-...
+
+  <test_depend>ament_lint_auto</test_depend>
 ```
 - Now you can compile again
 ```shell
