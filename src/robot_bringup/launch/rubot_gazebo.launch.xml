@@ -1,6 +1,6 @@
 <launch>
     <let name="urdf_path" 
-         value="$(find-pkg-share robot_description)/urdf/rubot_mpuig.urdf" />
+         value="$(find-pkg-share robot_description)/urdf/rubot_mpuig2.urdf" />
     <let name="rviz_config_path"
          value="$(find-pkg-share robot_bringup)/rviz/urdf_base_footprint_config.rviz" />
 
