@@ -15,9 +15,9 @@ ros2 pkg create robot_description
 ```
 Now proceed with the following instructions:
 - remove "src" and "include" folders
-- add "urdf", "launch" and "rviz" folders
+- add "urdf", "meshes", "launch" and "rviz" folders
 - place the robot model in urdf folder
-- Install the urdf, launch and rviz folders modifying the "CMakeList.txt" file:
+- Install the urdf, meshes, launch and rviz folders modifying the "CMakeList.txt" file:
 ```shell
 cmake_minimum_required(VERSION 3.8)
 project(robot_description)
@@ -51,7 +51,7 @@ ament_package()
   <test_depend>ament_lint_auto</test_depend>
 ```
 - move to the ws and compile again
-- You can see the installed directories in "~/ROS2_rUBot_ws/install/robot_description/share/robot_description/" folders
+- You can see the installed directories in "~/ROS2_rUBot_mecanum_ws/install/robot_description/share/robot_description/" folders
 
 Now everything is ready to create the **launch file**. This can be done in python but also in xml. We will do in xml language for simplicity and better understanding.
 - verify "launch" folder is created and CMakeList.txt is created properly
@@ -110,6 +110,19 @@ The robot model defined in xacro format, can be displayed using the same launch 
      value="$(find-pkg-share robot_description)/urdf/my_robot.urdf.xacro" />
 ...
 ```
+
+![](./Images/02_rubot_model/2_urdf_myrobot.png)
+
+You can use also any urdf robot model. For exemple our rubot_mpuig.urdf
+
+The only steps to do are:
+- write this name in the "urdf_path"
+- compile again 
+- source the setup.bash
+
+
+![](./Images/02_rubot_model/3_urdf_rubot_mpuig.png)
+
 
 ### **2.3. Create a new robot_bringup package**
 
@@ -186,8 +199,12 @@ colcon build
 ```
 You can now bringup your robot in the designed world
 ```shell
-ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
+ros2 launch robot_bringup my_robot_gazebo.launch.xml
 ```
+
+![](./Images/02_rubot_model/4_gazebo_myrobot.png)
+
+
 
 **Activity:**
 
