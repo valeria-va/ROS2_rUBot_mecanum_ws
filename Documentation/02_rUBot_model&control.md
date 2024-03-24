@@ -204,8 +204,16 @@ ros2 launch robot_bringup my_robot_gazebo.launch.xml
 
 ![](./Images/02_rubot_model/4_gazebo_myrobot.png)
 
+I can use also the rUBot custom model. In ROS2 is reccomended not to use 3D files and use simple geometries instead (Box, Cylinder and sphere).
 
+```shell
+ros2 launch robot_bringup rubot_gazebo.launch.xml
+```
+![](./Images/02_rubot_model/5_gazebo_rubot.png)
+
+> Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
 
 **Activity:**
 
 Bringup your rUBot model within the real custom designed World
+
