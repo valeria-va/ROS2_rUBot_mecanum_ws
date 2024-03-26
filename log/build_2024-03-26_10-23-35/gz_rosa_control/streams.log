@@ -1,0 +1,26 @@
+[0.021s] Invoking command in '/home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/ROS2_rUBot_tutorial_ws/install/ros2_tutorial:/opt/ros/humble /usr/bin/cmake --build /home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control -- -j8 -l8
+[0.076s] [100%] Built target gazebo_ros_omni_drive
+[0.101s] Invoked command in '/home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/ROS2_rUBot_tutorial_ws/install/ros2_tutorial:/opt/ros/humble /usr/bin/cmake --build /home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control -- -j8 -l8
+[0.137s] Invoking command in '/home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/ROS2_rUBot_tutorial_ws/install/ros2_tutorial:/opt/ros/humble /usr/bin/cmake --install /home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control
+[0.143s] -- Install configuration: ""
+[0.143s] -- Execute custom install script
+[0.143s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/library_path.sh
+[0.143s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/library_path.dsv
+[0.144s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/lib/libgazebo_ros_omni_drive.so
+[0.144s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/ament_index/resource_index/package_run_dependencies/gz_rosa_control
+[0.144s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/ament_index/resource_index/parent_prefix_path/gz_rosa_control
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/ament_prefix_path.sh
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/ament_prefix_path.dsv
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/path.sh
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/environment/path.dsv
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/local_setup.bash
+[0.145s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/local_setup.sh
+[0.146s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/local_setup.zsh
+[0.146s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/local_setup.dsv
+[0.146s] -- Symlinking: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/package.dsv
+[0.153s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/ament_index/resource_index/packages/gz_rosa_control
+[0.153s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/cmake/ament_cmake_export_libraries-extras.cmake
+[0.153s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/cmake/gz_rosa_controlConfig.cmake
+[0.154s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/cmake/gz_rosa_controlConfig-version.cmake
+[0.154s] -- Up-to-date symlink: /home/ROS2_rUBot_mecanum_ws/install/gz_rosa_control/share/gz_rosa_control/package.xml
+[0.158s] Invoked command in '/home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/ROS2_rUBot_tutorial_ws/install/ros2_tutorial:/opt/ros/humble /usr/bin/cmake --install /home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control

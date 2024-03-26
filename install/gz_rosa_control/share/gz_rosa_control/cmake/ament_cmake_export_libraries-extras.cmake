@@ -1,0 +1,1 @@
+/home/ROS2_rUBot_mecanum_ws/build/gz_rosa_control/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake

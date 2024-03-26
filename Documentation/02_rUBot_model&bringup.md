@@ -6,12 +6,12 @@ The objectives of this section are:
 - Create a complete robot model
 - Spawn the robot model in a proper virtual world in gazebo environment
 
-A very good guide is deescribed in: https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview
+A very good guide is described in: https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview
 
 ### **2.1. Create a new "robot_description" package**
 To create this package, type:
 ```shell
-ros2 pkg create robot_description
+ros2 pkg create my_robot_description
 ```
 Now proceed with the following instructions:
 - remove "src" and "include" folders
@@ -60,7 +60,7 @@ Now everything is ready to create the **launch file**. This can be done in pytho
 - source install/setup.bash
 - Launch:
 ```shell
-ros2 launch robot_description display.launch.xml
+ros2 launch my_robot_description display.launch.xml
 ```
 - Configure the rviz with:
     - Fixed frame to "base_footprint"
@@ -123,6 +123,20 @@ The only steps to do are:
 
 ![](./Images/02_rubot_model/3_urdf_rubot_mpuig.png)
 
+**Gazebo plugins**: 
+
+You need to install the gazebo plugins to properly interact with the sensors and actuators:
+```shell
+sudo apt update
+sudo apt install ros-humble-gazebo-ros-pkgs
+```
+In ROS2 the gazebo plugins have changed and you have to see the available ones (with the syntax exemple) in: https://github.com/ros-simulation/gazebo_ros_pkgs/tree/ros2/gazebo_plugins/include/gazebo_plugins
+
+You will have to install a speciffic plugin for Mecanum drive. A package "gz_mecanum_control" is created from: https://github.com/mhernando/gz_rosa_control
+
+Check the urdf file to see the syntax and changes in ROS2
+
+Verify that the Gazebo plugins create the topics for the different sensors and actuators implemented with the Gazebo plugins: /cmd_vel, /odom, /scan, /camera1/image_raw, etc.
 
 ### **2.3. Create a new robot_bringup package**
 
@@ -131,7 +145,7 @@ This is usually made to spawn the robot model in a proper virtual world in gazeb
 Let's follow similar steps as previous section for robot_description package:
 - Create a new package:
 ```shell
-ros2 pkg create robot_bringup
+ros2 pkg create my_robot_bringup
 ```
 - remove "src" and "include" folders
 - add "launch" "rviz" "worlds" folders
@@ -199,7 +213,7 @@ colcon build
 ```
 You can now bringup your robot in the designed world
 ```shell
-ros2 launch robot_bringup my_robot_gazebo.launch.xml
+ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
 
 ![](./Images/02_rubot_model/4_gazebo_myrobot.png)
@@ -207,7 +221,7 @@ ros2 launch robot_bringup my_robot_gazebo.launch.xml
 I can use also the rUBot custom model. In ROS2 is reccomended not to use 3D files and use simple geometries instead (Box, Cylinder and sphere).
 
 ```shell
-ros2 launch robot_bringup rubot_gazebo.launch.xml
+ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
 ![](./Images/02_rubot_model/5_gazebo_rubot.png)
 
@@ -217,3 +231,27 @@ ros2 launch robot_bringup rubot_gazebo.launch.xml
 
 Bringup your rUBot model within the real custom designed World
 
+### **2.4. First driving Control**
+
+The objective here is only to verify that the robot is correcly bringup and we can control it using the "teleop-twist-keyboard" package.
+
+- Install the "teleop-twist-keyboard" package.
+```shell
+sudo apt update
+sudo apt install ros-humble-teleop-twist-keyboard
+```
+- Bringup our robot in Gazebo virtual environment
+```shell
+ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
+```
+- Launch the teleop-twist-keyboard:
+```shell
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+- open a new terminal and listen the /odom topic
+```shell
+ros2 topic echo /odom
+```
+- Print the Nodes and topics using rqt_graph
+
+![](./Images/02_rubot_model/6_rosgraph.png)
