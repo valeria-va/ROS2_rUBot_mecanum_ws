@@ -325,9 +325,9 @@
         <remapping>~/out:=scan</remapping>
       </ros>
       <output_type>sensor_msgs/LaserScan</output_type>
-      <frame_name>lidar_link</frame_name>
+      <frame_name>base_scan</frame_name>
     </plugin>
-  </sensor>
+    </sensor>
   </gazebo>
 <!-- Gazebo colors have to be specified here with predefined Gazebo colors -->
 <!-- lower friction with floor -->
