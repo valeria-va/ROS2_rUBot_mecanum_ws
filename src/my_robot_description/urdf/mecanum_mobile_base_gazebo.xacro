@@ -7,18 +7,26 @@
 
     <gazebo reference="lower_right_wheel_link">
         <material>Gazebo/Grey</material>
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
     </gazebo>
 
     <gazebo reference="lower_left_wheel_link">
         <material>Gazebo/Grey</material>
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
     </gazebo>
 
     <gazebo reference="upper_right_wheel_link">
         <material>Gazebo/Grey</material>
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
     </gazebo>
 
     <gazebo reference="upper_left_wheel_link">
         <material>Gazebo/Grey</material>
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
     </gazebo>
 
     <gazebo>
