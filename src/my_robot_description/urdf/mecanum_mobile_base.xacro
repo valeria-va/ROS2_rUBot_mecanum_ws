@@ -8,7 +8,7 @@
     <xacro:property name="wheel_length" value="0.05" />
 
     <link name="base_footprint" />
-
+    <!-- collision and inertia box close to floor for lateral movements -->
     <link name="base_link">
         <visual>
             <geometry>
@@ -21,10 +21,10 @@
             <geometry>
                 <box size="${base_length} ${base_width} ${base_height}" />
             </geometry>
-            <origin xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
         </collision>
         <xacro:box_inertia m="5.0" l="${2*base_length}" w="${2*base_width}" h="${2*base_height}"
-                           xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
+                           xyz="0 0 0" rpy="0 0 0" />
     </link>
 
     <xacro:macro name="wheel_link" params="prefix">
