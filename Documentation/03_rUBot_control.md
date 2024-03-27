@@ -1,104 +1,53 @@
 # **4. ROS2 rUBot project**
 
 The objectives of this section are:
-- Create a new arm robot
-- Integrate the arm in the robot base model
-- Bringup and move the robot with the arm in a custom designed environment
 
-The specifications are described in the document "ROS2_rubot_project"
+## **4.1. Create a new package**
 
-## **4.1. Create a new arm robot**
-The arm model is created within the files:
-- arm.xacro
-- arm_gazebo.xacro
-- standalone_arm.urdf.xacro
-
-The main characteristics:
-
-**arm.xacro**
-- Contains links and joints
-- geometric xacro properties
-- Friction coeficients in joint definition
-
-**arm_gazebo.xacro**
-- gazebo colors
-- plugins: 
-    - gazebo_ros_joint_state_publisher: https://github.com/ros-simulation/gazebo_ros_pkgs/blob/ros2/gazebo_plugins/include/gazebo_plugins/gazebo_ros_joint_state_publisher.hpp
-    - gazebo_ros_joint_pose_trajectory: https://github.com/ros-simulation/gazebo_ros_pkgs/blob/ros2/gazebo_plugins/include/gazebo_plugins/gazebo_ros_joint_pose_trajectory.hpp
-
-**standalone_arm.urdf.xacro**
-- calls to needed xacro files
-
-To call the arm model:
+We will need to create a new package. This is already done, but if you want to do it from scratch:
 ```shell
-ros2 launch robot_description display_arm.launch.xml
+ros2 pkg create --build-type ament_python my_robot_control --dependencies rclpy std_msgs sensor_msgs geometry_msgs nav_msgs
+cd ..
+colcon build
 ```
+## **4.2. Driving control**
 
+We will first drive the robot with speciffic Twist message.
 
+We can control the movement of our robot using:
 
-## **4.2. Integrate the arm in the robot base model**
-The final model integrates the robot base with the arm and is described in: my_robot.urdf.xacro
+- the keyboard or a joypad
+- programatically in python creating a "/rubot_nav" node
 
-To call the final robot model:
+We will do it first in virtual environment and later with the real robot.
+
+**Virtual environment**
+
+A first simple navigation program is created to move the robot according to a speciffic Twist message.
+
+- We first bringup our robot:
 ```shell
-ros2 launch robot_description display_robot.launch.xml
+ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
+- We will create now a first navigation python file "rubot_nav.py" to define a rubot movement with linear and angular speed during a time td
+- We have to add in "setup.py" the entry point corresponding to the created node 
 
-## **4.3. Bringup and move the new robot**
-The final robot bringup is performed with:
-To call the arm model:
+```python
+    entry_points={
+        'console_scripts': [
+            'rubot_controller = my_robot_control.my_robot_control:main',
+        ],
+    },
+```
+- Create "launch" and "config" folders
+- Install the launch and config folders modifying the "setup.py" file
+- Add dependency on the ros2launch package in "package.xml":
 ```shell
-ros2 launch robot_bringup my_robot_gazebo.launch.xml
+<exec_depend>ros2launch</exec_depend>
 ```
-
-To test the joint_pose_trajectory plugin, run this command from the terminal:
-```shell
-ros2 topic pub -1 /set_joint_trajectory trajectory_msgs/msg/JointTrajectory '{header: {frame_id: arm_base_link}, joint_names: [arm_base_forearm_joint, forearm_hand_joint],
-points: [ {positions: {0.0, 0.0}} ]}'
+- Create specific launch file "my_robot_control.launch" to launch the node and python file created above
+- You need to create a YAML file named my_robot_control_params.yaml in the config directorymaking it more maintainable and easier to modify.
+- Compile again and execute:
 ```
-
-# **5. Navigation2**
-
-You have to install some packages:
-```shell
-sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-turtlebot3*
-sudo apt install terminator
-sudo snap install code --classic
+ros2 launch my_robot_control my_robot_control.launch
 ```
-you have to install extensions:
-- ROS from Microsoft
-- cMake from twxs
-
-Issue in ROS Humble when loading map. To solve it:
-- Change DDSfrom Fast to Cyclone
-
-```shell
-sudo apt update
-sudo apt install ros-humble-rmw-cyclonedds-cpp
-```
-- and add line in bashrc file:
-```xml
-export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-```
-- now, if you are working with turtlebot3, you need to change some parameters in /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml
-- You will search for ROBOT_MODEL_TYPE and change to "nav2_amcl::DifferentialMotionModel"
-- reboot your computer
-
-**Bringup turtlebot3**
-
-In a new terminal type:
-```shell
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-```
-first time takes some minutes to open with all models
-
-**Navigation**
-
-Open a new terminal and type:
-```shell
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=maps/my_map.yaml
-```
-the rviz with the map appears
-
-- select three initial pose
-- select the goal pose
