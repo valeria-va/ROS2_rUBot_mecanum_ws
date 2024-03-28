@@ -29,24 +29,29 @@ A first simple navigation program is created to move the robot according to a sp
 ```shell
 ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
-- We will create now a first navigation python file "rubot_nav.py" to define a rubot movement with linear and angular speed during a time td
+- We will create now a first navigation python file "my_robot_control.py" to define a rubot movement with linear and angular speed during a time td
+- Because of we will use parameters, review in the file:
+    - Declare Parametes
+    - Get Parameters
 - We have to add in "setup.py" the entry point corresponding to the created node 
 
 ```python
     entry_points={
         'console_scripts': [
-            'rubot_controller = my_robot_control.my_robot_control:main',
+            'my_robot_control_node = my_robot_control.my_robot_control:main',
         ],
     },
 ```
-- Create "launch" and "config" folders
+- Create "launch" folder
 - Install the launch and config folders modifying the "setup.py" file
 - Add dependency on the ros2launch package in "package.xml":
 ```shell
 <exec_depend>ros2launch</exec_depend>
 ```
-- Create specific launch file "my_robot_control.launch" to launch the node and python file created above
-- You need to create a YAML file named my_robot_control_params.yaml in the config directorymaking it more maintainable and easier to modify.
+- Create specific launch file "my_robot_control.launch.xml" or "my_robot_control.launch.py" to launch the node and python file created above
+- The parameter values can be updated:
+    - In the node with the "declare parameter"
+    - In the launch file with the parameter values
 - Compile again and execute:
 ```
 ros2 launch my_robot_control my_robot_control.launch
