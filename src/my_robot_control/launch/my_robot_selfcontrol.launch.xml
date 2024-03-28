@@ -1,0 +1,15 @@
+<launch>
+    <!-- Navigation Program   -->
+    <let name="vx" value="0.4"/>
+    <let name="vy" value="0.0"/>
+    <let name="w" value="0.0"/>
+    <let name="td" value="2"/>
+
+    <node
+        pkg="my_robot_control" exec="my_robot_selfcontrol_node" name="robot_selfcontrol" output="screen">
+            <param name="vx" value="$(var vx)"/>
+            <param name="vy" value="$(var vy)"/>
+            <param name="w" value="$(var w)"/>
+            <param name="td" value="$(var td)"/>
+    </node>
+</launch>
