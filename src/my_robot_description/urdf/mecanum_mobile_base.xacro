@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:property name="base_length" value="0.6" />
-    <xacro:property name="base_width" value="0.4" />
-    <xacro:property name="base_height" value="0.2" />
-    <xacro:property name="wheel_radius" value="0.1" />
-    <xacro:property name="wheel_length" value="0.05" />
+    <xacro:property name="base_length" value="0.26" />
+    <xacro:property name="base_width" value="0.15" />
+    <xacro:property name="base_height" value="0.08" />
+    <xacro:property name="wheel_radius" value="0.04" />
+    <xacro:property name="wheel_length" value="0.01" />
 
     <link name="base_footprint" />
     <!-- collision and inertia box close to floor for lateral movements -->
@@ -15,7 +15,7 @@
                 <box size="${base_length} ${base_width} ${base_height}" />
             </geometry>
             <origin xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
-            <material name="blue" />
+            <material name="yellow" />
         </visual>
         <collision>
             <geometry>

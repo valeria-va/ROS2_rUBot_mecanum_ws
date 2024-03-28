@@ -172,10 +172,14 @@ ament_package()
 - create a new "my_robot_gazebo.launch.xml"
 ```xml
 <launch>
+     <let name="x0" value="0.5"/>
+     <let name="y0" value="0.5"/>
+     <let name="yaw0" value="1.57"/>
+
     <let name="urdf_path" 
-         value="$(find-pkg-share robot_description)/urdf/my_robot.urdf.xacro" />
+         value="$(find-pkg-share my_robot_description)/urdf/my_mecanum_robot.urdf.xacro" />
     <let name="rviz_config_path"
-         value="$(find-pkg-share robot_bringup)/rviz/urdf_config.rviz" />
+         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
         <param name="robot_description"
@@ -183,11 +187,11 @@ ament_package()
     </node>
 
     <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
-     <arg name="world" value="$(find-pkg-share robot_bringup)/worlds/test_world.world" />
+     <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square2.world" />
     </include>
 
     <node pkg="gazebo_ros" exec="spawn_entity.py"
-          args="-topic robot_description -entity my_robot" />
+          args="-topic robot_description -entity my_robot -x $(var x0) -y $(var y0) -Y $(var yaw0)" />
 
     <node pkg="rviz2" exec="rviz2" output="screen" 
           args="-d $(var rviz_config_path)" />

@@ -70,7 +70,7 @@ def main(args=None):
     vy = controller.get_parameter('vy').value
     w = controller.get_parameter('w').value
     td = controller.get_parameter('td').value
-    controller.move_robot().
+    #controller.move_robot().
     rclpy.spin(controller)
     controller.destroy_node()
     rclpy.shutdown()

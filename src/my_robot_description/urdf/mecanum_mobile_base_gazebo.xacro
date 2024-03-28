@@ -3,7 +3,7 @@
 
     <!-- low friction with base and high friction with wheels -->
     <gazebo reference="base_link">
-        <material>Gazebo/Blue</material>
+        <material>Gazebo/Yellow</material>
         <mu1>0.005</mu1>
         <mu2>0.005</mu2>
     </gazebo>

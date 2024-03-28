@@ -1,0 +1,5 @@
+  File "/home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/my_robot_control.py", line 73
+    controller.move_robot().
+                            ^
+SyntaxError: invalid syntax
+

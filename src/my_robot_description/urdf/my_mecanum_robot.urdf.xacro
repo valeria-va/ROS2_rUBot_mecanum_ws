@@ -4,8 +4,8 @@
     <xacro:include filename="common_properties.xacro" />
     <xacro:include filename="mecanum_mobile_base.xacro" />
     <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
-    <xacro:include filename="arm.xacro" />
-    <xacro:include filename="arm_gazebo.xacro" />
+    <xacro:include filename="mecanum_arm.xacro" />
+    <xacro:include filename="mecanum_arm_gazebo.xacro" />
     <xacro:include filename="camera.xacro" />
     <xacro:include filename="lidar.xacro" />
 
