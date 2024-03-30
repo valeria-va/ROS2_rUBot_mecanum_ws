@@ -7,12 +7,18 @@ from geometry_msgs.msg import Twist
 class rUBot(Node):
 
     def __init__(self):
-        super().__init__('rubot_nav')
-        self._distanceLaser = self.get_parameter('distance_laser').get_parameter_value().double_value
-        self._speedFactor = self.get_parameter('speed_factor').get_parameter_value().double_value
-        self._forwardSpeed = self.get_parameter('forward_speed').get_parameter_value().double_value
-        self._backwardSpeed = self.get_parameter('backward_speed').get_parameter_value().double_value
-        self._rotationSpeed = self.get_parameter('rotation_speed').get_parameter_value().double_value
+        super().__init__('robot_selfcontrol')
+        self.declare_parameter('distance_laser', 0.3)
+        self.declare_parameter('speed_factor', 1.0)
+        self.declare_parameter('forward_speed', 0.2)
+        self.declare_parameter('backward_speed', 0.2)
+        self.declare_parameter('rotation_speed', 0.3)
+        
+        self._distanceLaser = self.get_parameter('distance_laser').value
+        self._speedFactor = self.get_parameter('speed_factor').value
+        self._forwardSpeed = self.get_parameter('forward_speed').value
+        self._backwardSpeed = self.get_parameter('backward_speed').value
+        self._rotationSpeed = self.get_parameter('rotation_speed').value
 
         self._msg = Twist()
         self._cmdVel = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -29,19 +35,19 @@ class rUBot(Node):
         angleClosestDistance = (elementIndex / 2)  
 
         angleClosestDistance = self.__wrapAngle(angleClosestDistance)
-        self.get_logger().info("Degree wraped %5.2f ", angleClosestDistance)
+        #self.get_logger().info("Degree wraped %5.2f ", angleClosestDistance)
         
         if angleClosestDistance > 0:
             angleClosestDistance = (angleClosestDistance - 180)
         else:
             angleClosestDistance = (angleClosestDistance + 180)
 			
-        self.get_logger().info("Closest distance of %5.2f m at %5.1f degrees.", closestDistance, angleClosestDistance)
+        self.get_logger().info("Closest distance of " + str(closestDistance) + " m at " +str(angleClosestDistance) + " degrees.")
 
         if closestDistance < self._distanceLaser and -80 < angleClosestDistance < 80:
             self._msg.linear.x = self._backwardSpeed * self._speedFactor
             self._msg.angular.z = -self.__sign(angleClosestDistance) * self._rotationSpeed * self._speedFactor
-            self.get_logger().warn("Within laser distance threshold. Rotating the robot (z=%4.1f)...", self._msg.angular.z)
+            #self.get_logger().warn("Within laser distance threshold. Rotating the robot (z=%4.1f)...", self._msg.angular.z)
 
         else:
             self._msg.linear.x = self._forwardSpeed * self._speedFactor
@@ -64,19 +70,15 @@ class rUBot(Node):
         self._msg.linear.y = 0
         self._msg.angular.z = 0
         self._cmdVel.publish(self._msg)
-        self.get_logger().info("Stop RVIZ")
+        self.get_logger().info("Stop")
 
 def main(args=None):
     rclpy.init(args=args)
     rubot = rUBot()
-    try:
-        rubot.start()
-        rclpy.spin(rubot)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        rubot.shutdown()
-        rclpy.shutdown()
+    rubot.start()
+    rclpy.spin(rubot)
+    rubot.shutdown()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
