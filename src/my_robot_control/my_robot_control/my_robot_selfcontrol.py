@@ -11,7 +11,7 @@ class rUBot(Node):
         self.declare_parameter('distance_laser', 0.3)
         self.declare_parameter('speed_factor', 1.0)
         self.declare_parameter('forward_speed', 0.2)
-        self.declare_parameter('backward_speed', 0.2)
+        self.declare_parameter('backward_speed', -0.2)
         self.declare_parameter('rotation_speed', 0.3)
         
         self._distanceLaser = self.get_parameter('distance_laser').value
@@ -21,14 +21,19 @@ class rUBot(Node):
         self._rotationSpeed = self.get_parameter('rotation_speed').value
 
         self._msg = Twist()
+        self._msg.linear.x = self._forwardSpeed * self._speedFactor
+        self._msg.angular.z = 0.0
+        
         self._cmdVel = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.create_subscription(LaserScan, '/scan', self.callbackLaser, 10)
-        self._r = self.create_rate(25)
+        timer_period = 0.05  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        
+        self.subscription = self.create_subscription(LaserScan, '/scan', self.callbackLaser, 10)
+        self.subscription  # prevent unused variable warning
 
-    def start(self):
-        while rclpy.ok():
-            self._cmdVel.publish(self._msg)
-            self._r.sleep()
+    def timer_callback(self):
+        self._cmdVel.publish(self._msg)
+        self.get_logger().info("Vx: " + str(self._msg.linear.x) + " and w: " + str(self._msg.angular.z))
 
     def callbackLaser(self, scan):
         closestDistance, elementIndex = min((val, idx) for (idx, val) in enumerate(scan.ranges) if scan.range_min < val < scan.range_max)
@@ -47,11 +52,11 @@ class rUBot(Node):
         if closestDistance < self._distanceLaser and -80 < angleClosestDistance < 80:
             self._msg.linear.x = self._backwardSpeed * self._speedFactor
             self._msg.angular.z = -self.__sign(angleClosestDistance) * self._rotationSpeed * self._speedFactor
-            #self.get_logger().warn("Within laser distance threshold. Rotating the robot (z=%4.1f)...", self._msg.angular.z)
+            self.get_logger().warn("Rotating the robot: " + str(self._msg.angular.z))
 
         else:
             self._msg.linear.x = self._forwardSpeed * self._speedFactor
-            self._msg.angular.z = 0
+            self._msg.angular.z = 0.0
 
     def __sign(self, val):
         if val >= 0:
@@ -75,9 +80,9 @@ class rUBot(Node):
 def main(args=None):
     rclpy.init(args=args)
     rubot = rUBot()
-    rubot.start()
     rclpy.spin(rubot)
     rubot.shutdown()
+    rubot.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':

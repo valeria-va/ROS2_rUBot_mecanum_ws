@@ -3,8 +3,8 @@
     <let name="distance_laser" value="0.4"/>
     <let name="speed_factor" value="1.0"/>
     <let name="forward_speed" value="0.2"/>
-    <let name="backward_speed" value="0.2"/>
-    <let name="rotation_speed" value="0.3"/>
+    <let name="backward_speed" value="-0.2"/>
+    <let name="rotation_speed" value="0.5"/>
 
     <node
         pkg="my_robot_control" exec="my_robot_selfcontrol_node" name="robot_selfcontrol" output="screen">
