@@ -32,6 +32,7 @@
             <visual>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+                    <!--<mesh filename="package://my_robot_description/meshes/left_tire.stl" scale="0.001 0.001 0.001"/>-->
                 </geometry>
                 <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
                 <material name="grey" />

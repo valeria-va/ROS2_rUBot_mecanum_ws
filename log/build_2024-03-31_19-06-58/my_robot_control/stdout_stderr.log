@@ -1,0 +1,17 @@
+running develop
+running egg_info
+writing my_robot_control.egg-info/PKG-INFO
+writing dependency_links to my_robot_control.egg-info/dependency_links.txt
+writing entry points to my_robot_control.egg-info/entry_points.txt
+writing requirements to my_robot_control.egg-info/requires.txt
+writing top-level names to my_robot_control.egg-info/top_level.txt
+reading manifest file 'my_robot_control.egg-info/SOURCES.txt'
+writing manifest file 'my_robot_control.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my-robot-control.egg-link (link to .)
+Installing my_robot_control_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+Installing my_robot_selfcontrol_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+
+Installed /home/ROS2_rUBot_mecanum_ws/build/my_robot_control
+running install_data
+copying launch/my_robot_control.launch.xml -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/share/my_robot_control

@@ -1,9 +1,9 @@
 <launch>
     <!-- Navigation Program   -->
-    <let name="vx" value="0.4"/>
+    <let name="vx" value="0.2"/>
     <let name="vy" value="0.0"/>
-    <let name="w" value="0.0"/>
-    <let name="td" value="2"/>
+    <let name="w" value="0.3"/>
+    <let name="td" value="4"/>
 
     <node
         pkg="my_robot_control" exec="my_robot_control_node" name="robot_control" output="screen">
