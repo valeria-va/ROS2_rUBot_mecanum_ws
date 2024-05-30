@@ -59,35 +59,35 @@ class WallFollower(Node):
             return
 
         msg = Twist()
-        linear_x = 0
-        angular_z = 0
+        linear_x = 0.0
+        angular_z = 0.0
 
         state_description = ''
 
         if self.regions['front'] > self.d and self.regions['fright'] > 2 * self.d and self.regions['right'] > 2 * self.d and self.regions['bright'] > 2 * self.d:
             state_description = 'case 1 - nothing'
             linear_x = self.vx
-            angular_z = 0
+            angular_z = 0.0
         elif self.regions['front'] < self.d:
             state_description = 'case 2 - front'
-            linear_x = self.vx
-            angular_z = 0
+            linear_x = 0.0
+            angular_z = self.wz
         elif self.regions['fright'] < self.d:
             state_description = 'case 3 - fright'
-            linear_x = self.vx
-            angular_z = 0
+            linear_x = 0.0
+            angular_z = self.wz
         elif self.regions['front'] > self.d and self.regions['right'] < self.d:
             state_description = 'case 4 - right'
             linear_x = self.vx
-            angular_z = 0
+            angular_z = 0.0
         elif self.regions['bright'] < self.d:
             state_description = 'case 5 - bright'
-            linear_x = self.vx
-            angular_z = 0
+            linear_x = 0.0
+            angular_z = -self.wz/2
         else:
             state_description = 'case 6 - Far'
             linear_x = self.vx
-            angular_z = 0
+            angular_z = -self.wz
 
         self.get_logger().info(state_description)
         msg.linear.x = linear_x

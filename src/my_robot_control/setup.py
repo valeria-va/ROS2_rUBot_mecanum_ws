@@ -25,6 +25,8 @@ setup(
         'console_scripts': [
             'my_robot_control_node = my_robot_control.my_robot_control:main',
             'my_robot_selfcontrol_node = my_robot_control.my_robot_selfcontrol:main',
+            'my_robot_wallfollower_node = my_robot_control.my_robot_wallfollower:main',
+            'my_robot_go2pose_node = my_robot_control.my_robot_go2pose:main',
         ],
     },
 )

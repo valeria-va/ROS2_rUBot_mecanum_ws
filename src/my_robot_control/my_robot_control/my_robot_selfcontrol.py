@@ -4,7 +4,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-class rUBot(Node):
+class RobotSelfControl(Node):
 
     def __init__(self):
         super().__init__('robot_selfcontrol')
@@ -71,19 +71,24 @@ class rUBot(Node):
             return angle - 360
 
     def shutdown(self):
-        self._msg.linear.x = 0
-        self._msg.linear.y = 0
-        self._msg.angular.z = 0
+        self.get_logger().info("Shutting down...")
+        self._msg.linear.x = 0.0
+        self._msg.angular.z = 0.0
         self._cmdVel.publish(self._msg)
-        self.get_logger().info("Stop")
+        self.get_logger().info("Robot stopped.")
 
 def main(args=None):
     rclpy.init(args=args)
-    rubot = rUBot()
-    rclpy.spin(rubot)
-    rubot.shutdown()
-    rubot.destroy_node()
-    rclpy.shutdown()
+    rubot = RobotSelfControl()
+
+    try:
+        rclpy.spin(rubot)
+    except KeyboardInterrupt:
+        rubot.get_logger().warn('Keyboard interrupt received, shutting down...')
+    finally:
+        rubot.shutdown()
+        rubot.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
