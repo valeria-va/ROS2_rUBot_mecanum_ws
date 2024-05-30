@@ -68,6 +68,7 @@
             <wheel_radius>0.04</wheel_radius>
             <base_length>0.65</base_length>
             <base_width>0.65</base_width>
+            <publish_wheel_tf>true</publish_wheel_tf>
             <front_left_joint>upper_left_wheel_joint</front_left_joint>
             <front_right_joint>upper_right_wheel_joint</front_right_joint>
             <rear_left_joint>lower_left_wheel_joint</rear_left_joint>
