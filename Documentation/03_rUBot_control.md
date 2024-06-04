@@ -1,6 +1,11 @@
 # **4. ROS2 rUBot Control**
 
 The objectives of this section are:
+- Create a new package
+- Driving control
+- Obstacle avoidance
+- Wall-follower
+- go to a POSE
 
 ## **4.1. Create a new package**
 
@@ -64,3 +69,7 @@ A first simple control program is created to move the robot according to a speci
 ```shell
 ros2 launch my_robot_bringup my_real_robot_bringup.launch.xml
 ```
+
+## **4.3. Driving self-control**
+
+We will
