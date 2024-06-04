@@ -1,4 +1,4 @@
-## **2. ROS2 rUBot model and Control**
+## **2. ROS2 rUBot model and Bringup**
 The objective of this section is to simulate the rUBot behaviour in virtual environment.
 
 The objectives of this section are:
@@ -62,20 +62,20 @@ Now everything is ready to create the **launch file**. This can be done in pytho
 ```shell
 ros2 launch my_robot_description display.launch.xml
 ```
-- Configure the rviz with:
+- Verify the configuration of rviz with:
     - Fixed frame to "base_footprint"
-    - add "RobotModel"
-    - select the robot Description topic to /robot_description
-    - add TFs
-- save config to rviz folder as "urdf_base_config.rviz"
+    - added "RobotModel"
+    - selected the robot Description topic to /robot_description
+    - added TFs
+- This configuration is saved to rviz folder as "urdf_config.rviz"
 
 > Perhaps you will have to install:
 >
 >sudo apt install ros-humble-joint-state-publisher-gui
 
-![](./Images/02_rubot_model/1_urdf_robot.png)
+![](./Images/02_rubot_model/01_urdf_robot1.png)
 
-The same launch file can be done in python. You can see the syntax in "display.launch,py" file in "launch" folder.
+The same launch file can be done in python. You can see the syntax in "display.launch.py" file in "launch" folder.
 - compile the ws
 - open a new terminal and type
 ```shell
@@ -85,35 +85,117 @@ ros2 launch robot_description display.launch.py
 
 ### **2.2. Create a robot model**
 
-A first "my_robot.urdf" file is delivered to display a first robot model in rviz program.
+Different robot models have been created to be user in ROS2 Virtual environment:
+- Differential-Drive robot
+- Mecanum-Drive robot
 
-For a more complete robot model, it is suggested to use xacro format. This format will help you to better organize and scale your model with more functionalities.
+These 2 robot models can be equipped with a robotic arm
 
-The gazebo functionalities are defined with plugins:
+![](./Images/02_rubot_model/02_models.png)
+
+The file format for a robotic model is:
+- **URDF** (Unified Robot Description Format): XML-based format to describe the physical configuration of a robot, including its links, joints, and sensors.
+- **XACRO** (XML Macros): XML-based, but with macro capabilities for generating URDF files. This format will help you to better organize and scale your model with more functionalities.
+
+We will use GAZEBO, as a physical simulator. The gazebo sensor and actuator functionalities are defined with plugins:
 - https://classic.gazebosim.org/tutorials?tut=ros_gzplugins
 - https://github.com/ros-simulation/gazebo_ros_pkgs/tree/ros2/gazebo_plugins/include/gazebo_plugins
 
 If you are using OpenCV, the frame used for the camera has a different orientation and you have to add a new link. This is explained and solved in:
 - https://answers.ros.org/question/232534/gazebo-camera-frame-is-inconsistent-with-rviz-opencv-convention/
 
-The complete "my_robot.urdf.xacro" is composed by different files:
-- my_robot.urdf.xacro (the main one)
-- mobile_base.xacro (with links and joints)
-- common_properties.xacro (with material and inertia properties)
-- mobile_base_gazebo.xacro (with differential_drive gazebo plugin)
-- camera.xacro (with camera plugin)
+**Robot models review**
 
-The robot model defined in xacro format, can be displayed using the same launch files, you have only to change the name of robot model to "my_robot.urdf.xacro", in launch file:
+The **differential-drive robots** in XACRO format are described with the files:
+- my_differential_robot.urdf.xacro
+````xml
+<?xml version="1.0"?>
+<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="common_properties.xacro" />
+    <xacro:include filename="differential_mobile_base.xacro" />
+    <xacro:include filename="differential_mobile_base_gazebo.xacro" />
+    <xacro:include filename="camera.xacro" />
+    <xacro:include filename="lidar.xacro" />
+
+</robot>
+````
+- my_differential_robot_arm.urdf.xacro
+````xml
+<?xml version="1.0"?>
+<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="common_properties.xacro" />
+    <xacro:include filename="mecanum_mobile_base.xacro" />
+    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
+    <xacro:include filename="mecanum_arm.xacro" />
+    <xacro:include filename="mecanum_arm_gazebo.xacro" />
+    <xacro:include filename="camera.xacro" />
+    <xacro:include filename="lidar.xacro" />
+
+    <joint name="mobile_base_arm_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="arm_base_link" />
+        <origin xyz="${base_length / 4.0} 0 ${base_height}" rpy="0 0 0" />
+    </joint>
+
+</robot>
+````
+The **Mecanum-drive robots** in XACRO format are described with the files:
+- my_mecanum_robot.urdf.xacro
+````xml
+<?xml version="1.0"?>
+<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="common_properties.xacro" />
+    <xacro:include filename="mecanum_mobile_base.xacro" />
+    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
+    <xacro:include filename="camera.xacro" />
+    <xacro:include filename="lidar.xacro" />
+
+</robot>
+````
+- my_mecanum_robot_arm.urdf.xacro
+````xml
+<?xml version="1.0"?>
+<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="common_properties.xacro" />
+    <xacro:include filename="mecanum_mobile_base.xacro" />
+    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
+    <xacro:include filename="mecanum_arm.xacro" />
+    <xacro:include filename="mecanum_arm_gazebo.xacro" />
+    <xacro:include filename="camera.xacro" />
+    <xacro:include filename="lidar.xacro" />
+
+    <joint name="mobile_base_arm_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="arm_base_link" />
+        <origin xyz="${base_length / 4.0} 0 ${base_height}" rpy="0 0 0" />
+    </joint>
+
+</robot>
+````
+
+For exemple, the complete differential robot with arm model is composed by different files:
+- my_differential_robot_arm.urdf.xacro (the main one)
+- common_properties.xacro (with material and inertia properties)
+- differential_mobile_base.xacro (with links and joints)
+- differential_mobile_base_gazebo.xacro (with differential_drive gazebo plugin)
+- camera.xacro (with camera plugin)
+- lidar.xacro (with lidar plugin)
+
+The robot model defined in xacro format, can be displayed using the same launch files, you have only to change the name of robot model to "my_differential_robot_arm.urdf.xacro", in launch file:
 ```xml
 ...
 <let name="urdf_path" 
-     value="$(find-pkg-share robot_description)/urdf/my_robot.urdf.xacro" />
+     value="$(find-pkg-share robot_description)/urdf/my_differential_robotarm.urdf.xacro" />
 ...
 ```
 
-![](./Images/02_rubot_model/2_urdf_myrobot.png)
+![](./Images/02_rubot_model/03_urdf_robot3.png)
 
-You can use also any urdf robot model. For exemple our rubot_mpuig.urdf
+You can use also any urdf robot model. For exemple our rubot_mecanum_mpuig.urdf
 
 The only steps to do are:
 - write this name in the "urdf_path"
@@ -121,7 +203,7 @@ The only steps to do are:
 - source the setup.bash
 
 
-![](./Images/02_rubot_model/3_urdf_rubot_mpuig.png)
+![](./Images/02_rubot_model/04_urdf_rubot_mpuig.png)
 >**Important**: In urdf file, the path to stl files has to be specified with:
 ````xml
 <mesh filename="file://$(find my_robot_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
@@ -218,14 +300,14 @@ You can now bringup your robot in the designed world
 ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
 
-![](./Images/02_rubot_model/4_gazebo_myrobot.png)
+![](./Images/02_rubot_model/05_gazebo_robot1.png)
 
-I can use also the rUBot custom model. In ROS2 is reccomended not to use 3D files and use simple geometries instead (Box, Cylinder and sphere).
+I can use also the rUBot custom model. In ROS2 is reccomended not to use 3D files and use simple geometries instead (Box, Cylinder and sphere) for computing simplicity.
 
 ```shell
 ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
-![](./Images/02_rubot_model/5_gazebo_rubot.png)
+![](./Images/02_rubot_model/06_gazebo_rubot.png)
 
 > Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
 
@@ -256,4 +338,4 @@ ros2 topic echo /odom
 ```
 - Print the Nodes and topics using rqt_graph
 
-![](./Images/02_rubot_model/6_rosgraph.png)
+![](./Images/02_rubot_model/07_rosgraph.png)
