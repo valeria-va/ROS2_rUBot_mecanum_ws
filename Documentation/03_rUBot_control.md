@@ -1,4 +1,4 @@
-# **4. ROS2 rUBot project**
+# **4. ROS2 rUBot Control**
 
 The objectives of this section are:
 
@@ -17,20 +17,20 @@ We will first drive the robot with speciffic Twist message.
 We can control the movement of our robot using:
 
 - the keyboard or a joypad
-- programatically in python creating a "/rubot_nav" node
+- programatically in python creating a "/my_robot_control_node" node
 
 We will do it first in virtual environment and later with the real robot.
 
 **Virtual environment**
 
-A first simple navigation program is created to move the robot according to a speciffic Twist message.
+A first simple control program is created to move the robot according to a speciffic Twist message.
 
-- We first bringup our robot:
+- We first bringup our robot (my_mecanum_robot_arm.urdf.xacro):
 ```shell
 ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
-- We will create now a first navigation python file "my_robot_control.py" to define a rubot movement with linear and angular speed during a time td
-- Because of we will use parameters, review in the file:
+- We will create now a first robot control python file "my_robot_control.py" to define a rubot movement with linear and angular speed during a time td
+- Because we will use parameters, review in the file:
     - Declare Parametes
     - Get Parameters
 - We have to add in "setup.py" the entry point corresponding to the created node 
@@ -54,5 +54,13 @@ ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
     - In the launch file with the parameter values
 - Compile again and execute:
 ```
-ros2 launch my_robot_control my_robot_control.launch
+ros2 launch my_robot_control my_robot_control.launch.xml
+```
+**Real robot**
+
+A first simple control program is created to move the robot according to a speciffic Twist message.
+
+- We first bringup our real robot (my_mecanum_robot_arm.urdf.xacro):
+```shell
+ros2 launch my_robot_bringup my_real_robot_bringup.launch.xml
 ```
