@@ -122,6 +122,10 @@ The only steps to do are:
 
 
 ![](./Images/02_rubot_model/3_urdf_rubot_mpuig.png)
+>**Important**: In urdf file, the path to stl files has to be specified with:
+````xml
+<mesh filename="file://$(find my_robot_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+````
 
 **Gazebo plugins**: 
 
@@ -131,12 +135,6 @@ sudo apt update
 sudo apt install ros-humble-gazebo-ros-pkgs
 ```
 In ROS2 the gazebo plugins have changed and you have to see the available ones (with the syntax exemple) in: https://github.com/ros-simulation/gazebo_ros_pkgs/tree/ros2/gazebo_plugins/include/gazebo_plugins
-
-You will have to install a speciffic plugin for Mecanum drive. A package "gz_mecanum_control" is created from: https://github.com/mhernando/gz_rosa_control
-
-Check the urdf file to see the syntax and changes in ROS2
-
-Verify that the Gazebo plugins create the topics for the different sensors and actuators implemented with the Gazebo plugins: /cmd_vel, /odom, /scan, /camera1/image_raw, etc.
 
 ### **2.3. Create a new robot_bringup package**
 
