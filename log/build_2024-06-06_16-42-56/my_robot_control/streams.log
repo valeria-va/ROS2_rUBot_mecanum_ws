@@ -1,0 +1,46 @@
+[1.025s] Invoking command in '/home/ROS2_rUBot_mecanum_ws/src/my_robot_control': PYTHONPATH=/home/ROS2_rUBot_mecanum_ws/build/my_robot_control/prefix_override:/home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/my_robot_control build --build-base /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build install --record /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/install.log --single-version-externally-managed
+[1.352s] running egg_info
+[1.353s] creating ../../build/my_robot_control/my_robot_control.egg-info
+[1.353s] writing ../../build/my_robot_control/my_robot_control.egg-info/PKG-INFO
+[1.354s] writing dependency_links to ../../build/my_robot_control/my_robot_control.egg-info/dependency_links.txt
+[1.354s] writing entry points to ../../build/my_robot_control/my_robot_control.egg-info/entry_points.txt
+[1.354s] writing requirements to ../../build/my_robot_control/my_robot_control.egg-info/requires.txt
+[1.355s] writing top-level names to ../../build/my_robot_control/my_robot_control.egg-info/top_level.txt
+[1.355s] writing manifest file '../../build/my_robot_control/my_robot_control.egg-info/SOURCES.txt'
+[1.361s] reading manifest file '../../build/my_robot_control/my_robot_control.egg-info/SOURCES.txt'
+[1.361s] writing manifest file '../../build/my_robot_control/my_robot_control.egg-info/SOURCES.txt'
+[1.362s] running build
+[1.362s] running build_py
+[1.363s] creating /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build
+[1.363s] creating /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib
+[1.363s] creating /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.364s] copying my_robot_control/my_robot_control.py -> /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.364s] copying my_robot_control/my_robot_go2pose.py -> /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.364s] copying my_robot_control/my_robot_wallfollower.py -> /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.364s] copying my_robot_control/my_robot_selfcontrol.py -> /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.365s] copying my_robot_control/__init__.py -> /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control
+[1.365s] running install
+[1.365s] running install_lib
+[1.365s] creating /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.365s] copying /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control/my_robot_control.py -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.366s] copying /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control/my_robot_go2pose.py -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.366s] copying /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control/my_robot_wallfollower.py -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.366s] copying /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control/my_robot_selfcontrol.py -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.366s] copying /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build/lib/my_robot_control/__init__.py -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control
+[1.366s] byte-compiling /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/my_robot_control.py to my_robot_control.cpython-310.pyc
+[1.367s] byte-compiling /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/my_robot_go2pose.py to my_robot_go2pose.cpython-310.pyc
+[1.367s] byte-compiling /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/my_robot_wallfollower.py to my_robot_wallfollower.cpython-310.pyc
+[1.367s] byte-compiling /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/my_robot_selfcontrol.py to my_robot_selfcontrol.cpython-310.pyc
+[1.367s] byte-compiling /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control/__init__.py to __init__.cpython-310.pyc
+[1.368s] running install_data
+[1.368s] copying launch/my_robot_wallfollower.launch.xml -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/share/my_robot_control
+[1.368s] copying launch/my_robot_go2pose.launch.xml -> /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/share/my_robot_control
+[1.369s] running install_egg_info
+[1.371s] Copying ../../build/my_robot_control/my_robot_control.egg-info to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages/my_robot_control-0.0.0-py3.10.egg-info
+[1.372s] running install_scripts
+[1.398s] Installing my_robot_control_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+[1.399s] Installing my_robot_go2pose_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+[1.399s] Installing my_robot_selfcontrol_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+[1.399s] Installing my_robot_wallfollower_node script to /home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/my_robot_control
+[1.399s] writing list of installed files to '/home/ROS2_rUBot_mecanum_ws/build/my_robot_control/install.log'
+[1.435s] Invoked command in '/home/ROS2_rUBot_mecanum_ws/src/my_robot_control' returned '0': PYTHONPATH=/home/ROS2_rUBot_mecanum_ws/build/my_robot_control/prefix_override:/home/ROS2_rUBot_mecanum_ws/install/my_robot_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/my_robot_control build --build-base /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/build install --record /home/ROS2_rUBot_mecanum_ws/build/my_robot_control/install.log --single-version-externally-managed
