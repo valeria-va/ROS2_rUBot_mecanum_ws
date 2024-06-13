@@ -53,5 +53,18 @@ ros2 topic echo /cmd_vel
 ```
 When the deadman key is pressed, the values published to /joy are sent to /cmd_vel
 
+## **4. PIGPIO install**
 
+We need to install pigpio package in ubuntu for gpio from raspberrypi.
+
+Follow instructions in: https://abyz.me.uk/rpi/pigpio/download.html
+
+And proceed with the installation
+````shell
+wget https://github.com/joan2937/pigpio/archive/master.zip
+unzip master.zip
+cd pigpio-master
+make
+sudo make install
+````
 
