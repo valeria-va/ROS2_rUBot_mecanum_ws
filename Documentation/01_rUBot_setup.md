@@ -15,6 +15,26 @@ Webgraphy:
 
 ## **2. Setup the rUBot mecanum in raspberrypi4 for real control**
 
+Install wifi dongle:
+````shell
+sudo apt install dkms
+git clone https://github.com/aircrack-ng/rtl8812au.git
+cd rtl8812au
+make
+sudo make install
+````
+
+Install packages:
+````shell
+sudo apt install ros-galactic-tf-transformations
+sudo pip3 install transforms3d
+````
+Daemon:
+````shell
+sudo pigpiod
+````
+
+
 ## **3. Install needed interfaces**
 
 We will use a joy pad as a user interface. This is only usefull if the USB ports are available (i.e. when we are using RaspberryPi4 hardware).
