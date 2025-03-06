@@ -1,1 +1,0 @@
-Invoking command in '/home/ROS2_rUBot_mecanum_ws/build/my_robot_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/ROS2_rUBot_mecanum_ws/install/my_robot_control:/home/ROS2_rUBot_tutorial_ws/install/ros2_tutorial:/opt/ros/humble /usr/bin/cmake --build /home/ROS2_rUBot_mecanum_ws/build/my_robot_description -- -j8 -l8

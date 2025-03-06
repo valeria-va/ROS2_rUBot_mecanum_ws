@@ -1,7 +1,0 @@
-<launch>
-    <node pkg="my_robot_control" exec="my_robot_go2pose_node" name="rubot_control" output="screen">
-        <param name="x" value="1.0" />
-        <param name="y" value="1.0" />
-        <param name="f" value="90.0" />
-    </node>
-</launch>
