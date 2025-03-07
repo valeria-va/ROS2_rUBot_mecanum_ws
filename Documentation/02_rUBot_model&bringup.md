@@ -1,97 +1,30 @@
 ## **2. ROS2 rUBot model and Bringup**
-The objective of this section is to simulate the rUBot behaviour in virtual environment.
+The main objective of this section is to simulate the rUBot behaviour in virtual environment.
 
-The objectives of this section are:
-- Create a new "robot_description" package
-- Create a complete robot model
-- Spawn the robot model in a proper virtual world in gazebo environment
+The particular objectives of this section are:
+- Create a complete robot model of our rUBot Mecanum
+- Create a world model of the virtual environment
+- Bringup the robot in virtual environment
+- Bringup the real robot.
+
+The rUBot mecanum robot we will work is represented in the picture:
+![](./Images/01_Setup/01_rubot_pi.jpg)
 
 A very good guide is described in: https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview
 
-### **2.1. Create a new "robot_description" package**
-To create this package, type:
-```shell
-ros2 pkg create my_robot_description
-```
-Now proceed with the following instructions:
-- remove "src" and "include" folders
-- add "urdf", "meshes", "launch" and "rviz" folders
-- place the robot model in urdf folder
-- Install the urdf, meshes, launch and rviz folders modifying the "CMakeList.txt" file:
-```shell
-cmake_minimum_required(VERSION 3.8)
-project(robot_description)
+### **2.1. Create a robot model of our rUBot mecanum**
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
-# find dependencies
-find_package(ament_cmake REQUIRED)
-
-install(
-  DIRECTORY urdf launch rviz meshes
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-ament_package()
-```
-- Include the dependencies on package.xml file:
-```xml
-  <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <exec_depend>urdf</exec_depend>
-  <exec_depend>xacro</exec_depend>
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>joint_state_publisher</exec_depend>
-  <exec_depend>rviz2</exec_depend>
-  <exec_depend>ros2launch</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-
-  <test_depend>ament_lint_auto</test_depend>
-```
-- move to the ws and compile again
-- You can see the installed directories in "~/ROS2_rUBot_mecanum_ws/install/robot_description/share/robot_description/" folders
-
-Now everything is ready to create the **launch file**. This can be done in python but also in xml. We will do in xml language for simplicity and better understanding.
-- verify "launch" folder is created and CMakeList.txt is created properly
-- create a new file "display.launch.xml" inside
-- compile again
-- source install/setup.bash
-- Launch:
-```shell
-ros2 launch my_robot_description display.launch.xml
-```
-- Verify the configuration of rviz with:
-    - Fixed frame to "base_footprint"
-    - added "RobotModel"
-    - selected the robot Description topic to /robot_description
-    - added TFs
-- This configuration is saved to rviz folder as "urdf_config.rviz"
-
-> Perhaps you will have to install:
->
->sudo apt install ros-humble-joint-state-publisher-gui
-
-![](./Images/02_rubot_model/01_urdf_robot1.png)
-
-The same launch file can be done in python. You can see the syntax in "display.launch.py" file in "launch" folder.
-- compile the ws
-- open a new terminal and type
-```shell
-ros2 launch my_robot_description display.launch.py
-```
->You will see the same as before
-
-### **2.2. Create a robot model**
-
-Different robot models have been created to be user in ROS2 Virtual environment:
+Different robot models have been created to be used in ROS2 Virtual environment:
 - Differential-Drive robot
 - Mecanum-Drive robot
 
-These 2 robot models can be equipped with a robotic arm
+These 2 kind of robot models can be equipped with a robotic arm:
 
 ![](./Images/02_rubot_model/02_models.png)
+
+With 3D custom designed parts (rUBot and Limo robots):
+
+![](./Images/02_rubot_model/02_models_rubot_limo.png)
 
 The file format for a robotic model is:
 - **URDF** (Unified Robot Description Format): XML-based format to describe the physical configuration of a robot, including its links, joints, and sensors.
@@ -101,99 +34,6 @@ We will use GAZEBO, as a physical simulator. The gazebo sensor and actuator func
 - https://classic.gazebosim.org/tutorials?tut=ros_gzplugins
 - https://github.com/ros-simulation/gazebo_ros_pkgs/tree/ros2/gazebo_plugins/include/gazebo_plugins
 
-If you are using OpenCV, the frame used for the camera has a different orientation and you have to add a new link. This is explained and solved in:
-- https://answers.ros.org/question/232534/gazebo-camera-frame-is-inconsistent-with-rviz-opencv-convention/
-
-**Robot models review**
-
-The **differential-drive robots** in XACRO format are described with the files:
-- my_differential_robot.urdf.xacro
-````xml
-<?xml version="1.0"?>
-<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="common_properties.xacro" />
-    <xacro:include filename="differential_mobile_base.xacro" />
-    <xacro:include filename="differential_mobile_base_gazebo.xacro" />
-    <xacro:include filename="camera.xacro" />
-    <xacro:include filename="lidar.xacro" />
-
-</robot>
-````
-- my_differential_robot_arm.urdf.xacro
-````xml
-<?xml version="1.0"?>
-<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="common_properties.xacro" />
-    <xacro:include filename="mecanum_mobile_base.xacro" />
-    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
-    <xacro:include filename="mecanum_arm.xacro" />
-    <xacro:include filename="mecanum_arm_gazebo.xacro" />
-    <xacro:include filename="camera.xacro" />
-    <xacro:include filename="lidar.xacro" />
-
-    <joint name="mobile_base_arm_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="arm_base_link" />
-        <origin xyz="${base_length / 4.0} 0 ${base_height}" rpy="0 0 0" />
-    </joint>
-
-</robot>
-````
-The **Mecanum-drive robots** in XACRO format are described with the files:
-- my_mecanum_robot.urdf.xacro
-````xml
-<?xml version="1.0"?>
-<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="common_properties.xacro" />
-    <xacro:include filename="mecanum_mobile_base.xacro" />
-    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
-    <xacro:include filename="camera.xacro" />
-    <xacro:include filename="lidar.xacro" />
-
-</robot>
-````
-- my_mecanum_robot_arm.urdf.xacro
-````xml
-<?xml version="1.0"?>
-<robot name="my_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="common_properties.xacro" />
-    <xacro:include filename="mecanum_mobile_base.xacro" />
-    <xacro:include filename="mecanum_mobile_base_gazebo.xacro" />
-    <xacro:include filename="mecanum_arm.xacro" />
-    <xacro:include filename="mecanum_arm_gazebo.xacro" />
-    <xacro:include filename="camera.xacro" />
-    <xacro:include filename="lidar.xacro" />
-
-    <joint name="mobile_base_arm_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="arm_base_link" />
-        <origin xyz="${base_length / 4.0} 0 ${base_height}" rpy="0 0 0" />
-    </joint>
-
-</robot>
-````
-
-For exemple, the complete differential robot with arm model is composed by different files:
-- my_differential_robot_arm.urdf.xacro (the main one)
-- common_properties.xacro (with material and inertia properties)
-- differential_mobile_base.xacro (with links and joints)
-- differential_mobile_base_gazebo.xacro (with differential_drive gazebo plugin)
-- camera.xacro (with camera plugin)
-- lidar.xacro (with lidar plugin)
-
-The robot model defined in xacro format, can be displayed using the same launch files, you have only to change the name of robot model to "my_differential_robot_arm.urdf.xacro", in launch file:
-```xml
-...
-<let name="urdf_path" 
-     value="$(find-pkg-share robot_description)/urdf/my_differential_robotarm.urdf.xacro" />
-...
-```
-
-![](./Images/02_rubot_model/03_urdf_robot3.png)
 
 You can use also any urdf robot model. For exemple our rubot_mecanum.urdf
 
