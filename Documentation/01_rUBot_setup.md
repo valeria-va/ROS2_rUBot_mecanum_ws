@@ -26,6 +26,16 @@ source /opt/ros/humble/setup.bash
 source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
 cd /home/user/ROS2_rUBot_mecanum_ws
 ````
+- If the compilation process returns wardings on PREFIX_PATH:
+````shell
+unset COLCON_PREFIX_PATH
+unset AMENT_PREFIX_PATH
+unset CMAKE_PREFIX_PATH
+cd ~/ROS2_rUBot_mecanum_ws
+rm -rf build/ install/ log/
+colcon build
+source install/setup.bash
+````
 
 ## **2. Setup the rUBot mecanum in raspberrypi4 for real control**
 
