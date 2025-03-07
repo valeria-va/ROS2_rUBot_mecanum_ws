@@ -470,7 +470,7 @@ To verify the final bringup, create a new "my_robot_bringup_sw.launch.xml" file 
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
-![](./Images/02_robot_model/07_mecanum_bringup.png)
+![](./Images/02_rubot_model/07_mecanum_bringup.png)
 
 Upload a zip file with:
 - Picture with gazebo and rviz obtained with your custom rubot model and designed world
