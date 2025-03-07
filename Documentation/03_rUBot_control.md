@@ -1,4 +1,4 @@
-# **4. ROS2 rUBot Control**
+# **3. ROS2 rUBot Mecanum Control**
 
 The objectives of this section are:
 - Create a new package

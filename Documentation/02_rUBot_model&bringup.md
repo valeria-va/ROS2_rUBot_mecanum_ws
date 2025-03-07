@@ -410,15 +410,74 @@ You can now bringup your robot in the designed world
 ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
 ```
 
-![](./Images/02_rubot_model/05_gazebo_robot1.png)
+![](./Images/02_rubot_model/06_rubot_bringup.png)
 
 > Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
+
+### **Design a custom world**
+
+Here we have first to design the project world, for exemple a maze from where our rUBot mecanum has to navigate autonomously.
+
+There is a very useful and simple tool to design a proper world: "**Building editor**" in gazebo.
+
+Open gazebo as superuser:
+```shell
+sudo gazebo
+```
+
+You can build your world using "Building Editor" in Edit menu
+
+![](./Images/02_rubot_model/07_BuildingWorld.png)
+
+- Save the generated model in a model folder (without extension)
+- Close the Builder Editor, modify the model position and add other models to configure your virtual desired world.
+- Save the generated world (with extension .world) in the world folder.
+
+Once you finish is better to close the terminal you have work as superuser
+
+#### ***Modify a created world***
+- Open a terminal where you have the world you want to modify
+- type: sudo gazebo ./test.world (or simply "gazebo test.world")
+- make modifications: add some other models, delete previously added models, etc.
+- save your world in a world directory
+- close gazebo and the terminal
+#### **Create world with model parts**
+You can create model parts like walls of 60cm or 90cm or 120cm with a geometry and color, using building editor. These parts can be saved:
+- in ~/.gazebo/models/ (this is the default folder)
+- in speciffic folder in your package (i.e. rUBot_mecanum_ws/src/rubot_mecanum_description/models). In this case, to add the path in Gazebo, add this line in .bashrc file:
+  ```xml
+  export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_description/models:$GAZEBO_MODEL_PATH
+  ```
+- When a model is created with "Building Editor", this path is saved in gazebo environment and you can use it in the future.
+- You can allways select "Add folder path" in "insert" gazebo menu tab, and select the models folder you have created in your project ws 
+
+You will have acces in gazebo insert section. Then you can construct your world adding parts.
+
+This is an exemple:
+![](./Images/02_rubot_model/07_BuildingEditor.png)
 
 **Activity:**
 
 Bringup your rUBot model within the real custom designed World
 
-### **2.4. First driving Control**
+You will have to:
+- Design a custom rUBot model corresponding to the real rUBot_mecanum (rubot_mecanum_custom.urdf), with:
+  - Customized model colors (rviz and gazebo)
+  - Add a 3D-part on top with a fixed joint
+- Design a custom virtual world using the wooden model parts
+
+To verify the final bringup, create a new "my_robot_bringup_sw.launch.xml" file with your rubot_custom.urdf and the world you have created:
+```shell
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+```
+![](./Images/02_robot_model/07_mecanum_bringup.png)
+
+Upload a zip file with:
+- Picture with gazebo and rviz obtained with your custom rubot model and designed world
+- file: "rubot_mecanum_custom.urdf"
+- file: "my_robot_bringup_sw.launch.xml"
+
+### **2.3. First driving Control**
 
 The objective here is only to verify that the robot is correcly bringup and we can control it using the "teleop-twist-keyboard" package.
 
