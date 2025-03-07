@@ -1,6 +1,6 @@
 <launch>
     <let name="urdf_path" 
-         value="$(find-pkg-share my_robot_description)/urdf/robot_arm/my_mecanum_robot_arm.urdf.xacro" />
+         value="$(find-pkg-share my_robot_description)/urdf/limo/limo.urdf.xacro" />
     <let name="rviz_config_path"
          value="$(find-pkg-share my_robot_description)/rviz/urdf_config.rviz" />
 
