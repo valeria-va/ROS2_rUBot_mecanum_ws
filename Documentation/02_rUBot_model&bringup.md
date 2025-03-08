@@ -370,7 +370,7 @@ In robotics research, always before working with a real robot, we simulate the r
 
 For this purpose, a new package "my_robot_bringup" is created.
 
-We have also created a new "my_robot_gazebo.launch.xml" file to spawn the robot in a virtual designed world (square2.world):
+We have also created a new "my_robot_bringup_sw.launch.xml" file to spawn the robot in a virtual designed world (square2.world):
 ```xml
 <launch>
      <let name="x0" value="0.5"/>
@@ -380,7 +380,7 @@ We have also created a new "my_robot_gazebo.launch.xml" file to spawn the robot 
      <let name="urdf_path" 
          value="$(find-pkg-share my_robot_description)/urdf/robot_arm/my_mecanum_robot.urdf.xacro" />
      <let name="rviz_config_path"
-         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
+         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_lidar.rviz" />
 
      <node pkg="joint_state_publisher" exec="joint_state_publisher" />
      <node pkg="robot_state_publisher" exec="robot_state_publisher">
@@ -407,7 +407,7 @@ source install/setup.bash
 ```
 You can now bringup your robot in the designed world
 ```shell
-ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
 
 ![](./Images/02_rubot_model/06_rubot_bringup.png)
