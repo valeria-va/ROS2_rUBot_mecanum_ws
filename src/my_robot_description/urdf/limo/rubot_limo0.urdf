@@ -219,8 +219,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find my_robot_description)/meshes/rubot/number2.stl" scale="0.0008 0.0008 0.0008"/>
-        <!--<box size="0.05 0.05 0.010"/>-->
+        <!--<mesh filename="file://$(find my_robot_description)/meshes/rubot/number2.stl" scale="0.0008 0.0008 0.0008"/>-->
+        <box size="0.05 0.05 0.010"/>
       </geometry>
       <material name="light_grey"/>
     </visual>
@@ -258,7 +258,7 @@
             <joint_config>1 1 1 1</joint_config>
         </plugin>
   </gazebo>
-  <!-- 2D Camera controller 
+  <!-- 2D Camera controller -->
   <gazebo reference="camera">
     <sensor name="camera1" type="camera">
       <update_rate>30.0</update_rate>
@@ -289,62 +289,21 @@
         <distortionT2>0.0</distortionT2>
       </plugin>
     </sensor>
-  </gazebo>-->
-<!-- Optical frame is the frame in which the depth points are published-->
-<!-- Reference frame is the frame rect to which we position the optical frame-->
-    <gazebo reference="camera">
-        <sensor name="sensor_camera" type="depth">
-            <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-            <always_on>1</always_on>
-            <update_rate>10</update_rate>
-            <visualize>1</visualize>
-
-            <camera name="limo_camera">
-              <!-- TC:Removed distorsion due to strange artifacts in image renderer-->
-              <!-- <vertical_fov>${90.0*M_PI/260.0}</horizontal_fov> -->
-              <image>
-                <format>R8G8B8</format>
-                <width>400</width>
-                <height>400</height>
-              </image>
-              <clip>
-                <near>0.01</near>
-                <far>10.0</far>
-              </clip>
-            </camera>
-
-            <plugin name="gazebo_ros_depth_camera_sensor" filename="libgazebo_ros_camera.so">
-              <ros>
-                <namespace>/limo</namespace>
-                <argument>--ros-args --remap limo_camera/image_raw:=limo_camera/image</argument>
-                <argument>--ros-args --remap limo_camera/image_depth:=limo_camera/depth/camera_image_depth</argument>
-                <argument>--ros-args --remap limo_camera/camera_info:=limo_camera/camera_info_raw</argument>
-                <argument>--ros-args --remap limo_camera/camera_info_depth:=limo_camera/camera_info_depth</argument>
-                <argument>--ros-args --remap limo_camera/points:=limo_camera/camera_points</argument>
-              </ros>
-              <camera_name>limo_camera</camera_name>
-              <frame_name>camera</frame_name>
-              <hack_baseline>0.07</hack_baseline>
-              <min_depth>0.001</min_depth>
-
-            </plugin>
-        </sensor>
-    </gazebo>
-
+  </gazebo>
   <!-- Laser Distance Sensor YDLIDAR X4 controller-->
   <gazebo reference="base_scan">
     <sensor name="lidar" type="ray">
     <pose>0.215 0 0.215 0 0 0</pose>
     <always_on>true</always_on>
-    <visualize>true</visualize>
+    <visualize>false</visualize>
     <update_rate>5</update_rate>
     <ray>
       <scan>
         <horizontal>
           <samples>720</samples>
           <resolution>1.00000</resolution>
-          <min_angle>2.093</min_angle>
-          <max_angle>+2.093</max_angle>
+          <min_angle>0.000000</min_angle>
+          <max_angle>6.280000</max_angle>
         </horizontal>
       </scan>
       <range>
