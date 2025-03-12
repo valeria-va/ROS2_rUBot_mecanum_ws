@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
+#import time as t
+#from tf_transformations import euler_from_quaternion
 
-import math
 import pigpio
 import rclpy
 from rclpy.node import Node
+import math
 from geometry_msgs.msg import Twist, TransformStamped
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
+
+import threading
 import tf2_ros
-import transforms3d.quaternions as quat  # For quaternion calculations
 from rubot_mecanum_library import Encoder, MPID, DCMotorController
 
 class RubotDrive(Node):
@@ -18,10 +21,10 @@ class RubotDrive(Node):
         # Robot Constant Parameter definition
         self.xn = 0.082
         self.yn = 0.105
-        self.r = 0.025  # Other robot 0.04
+        self.r = 0.025 # Other robot 0.04
         self.K = abs(self.xn) + abs(self.yn) - 0.02
         self.max_rmp = 330
-        self.resolution = 2 * math.pi * self.r / 1320  # 1440
+        self.resolution = 2 * math.pi * self.r / 1320 # 1440
 
         # Odometry Variables
         self.vx = 0
@@ -35,9 +38,9 @@ class RubotDrive(Node):
         self.wi = 0
 
         # PID
-        self.kp = 0.1  # 0.1
-        self.kd = 0.1  # 0.1
-        self.ki = 0.4  # 0.45
+        self.kp = 0.1 #0.1
+        self.kd = 0.1 #0.1
+        self.ki = 0.4 #0.45
 
         # Encoder position variables
         self.position1 = 0
@@ -46,14 +49,7 @@ class RubotDrive(Node):
         self.position4 = 0
 
         # Initiate pigpio
-        try:
-            self.pi = pigpio.pi()
-            if not self.pi.connected:
-                raise Exception("pigpio connection failed")
-        except Exception as e:
-            self.get_logger().error(f"Error initializing pigpio: {e}")
-            rclpy.shutdown()
-            return
+        self.pi = pigpio.pi()
 
         # Motor and Encoder Pin distribution and configuration
         self.EnA = Encoder(self.pi, 24, 25, self.callback1)
@@ -142,7 +138,7 @@ class RubotDrive(Node):
     def publish_odom(self, x, y, theta, vx, vy, vth):
         current_time = self.get_clock().now().to_msg()
 
-        odom_quat = quat.axangle2quat((0, 0, 1), theta)
+        odom_quat = [0,0,0,0]
 
         odom = Odometry()
         odom.header.stamp = current_time
@@ -171,10 +167,10 @@ class RubotDrive(Node):
         t.transform.translation.x = x
         t.transform.translation.y = y
         t.transform.translation.z = 0.0
-        t.transform.rotation.x = odom_quat[0]
-        t.transform.rotation.y = odom_quat[1]
-        t.transform.rotation.z = odom_quat[2]
-        t.transform.rotation.w = odom_quat[3]
+        t.transform.rotation.x = odom_quat[1]
+        t.transform.rotation.y = odom_quat[2]
+        t.transform.rotation.z = odom_quat[3]
+        t.transform.rotation.w = odom_quat[0]
 
         self.broadcaster.sendTransform(t)
 
@@ -216,9 +212,7 @@ def main(args=None):
     rclpy.init(args=args)
     rubot_drive = RubotDrive()
     try:
-        while rclpy.ok():
-            rubot_drive.update_odom()
-            rclpy.spin_once(rubot_drive, timeout_sec=0.01) #adjust timeout if needed.
+        rclpy.spin(rubot_drive)
     except KeyboardInterrupt:
         rubot_drive.shutdown()
     finally:

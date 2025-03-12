@@ -150,6 +150,84 @@ A first simple control program is created to move the robot according to a speci
 ros2 launch my_robot_bringup my_real_robot_bringup.launch.xml
 ```
 
-## **4.3. Driving self-control**
+### **1.3. rUBot control in REAL environment**
 
-We will
+In real environment, the bringup process depends on the real robot.
+
+To bringup the rUBot_mecanum, execute in a first terminal:
+``` shell
+ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
+```
+![](./Images/03_Control/08_bringup.png)
+
+**Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
+
+#### **a) Keyboard control**
+You can control the rUBot with the keyboard if you have first connected to the real robot within RRL service.
+
+Then you will be able to control the robot with the Keyboard typing:
+```shell
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+#### **b) Python programming control**
+In the previous session we have created a python node to publish a Twist message in /cmd_vel topic. Verify the previous rubot_nav.launch file created for this purpose:
+``` shell
+ros2 launch my_robot_control my_robot_control.launch.xml
+```
+
+## **2. Driving self-control**
+
+We will use now the created world to test the autonomous navigation with obstacle avoidance performance. 
+
+The algorithm description functionality, created in "rubot_self_control.py" file,is:
+- The created node makes the robot go forward.
+    - LIDAR is allways searching the closest distance and the angle
+    - when this distance is lower than a threshold, the robot goes backward with angular speed in the oposite direction of the minimum distance angle.
+
+Let's verify first this behaviour in virtual environment
+
+### **2.1. Self-control in VIRTUAL environment**
+
+We have to launch the "rubot_self_control.launch" file in the "rubot_control" package.
+```shell
+roslaunch rubot_mecanum_description rubot_bringup_sw.launch
+roslaunch rubot_control rubot_self_control.launch
+```
+
+![](./Images/03_Control/09_rubot_self.png)
+
+>- Verify in rviz if you have to change the fixed frame to "odom" frame
+>- You can test the behaviour when tunning the parameters defined
+
+**Activity: rUBot self-control**
+
+The objective of this activity is to modify the code to move the robot in Holonomic way, for exemple:
+-  When the minimum distance is in the right side move the robot over the left side
+
+Design the code using the Holonomic robot performances, and upload:
+- the file "rubot_self_control_holonomic.py"
+- a video of the current behaviour in your designed world
+
+### **2.2. Self-control control in REAL environment**
+
+Connect first to the Real robot within RRL service.
+
+Then verify the obstacle avoidance behaviour for different parameter values.
+```shell
+roslaunch rubot_control rubot_self_control.launch
+```
+The robot is not working as expected because the number of laser beams is not 720 as in simulation!
+
+**Lab Activity: rUBot self-control**
+
+The objective of this lab session is:
+- take into account the number of laser beams of your Lidar in the python code
+- verify the designed holonomic self-control node you have created for virtual environment in the previous activity.
+
+Upload the:
+- rubot_self_control_holonomic.launch and rubot_self_control_holonomic.py files
+- Video of the execution in REAL environment
+
+## **3. Wall Follower**
+

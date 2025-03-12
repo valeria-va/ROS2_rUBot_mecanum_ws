@@ -75,8 +75,9 @@ class RobotSelfControl(Node):
         self._msg.linear.x = 0.0
         self._msg.angular.z = 0.0
         self._cmdVel.publish(self._msg)
+        rclpy.spin_once(self, timeout_sec=0.5) #allow time for message to be sent.
         self.get_logger().info("Robot stopped.")
-
+        
 def main(args=None):
     rclpy.init(args=args)
     rubot = RobotSelfControl()
