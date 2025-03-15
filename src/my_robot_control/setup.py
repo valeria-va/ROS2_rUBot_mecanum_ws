@@ -19,12 +19,12 @@ setup(
     maintainer='root',
     maintainer_email='manel.puig@ub.edu',
     description='TODO: Package description',
-    license='TODO: License declaration',
+    license='Apache License 2.0', # improved license
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'my_robot_control_node = my_robot_control.my_robot_control:main',
-            'my_robot_selfcontrol_node = my_robot_control.my_robot_selfcontrol:main',
+            'my_robot_selfcontrol_node = my_robot_control.my_robot_selfcontrol1:main',
             'my_robot_wallfollower_node = my_robot_control.my_robot_wallfollower:main',
             'my_robot_go2pose_node = my_robot_control.my_robot_go2pose:main',
         ],
