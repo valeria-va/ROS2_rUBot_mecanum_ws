@@ -3,7 +3,7 @@
     <let name="vx" value="0.2"/>
     <let name="vy" value="0.0"/>
     <let name="w" value="0.0"/>
-    <let name="td" value="2.0"/>
+    <let name="td" value="5.0"/>
 
     <node
         pkg="my_robot_control" exec="my_robot_control_node" name="robot_control" output="screen">
