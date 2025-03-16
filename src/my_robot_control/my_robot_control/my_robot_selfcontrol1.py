@@ -31,7 +31,7 @@ class RobotSelfControl(Node):
 
         self._shutting_down = False
 
-        self.on_shutdown(self.shutdown_callback)
+        #self.on_shutdown(self.shutdown_callback)
 
     def scan_callback(self, scan):
         if self._shutting_down:
@@ -60,8 +60,8 @@ class RobotSelfControl(Node):
         self._cmdVel.publish(self._msg)
         self._rate.sleep()
 
-    def on_shutdown(self, callback):
-        self.get_node_base_interface().add_on_shutdown_callback(callback)
+    """def on_shutdown(self, callback):
+        self.get_node_base_interface().add_on_shutdown_callback(callback)"""
 
     def shutdown_callback(self):
         self._shutting_down = True
@@ -77,6 +77,7 @@ def main(args=None):
     rclpy.init(args=args)
     rubot = RobotSelfControl()
     rclpy.spin(rubot)
+    rubot.shutdown_callback()
     rubot.destroy_node()
     rclpy.shutdown()
 

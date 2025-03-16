@@ -34,8 +34,8 @@ unset CMAKE_PREFIX_PATH
 cd ~/ROS2_rUBot_mecanum_ws
 rm -rf build/ install/ log/
 colcon build
-source install/setup.bash
 ````
+- Open a new terminal to ensure the .bashrc is read again
 
 ## **2. Setup the rUBot mecanum in raspberrypi4 for real control**
 
@@ -87,8 +87,8 @@ The objective is to update the changes you have made, when working in ROS enviro
 - When you will Push them, the first time you will be asked to link the repository to your github account:
 - Open a terminal in and type the first time:
   ```shell
-  git config --global user.email "mail@alumnes.ub.edu"
-  git config --global user.name "your github username"
+  git config --global user.email "manel.puig@ub.edu"
+  git config --global user.name "manelpuig"
   ```
 - for succesive times, you only need to select changes, Commit a message and Push
 - You will have to specify the Username and Password (Personal Access Token you have generated)
