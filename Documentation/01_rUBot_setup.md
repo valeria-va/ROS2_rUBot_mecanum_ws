@@ -42,7 +42,7 @@ colcon build
 Some packages will have to be installed:
 
 ````shell
-sudo apt install ros-galactic-tf-transformations
+sudo apt install ros-humble-tf-transformations
 sudo pip3 install transforms3d
 ````
 Daemon:
