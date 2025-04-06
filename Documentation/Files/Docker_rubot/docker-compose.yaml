@@ -1,0 +1,16 @@
+name: rubot_humble
+
+services:
+  limo-humble-container:
+    image: rubot_humble_image
+    privileged: true
+    network_mode: host
+    container_name: rubot-humble-container
+    volumes:
+      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
+      - /dev:/dev
+      - ./rubot_bringup.launch.xml:/root/ROS2_rUBot_mecanum_ws/install/my_robot_bringup/share/my_robot_bringup/launch/humble/rubot_bringup.launch.xml
+      - ./rubot_entrypoint.sh:/rubot_entrypoint.sh
+    entrypoint: /rubot_entrypoint.sh
+    command: ["ros2", "launch", "limo_bringup", "limo_start.launch.py"]
+    restart: always

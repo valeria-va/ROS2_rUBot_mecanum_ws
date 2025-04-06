@@ -108,13 +108,13 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 
 Documentation is in: https://hub.docker.com/r/theconstructai/limo
 
-These files are located in this repository on Documentation/files/Docker folder
+These files are located in this repository on Documentation/files/Docker_rubot folder
 
 Follow the instructions:
 - Build the Image
 ````shell
 cd /home/ubuntu/Desktop/Docker
-docker build -t rubot_ros_humble_image .
+docker build -t rubot_humble_image .
 ````
 - Start the Container
 ````shell
