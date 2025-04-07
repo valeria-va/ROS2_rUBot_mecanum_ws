@@ -11,9 +11,16 @@ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
 
 echo "Starting pigpiod daemon..."
-sudo pigpiod & # Executar en segon pla
-# Esperar una mica per assegurar-se que el daemon s'inicia
+pigpiod & # Executar en segon pla
+PIGPID=$! # Obté el PID del procés en segon pla
+# Esperar una mica i verificar si pigpiod s'està executant
 sleep 2
+if ! pgrep -x "pigpiod" > /dev/null; then
+    echo "Error: pigpiod no s'ha iniciat correctament."
+    kill $PIGPID 2>/dev/null # Intenta matar el procés fallit
+    exit 1
+fi
+echo "pigpiod s'ha iniciat correctament (PID: $PIGPID)."
 
 echo "Executing the main command..."
 exec "$@"

@@ -9,6 +9,8 @@ services:
     volumes:
       - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
+      - /dev/mem:/dev/mem
+      - /dev/gpiomem:/dev/gpiomem # O /dev/vcio:/dev/vcio
     entrypoint: /rubot_entrypoint.sh
     command: ["ros2", "launch", "my_robot_bringup", "my_robot_bringup_hw_pi.launch.xml"]
     restart: always

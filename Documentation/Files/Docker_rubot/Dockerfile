@@ -54,7 +54,6 @@ RUN apt-get update && apt-get install -y \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \
     libgoogle-glog0v5 \
-    python3-rpi.gpio \  # Mantinc aquesta per si de cas
     && rm -rf /var/lib/apt/lists/*
 
 # Install pigpio from source
@@ -63,7 +62,8 @@ RUN wget https://github.com/joan2937/pigpio/archive/master.zip && \
     unzip master.zip && \
     cd pigpio-master && \
     make && \
-    make install
+    make install && \
+    setcap cap_sys_rawio=ep /usr/local/bin/pigpiod
 
 # Set up the working directory for ROS workspace
 WORKDIR /root
