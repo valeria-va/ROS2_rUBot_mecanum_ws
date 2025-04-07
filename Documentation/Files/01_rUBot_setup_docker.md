@@ -104,7 +104,6 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 - Dockerfile
 - rubot_bringup.sh (in executable mode!)
 - docker-compose.yaml
-- .env folder to store the Environment variables (DISPLAY, etc.)
 
 Documentation is in: https://hub.docker.com/r/theconstructai/limo
 
@@ -140,13 +139,11 @@ To verify if the container is working type on terminal:
 docker exec -it rubot_ros_humble_container /bin/bash
 ````
 
-## **4. PIGPIO install**
+### **2.5. PIGPIO verification**
 
-We need to install pigpio package in ubuntu for gpio from raspberrypi.
+To install pigpio package in ubuntu for gpio from raspberrypi, we had to follow instructions in: https://abyz.me.uk/rpi/pigpio/download.html
 
-Follow instructions in: https://abyz.me.uk/rpi/pigpio/download.html
-
-And proceed with the installation
+The installation is done with theses instructions already defined in Dockerfile:
 ````shell
 wget https://github.com/joan2937/pigpio/archive/master.zip
 unzip master.zip
@@ -154,4 +151,21 @@ cd pigpio-master
 make
 sudo make install
 ````
-
+To verify that the installation was succesfully in Container, we could open a new container terminal:
+````shell
+docker exec -it rubot-humble-container bash
+````
+- test the pigpio installation
+````shell
+python3 -c "import pigpio; print('pigpio is installed')"
+````
+- Test the deamon is running
+````shell
+pidof pigpiod
+````
+>If the daemon is running, this command will return the PID (process identifier) ​​of pigpiod.
+- Verify the file permissions:
+````shell
+stat -c "%a %U:%G %n" /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver/rubot_mecanum_driver.py
+````
+>The result will show the permissions (the first number should be 4777), the owner (root), the group (root), and the file name.

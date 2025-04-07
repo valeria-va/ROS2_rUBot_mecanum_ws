@@ -1,16 +1,21 @@
 # Stage 1: Build stage
 FROM ros:humble-ros-core AS build
 
-# Install required packages and dependencies
+# Install basic dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     python3-colcon-common-extensions \
+    python3-pip \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ROS 2 and other ROS dependencies
+RUN apt-get update && apt-get install -y \
     ros-humble-magic-enum \
     nlohmann-json3-dev \
     libusb-1.0-0-dev \
-    ros-humble-tf2 \
-    ros-humble-tf2-ros \
     libeigen3-dev \
     ros-humble-tf2-geometry-msgs \
     ros-humble-eigen3-cmake-module \
@@ -37,34 +42,41 @@ RUN apt-get update && apt-get install -y \
     ros-humble-image-geometry \
     ros-humble-image-publisher \
     ros-humble-image-transport \
-    ros-humble-tf2-msgs \
-    ros-humble-tf2-sensor-msgs \
-    ros-humble-tf2 \
-    ros-humble-tf2-ros \
-    ros-humble-tf2-geometry-msgs \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-tf-transformations \
     ros-humble-teleop-twist-keyboard \
+    ros-humble-tf2 \
+    ros-humble-tf2-ros \
     ros-humble-tf2-msgs \
+    ros-humble-tf2-geometry-msgs \
     ros-humble-tf2-sensor-msgs \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \
-    ros-humble-image-geometry \
-    ros-humble-image-publisher \
-    ros-humble-image-transport \
     libgoogle-glog0v5 \
+    python3-rpi.gpio \  # Mantinc aquesta per si de cas
     && rm -rf /var/lib/apt/lists/*
 
-# Set up the working directory
+# Install pigpio from source
+WORKDIR /tmp
+RUN wget https://github.com/joan2937/pigpio/archive/master.zip && \
+    unzip master.zip && \
+    cd pigpio-master && \
+    make && \
+    sudo make install
+
+# Set up the working directory for ROS workspace
 WORKDIR /root
 
 # Copy and unzip the ROS2_rUBot_mecanum_ws.zip file
 COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
-RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && rm /root/ROS2_rUBot_mecanum_ws.zip
+RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
+    rm /root/ROS2_rUBot_mecanum_ws.zip
 
 # Build the ROS workspace
-RUN /bin/bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
+RUN source /opt/ros/humble/setup.bash && \
+    cd /root/ROS2_rUBot_mecanum_ws && \
+    colcon build
 
 # Add workspace and ROS environment setup to .bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
@@ -74,6 +86,11 @@ RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
 # Copy the rubot_entrypoint.sh into the image
 COPY rubot_entrypoint.sh /rubot_entrypoint.sh
 RUN chmod +x /rubot_entrypoint.sh
+
+# Set permissions for rubot_mecanum_driver.py (assuming it's in your workspace)
+RUN cd /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver && \
+    sudo chown root:root rubot_mecanum_driver.py && \
+    sudo chmod 4777 rubot_mecanum_driver.py
 
 # Set the default command to run when the container starts
 CMD ["bash"]
