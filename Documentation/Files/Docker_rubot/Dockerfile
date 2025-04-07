@@ -63,7 +63,7 @@ RUN wget https://github.com/joan2937/pigpio/archive/master.zip && \
     unzip master.zip && \
     cd pigpio-master && \
     make && \
-    sudo make install
+    make install
 
 # Set up the working directory for ROS workspace
 WORKDIR /root
@@ -74,9 +74,7 @@ RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
     rm /root/ROS2_rUBot_mecanum_ws.zip
 
 # Build the ROS workspace
-RUN source /opt/ros/humble/setup.bash && \
-    cd /root/ROS2_rUBot_mecanum_ws && \
-    colcon build
+RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
 
 # Add workspace and ROS environment setup to .bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
@@ -89,8 +87,8 @@ RUN chmod +x /rubot_entrypoint.sh
 
 # Set permissions for rubot_mecanum_driver.py (assuming it's in your workspace)
 RUN cd /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver && \
-    sudo chown root:root rubot_mecanum_driver.py && \
-    sudo chmod 4777 rubot_mecanum_driver.py
+    chown root:root rubot_mecanum_driver.py && \
+    chmod 4777 rubot_mecanum_driver.py
 
 # Set the default command to run when the container starts
 CMD ["bash"]
