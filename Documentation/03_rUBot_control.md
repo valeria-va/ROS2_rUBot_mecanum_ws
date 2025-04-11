@@ -182,8 +182,8 @@ Let's verify first this behaviour in virtual environment
 
 We have to launch the "rubot_self_control.launch" file in the "rubot_control" package.
 ```shell
-roslaunch rubot_mecanum_description rubot_bringup_sw.launch
-roslaunch rubot_control rubot_self_control.launch
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
 ```
 
 ![](./Images/03_Control/09_rubot_self.png)
@@ -222,3 +222,10 @@ Upload the:
 
 ## **3. Wall Follower**
 
+- Bringup
+````shell
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+````
+- Wall follower
+````shell
+````
