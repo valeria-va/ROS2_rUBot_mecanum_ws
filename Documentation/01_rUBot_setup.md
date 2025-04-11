@@ -56,6 +56,8 @@ The rUBot mecanum custom made robot is based on:
 - Raspberrypi4 computer onboard
 - Custom Dockerfile and docker-compose 
 
+When the real robot is plugged on, the bringup is executes and is ready to be controlled within the TheConstruct environment.
+
 ## **3. Update and syncronize the repository project**
 
 The objective is to update the changes you have made, when working in ROS environment, in your github repository.

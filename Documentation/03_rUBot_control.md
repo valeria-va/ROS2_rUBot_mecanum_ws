@@ -2,7 +2,7 @@
 
 The objectives of this chapter are:
 - control in virtual environment 
-- control with real rUBot
+- control with real robot
 
 We have created different activities in this section:
 - Robot performances
@@ -12,15 +12,19 @@ We have created different activities in this section:
 - Robot Wall follower
 - Robot go to pose
 
-The final model represents the real rUBot we will use in the laboratory
+The final model represents the real robots we will use in the laboratory:
+- rUBot mecanum custom made robot
+- LIMO commercial mecanum robot
 
-The rUBot mecanum robot we will work is represented in the picture:
-![](./Images/01_Setup/01_rubot_pi.jpg)
+
+| <img src="./Images/01_Setup/01_rubot_pi.jpg" width="400"/> | <img src="./Images/01_Setup/02_Limo.png" width="380"/> |
+|:--:|:--:|
+| **rUBot** | **LIMO** |
 
 **Bibliography:**
 
 
-## **1. rUBot mecanum performances**
+## **3.1. Robot performances**
 
 We will need to create a new package. This is already done, but if you want to do it from scratch:
 ```shell
@@ -76,14 +80,11 @@ The analytical expressions are explained graphically in the picture:
 
 In the case of real mecanum robot this is calculated by the robot driver as an arduino program in arduino-mega platform.
 
-### **1.2. rUBot control**
+### **1.2. Robot control**
 
 We will first drive the robot with speciffic Twist message.
 
-We can control the movement of our robot using:
-
-- the keyboard or a joypad
-- programatically in python creating a "/my_robot_control_node" node
+We can control the movement of our robot programatically in python creating a "/my_robot_control_node" node
 
 We will do it first in virtual environment and later with the real robot.
 
@@ -96,21 +97,6 @@ A first simple control program is created to move the robot according to a speci
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
 ![](./Images/03_Control/06_bringup_sw.png)
-
-#### **a) Keyboard control**
-
-You can control the rUBot with the keyboard installing the teleop-twist-keyboard package:
-```shell
-sudo apt install ros-humble-teleop-twist-keyboard
-```
-
-Then you will be able to control the robot with the Keyboard typing:
-```shell
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-![](./Images/03_Control/07_rubot_teleop.png)
-
-#### **b) Python programming control**
 
 A first simple navigation program is created to move the robot according to a speciffic Twist message.
 
@@ -143,50 +129,43 @@ ros2 launch my_robot_control my_robot_control.launch.xml
 ```
 **Real robot**
 
-A first simple control program is created to move the robot according to a speciffic Twist message.
+The same simple control program created in virtual environment to move the robot is used for the real robot.
 
 - We first bringup our real LIMO robot:
-```shell
-ros2 launch limo_bringup limo_start.launch.py
-```
+    ```shell
+    ros2 launch limo_bringup limo_start.launch.py
+    ```
+- Or bringup the rUBot mecanum robot:
+    ``` shell
+    ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
+    ```
 
-- To bringup the rUBot_mecanum, execute in a first terminal:
-``` shell
-ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
-```
-![](./Images/03_Control/08_bringup.png)
+    ![](./Images/03_Control/08_bringup.png)
 
-**Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
-- We control the robot with TeleopTwistKeyboard
-````shell
-ros2 run teleop_twist_keyboard teleop_twist_keyboard 
-````
-
-In the previous session we have created a python node to publish a Twist message in /cmd_vel topic. Verify the previous rubot_nav.launch file created for this purpose:
-``` shell
-ros2 launch my_robot_control my_robot_control.launch.xml
-```
+    >**Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
+- We control the robot with the same node created for virtual environment:
+    ``` shell
+    ros2 launch my_robot_control my_robot_control.launch.xml
+    ```
 
 ## **2. Driving self-control**
 
 We will use now the created world to test the autonomous navigation with obstacle avoidance performance. 
 
-The algorithm description functionality, created in "rubot_self_control.py" file,is:
+The algorithm description functionality, created in "my_robot_selfcontrol.py" file,is:
 - The created node makes the robot go forward.
     - LIDAR is allways searching the closest distance and the angle
     - when this distance is lower than a threshold, the robot goes backward with angular speed in the oposite direction of the minimum distance angle.
 
 Let's verify first this behaviour in virtual environment
 
-### **2.1. Self-control in VIRTUAL environment**
+**VIRTUAL environment**
 
-We have to launch the "rubot_self_control.launch" file in the "rubot_control" package.
+We have to launch the "my_robot_selfcontrol.launch.xml" file in the "my_robot_control" package.
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
 ```
-
-![](./Images/03_Control/09_rubot_self.png)
 
 >- Verify in rviz if you have to change the fixed frame to "odom" frame
 >- You can test the behaviour when tunning the parameters defined
@@ -197,18 +176,16 @@ The objective of this activity is to modify the code to move the robot in Holono
 -  When the minimum distance is in the right side move the robot over the left side
 
 Design the code using the Holonomic robot performances, and upload:
-- the file "rubot_self_control_holonomic.py"
+- the file "my_robot_selfcontrol_holonomic.py"
 - a video of the current behaviour in your designed world
 
-### **2.2. Self-control control in REAL environment**
+**REAL robot**
 
-Connect first to the Real robot within RRL service.
-
-Then verify the obstacle avoidance behaviour for different parameter values.
+We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
 ```shell
-roslaunch rubot_control rubot_self_control.launch
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
 ```
-The robot is not working as expected because the number of laser beams is not 720 as in simulation!
+>The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
 **Lab Activity: rUBot self-control**
 
@@ -217,15 +194,50 @@ The objective of this lab session is:
 - verify the designed holonomic self-control node you have created for virtual environment in the previous activity.
 
 Upload the:
-- rubot_self_control_holonomic.launch and rubot_self_control_holonomic.py files
+- "my_robot_selfcontrol_holonomic.launch.xml" and "my_robot_selfcontrol_holonomic.py" files
 - Video of the execution in REAL environment
 
 ## **3. Wall Follower**
 
-- Bringup
-````shell
+We have created a Wall_Follower strategy based on the reading distances from LIDAR in the ranges: front, front-right, right and back-right, and perform a specific actuation in function of the minimum distance readings.
+
+Follow the instructions to create the program is described on: https://www.theconstructsim.com/wall-follower-algorithm/
+
+The algorith is based on laser ranges test and depends on the LIDAR type: 
+![](./Images/03_Control/10_lidar_rg.png)
+
+**VIRTUAL environment**
+
+We have to launch the "my_robot_wallfollower.launch.xml" file in the "my_robot_control" package.
+```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
-````
-- Wall follower
-````shell
-````
+ros2 launch my_robot_control my_robot_wallfollower.launch.xml
+```
+>- You can test the behaviour when tunning the parameters defined
+
+**Activity: rUBot self-control**
+
+The objective of this activity is to modify the code to move the robot in Holonomic way, for exemple:
+-  When the minimum distance is in the right side move the robot over the left side
+
+Design the code using the Holonomic robot performances, and upload:
+- the file "my_robot_selfcontrol_holonomic.py"
+- a video of the current behaviour in your designed world
+
+**REAL robot**
+
+We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
+```shell
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
+```
+>The robot is not working as expected because the number of laser beams is not 720 as in simulation!
+
+**Lab Activity: rUBot self-control**
+
+The objective of this lab session is:
+- take into account the number of laser beams of your Lidar in the python code
+- verify the designed holonomic self-control node you have created for virtual environment in the previous activity.
+
+Upload the:
+- "my_robot_selfcontrol_holonomic.launch.xml" and "my_robot_selfcontrol_holonomic.py" files
+- Video of the execution in REAL environment

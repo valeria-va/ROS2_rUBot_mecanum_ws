@@ -30,7 +30,7 @@ The file format for a robotic model is:
 - **URDF** (Unified Robot Description Format): XML-based format to describe the physical configuration of a robot, including its links, joints, and sensors.
 - **XACRO** (XML Macros): XML-based, but with macro capabilities for generating URDF files. This format will help you to better organize and scale your model with more functionalities.
 
-### **rUBot Mecanum Model design**
+#### **rUBot Mecanum Model design**
 
 The geometrical definition of our rUBot is graphically described by:
 ![](./Images/02_rubot_model/01_rubot_cad.png)
@@ -308,7 +308,7 @@ This driver is the "Planar Move Plugin" and is described in Gazebo tutorials.
   </gazebo>
   ```
 
-### **RVIZ ROS visualization Tool**
+#### **RVIZ ROS visualization Tool**
 
 We will first use RVIZ to check that the model is properly built. 
 
@@ -414,7 +414,7 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 
 > Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
 
-### **Design a custom world**
+#### **Design a custom world**
 
 Here we have first to design the project world, for exemple a maze from where our rUBot mecanum has to navigate autonomously.
 
@@ -435,13 +435,15 @@ You can build your world using "Building Editor" in Edit menu
 
 Once you finish is better to close the terminal you have work as superuser
 
-#### ***Modify a created world***
+***Modify a created world***
 - Open a terminal where you have the world you want to modify
 - type: sudo gazebo ./test.world (or simply "gazebo test.world")
 - make modifications: add some other models, delete previously added models, etc.
 - save your world in a world directory
 - close gazebo and the terminal
-#### **Create world with model parts**
+
+***Create world with model parts***
+
 You can create model parts like walls of 60cm or 90cm or 120cm with a geometry and color, using building editor. These parts can be saved:
 - in ~/.gazebo/models/ (this is the default folder)
 - in speciffic folder in your package (i.e. rUBot_mecanum_ws/src/rubot_mecanum_description/models). In this case, to add the path in Gazebo, add this line in .bashrc file:
@@ -486,9 +488,13 @@ The objective here is only to verify that the robot is correcly bringup and we c
 sudo apt update
 sudo apt install ros-humble-teleop-twist-keyboard
 ```
+
+#### **Virtual environment**
+
+When you are using the virtual environment to simulate the robot behavior you have to:
 - Bringup our robot in Gazebo virtual environment
 ```shell
-ros2 launch my_robot_bringup my_robot_gazebo.launch.xml
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
 - Launch the teleop-twist-keyboard:
 ```shell
@@ -501,3 +507,12 @@ ros2 topic echo /odom
 - Print the Nodes and topics using rqt_graph
 
 ![](./Images/02_rubot_model/07_rosgraph.png)
+
+#### **Real robot**
+
+When you are using the real robot, the bringup is already made when the docker container is started, the you have only to:
+
+- Launch the teleop-twist-keyboard control node:
+```shell
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
