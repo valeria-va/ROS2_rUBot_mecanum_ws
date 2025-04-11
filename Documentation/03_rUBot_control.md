@@ -76,7 +76,7 @@ The analytical expressions are explained graphically in the picture:
 
 In the case of real mecanum robot this is calculated by the robot driver as an arduino program in arduino-mega platform.
 
-### **1.2. rUBot control in VIRTUAL environment**
+### **1.2. rUBot control**
 
 We will first drive the robot with speciffic Twist message.
 
@@ -145,32 +145,23 @@ ros2 launch my_robot_control my_robot_control.launch.xml
 
 A first simple control program is created to move the robot according to a speciffic Twist message.
 
-- We first bringup our real robot (my_mecanum_robot_arm.urdf.xacro):
+- We first bringup our real LIMO robot:
 ```shell
-ros2 launch my_robot_bringup my_real_robot_bringup.launch.xml
+ros2 launch limo_bringup limo_start.launch.py
 ```
 
-### **1.3. rUBot control in REAL environment**
-
-In real environment, the bringup process depends on the real robot.
-
-To bringup the rUBot_mecanum, execute in a first terminal:
+- To bringup the rUBot_mecanum, execute in a first terminal:
 ``` shell
 ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
 ```
 ![](./Images/03_Control/08_bringup.png)
 
 **Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
+- We control the robot with TeleopTwistKeyboard
+````shell
+ros2 run teleop_twist_keyboard teleop_twist_keyboard 
+````
 
-#### **a) Keyboard control**
-You can control the rUBot with the keyboard if you have first connected to the real robot within RRL service.
-
-Then you will be able to control the robot with the Keyboard typing:
-```shell
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-
-#### **b) Python programming control**
 In the previous session we have created a python node to publish a Twist message in /cmd_vel topic. Verify the previous rubot_nav.launch file created for this purpose:
 ``` shell
 ros2 launch my_robot_control my_robot_control.launch.xml
