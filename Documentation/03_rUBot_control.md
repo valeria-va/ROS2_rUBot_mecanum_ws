@@ -187,6 +187,23 @@ ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
 ```
 >The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
+**Lab Activity: Lidar test**
+
+The objectives of this activity are:
+- Put your robot inside a real world
+- Launch the rubot_lidar_test.launch file and verify:
+  - the number of laser beams
+  - the angle for the first laser beam index
+  - the total laser beams angle range
+- Create a new **rubot_lidar_test_custom.launch** and **rubot_lidar_test_custom.py**, including a laser_factor variable as beams/deg.
+- Verify the Lidar is able to identify correctly the obstacles in each angle orientation!
+
+Upload a zip file including:
+- picture containing:
+  - rviz screen where you can see the lidar distances
+  - terminal running the "rubot_lidar_test_custom.launch" with distances readings
+- the rubot_lidar_test_custom.py
+
 **Lab Activity: rUBot self-control**
 
 The objective of this lab session is:

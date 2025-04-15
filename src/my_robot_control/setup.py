@@ -23,6 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'my_robot_lidar_test_node = my_robot_control.my_robot_lidar_test:main',
             'my_robot_control_node = my_robot_control.my_robot_control:main',
             'my_robot_selfcontrol_node = my_robot_control.my_robot_selfcontrol:main',
             'my_robot_wallfollower_node = my_robot_control.my_robot_wallfollower:main',
