@@ -5,7 +5,8 @@ The objectives of this section are:
 The interesting documentation is:
 - https://www.udemy.com/course/ros2-nav2-stack/learn/lecture/35488788#overview
 - https://automaticaddison.com/the-ultimate-guide-to-the-ros-2-navigation-stack/
-- https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md
+- https://github.com/agilexrobotics/limo_ros2_doc/blob/master/LIMO-ROS2-humble(EN).md
+- https://discourse.ros.org/t/ros2-mapping-and-navigation-with-agilex-limo-ros2/37439
 - https://bitbucket.org/theconstructcore/workspace/projects/ROB
 
 ## **4.1. Navigation Stack**
@@ -69,5 +70,7 @@ To Navigate on the generated MAP you have to:
 ````shell
 ros2 launch limo_bringup limo_nav2.launch.py
 ````
-- After launching the navigation, it may be observed that the laser-scanned shape does not align with the map, requiring manual correction. To rectify this, adjust the actual position of the chassis in the scene displayed on the rviz map.
-- Set the navigation goal point through '2D Nav Goal'.
+- After launching the navigation, it may be observed that the laser-scanned shape does not align with the map, requiring manual correction. To rectify this, adjust the actual position of the chassis in the scene displayed on the rviz map through "2D POSE Estimate".
+- Set the navigation goal point through '2D Nav Goal'. 
+- A purple path will be generated on the map and Limo will automatically navigate to the goal point.
+- Multi-point navigation: Click "Waypoint" to enter multi-point navigation mode.
