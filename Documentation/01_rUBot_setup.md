@@ -16,6 +16,7 @@ Webgraphy:
 - https://github.com/agilexrobotics/limo_ros2/tree/humble
 - https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md
 - bitbucket: https://bitbucket.org/theconstructcore/limo_robot/src/main/
+- https://bitbucket.org/theconstructcore/workspace/projects/ROB
 
 ## **1. Setup the robot in virtual environment for simulation**
 
