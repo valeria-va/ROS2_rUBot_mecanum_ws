@@ -1,0 +1,5 @@
+<launch>
+ <!-- LIDAR Test -->
+  <node pkg="my_robot_control" exec="my_robot_lidar_test_node" name="lidar_test" output="screen">
+  </node> 
+</launch>

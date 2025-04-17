@@ -1,0 +1,7 @@
+<launch>
+    <let name="distance_laser" value="0.35"/>
+
+    <node pkg="my_robot_control" exec="my_robot_wallfollower_node" name="wall_follower" output="screen">
+        <param name="distance_laser" value="$(var distance_laser)"/>
+    </node>
+</launch>
