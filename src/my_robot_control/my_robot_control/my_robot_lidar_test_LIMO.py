@@ -8,7 +8,7 @@ class LidarTest(Node):
 
     def __init__(self):
         super().__init__('lidar_test')
-
+        # Define Quality of Service to receive scan values faster. Its is not important if some of them are lost and only keep the last 10 values
         qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
             history=QoSHistoryPolicy.KEEP_LAST,
