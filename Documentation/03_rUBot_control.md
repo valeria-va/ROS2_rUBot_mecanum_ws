@@ -245,7 +245,7 @@ Design the code using the Holonomic robot performances, and upload:
 
 We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
 ```shell
-ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
+ros2 launch my_robot_control my_robot_wallfollower.launch.xml
 ```
 >The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
