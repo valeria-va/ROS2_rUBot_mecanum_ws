@@ -21,6 +21,31 @@ There are different methods:
 
 Cartographer is a set of SLAM algorithms based on image optimization launched by Google. The main goal of this algorithm is to achieve low computing resource consumption and achieve the purpose of real-time SLAM.
 
+- Create a new package named cartographer_slam within the src/ directory of the ros2_ws workspace. Add the cartographer_ros and rclpy dependencies. Use ament_python to create the package.
+````shell
+ros2 pkg create --build-type ament_python cartographer_slam --dependencies cartographer_ros rclpy
+````
+- Create launch & config directories at ros2_ws/src/cartographer_slam.
+
+- Write a launch file to launch Cartographer with the name cartographer.launch.py, where the two nodes are launched.
+
+- Create a Lua file named cartographer.lua in the config directory
+
+Before compile:
+- Open the setup.py of the cartographer_slam package
+
+- Add the installation lines for launch and config directories
+
+
+To save the map you have created, run an executable map_saver that runs a map_saver node from nav2_map_server.
+
+IMPORTANT: Call the node inside the directory where you want to save the map.
+
+The command is as follows:
+````shell
+cd ~/ROS2_rUBot_mecanum_ws/src/cartographer_slam/config
+ros2 run nav2_map_server map_saver_cli -f limo_area
+````
 Launch a new terminal and enter the command:
 ````shell
 ros2 launch limo_bringup limo_start.launch.py
