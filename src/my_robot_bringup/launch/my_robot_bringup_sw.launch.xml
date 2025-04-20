@@ -4,7 +4,7 @@
      <let name="yaw0" value="1.57"/>
 
      <let name="urdf_path" 
-         value="$(find-pkg-share my_robot_description)/urdf/rubot/rubot_mecanum.urdf" />
+         value="$(find-pkg-share my_robot_description)/urdf/limo/rubot_limo.urdf" />
      <let name="rviz_config_path"
          value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
 

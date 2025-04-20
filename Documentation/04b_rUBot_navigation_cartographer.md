@@ -36,6 +36,20 @@ Before compile:
 
 - Add the installation lines for launch and config directories
 
+**Create the MAP**
+
+Fist of all you have to bringup the robot in the desired environment:
+- In the case of Virtual envieronment:
+````shell
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+````
+> Be sure to have ".../urdf/limo/rubot_limo.urdf" in launch file
+- In the case of REAL robot:
+````shell
+ros2 launch limo_bringup limo_start.launch.py
+````
+> When using the Docker configuration this is done when powering the Limo robot
+
 
 To save the map you have created, run an executable map_saver that runs a map_saver node from nav2_map_server.
 
@@ -46,10 +60,7 @@ The command is as follows:
 cd ~/ROS2_rUBot_mecanum_ws/src/cartographer_slam/config
 ros2 run nav2_map_server map_saver_cli -f limo_area
 ````
-Launch a new terminal and enter the command:
-````shell
-ros2 launch limo_bringup limo_start.launch.py
-````
+
 Then start the cartographer mapping algorithm. Open another new terminal and enter the command:
 ````shell
 ros2 launch limo_bringup cartographer.launch.py
