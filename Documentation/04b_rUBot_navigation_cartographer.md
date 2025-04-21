@@ -12,7 +12,7 @@ The interesting documentation is:
 SLAM (Simultaneous Localization and Mapping) navigation aims to simultaneously map an unknown environment and localize the robot within it. It generates an optimal trajectory to a specified target point and navigates along this path, continuously updating the map and avoiding obstacles to ensure efficient and autonomous movement.
 
 There are different methods:
-- SLAM gmapping: to create 2D occupancy maps from laser and position data. Ideal for small indoor environments with low scan frequency.
+- Gmapping: to create 2D occupancy maps from laser and position data. Ideal for small indoor environments with low scan frequency.
 - Cartographer: Provides real-time SLAM in 2D and 3D, compatible with multiple platforms and sensor configurations. Known for its accuracy and ability to work with multi-sensor data.
 - RTAB-MAP: A library and standalone application for visual and lidar SLAM. Supports various platforms and sensors.
 
@@ -21,61 +21,48 @@ There are different methods:
 
 Cartographer is a set of SLAM algorithms based on image optimization launched by Google. The main goal of this algorithm is to achieve low computing resource consumption and achieve the purpose of real-time SLAM.
 
-- Create a new package named cartographer_slam within the src/ directory of the ros2_ws workspace. Add the cartographer_ros and rclpy dependencies. Use ament_python to create the package.
+- Create a new package named cartographer_slam within the src/ directory of the ROS2_rUBot_mecanum_ws workspace. Add the cartographer_ros and rclpy dependencies. Use ament_python to create the package.
 ````shell
 ros2 pkg create --build-type ament_python cartographer_slam --dependencies cartographer_ros rclpy
 ````
-- Create launch & config directories at ros2_ws/src/cartographer_slam.
+- Create launch & config directories at ROS2_rUBot_mecanum_ws/src/cartographer_slam.
 
-- Write a launch file to launch Cartographer with the name cartographer.launch.py, where the two nodes are launched.
+- Write a launch file to launch Cartographer with the name cartographer.launch.py, where the needed nodes are launched.
 
 - Create a Lua file named cartographer.lua in the config directory
 
-Before compile:
-- Open the setup.py of the cartographer_slam package
-
-- Add the installation lines for launch and config directories
+Before to compile:
+- Open the setup.py of the cartographer_slam package and add the installation lines for launch and config directories
 
 **Create the MAP**
 
-Fist of all you have to bringup the robot in the desired environment:
-- In the case of Virtual envieronment:
+- Fist of all you have to bringup the robot in the desired environment:
+    - In the case of Virtual envieronment:
+    ````shell
+    ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+    ````
+    > Be sure to have ".../urdf/limo/rubot_limo.urdf" in launch file
+    - In the case of REAL robot:
+    ````shell
+    ros2 launch limo_bringup limo_start.launch.py
+    ````
+    > When using the Docker configuration this is done when powering the Limo robot
+
+- Now launch the previously created cartographer.launch.py:
 ````shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+ros2 launch cartographer_slam cartographer.launch.py
 ````
-> Be sure to have ".../urdf/limo/rubot_limo.urdf" in launch file
-- In the case of REAL robot:
+- Open the Teleop_twist_keyboard node to move the robot slowly and generate the map:
 ````shell
-ros2 launch limo_bringup limo_start.launch.py
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ````
-> When using the Docker configuration this is done when powering the Limo robot
-
-
-To save the map you have created, run an executable map_saver that runs a map_saver node from nav2_map_server.
-
-IMPORTANT: Call the node inside the directory where you want to save the map.
-
-The command is as follows:
+- To save the map you have created, run an executable map_saver that runs a map_saver node from nav2_map_server.
 ````shell
 cd ~/ROS2_rUBot_mecanum_ws/src/cartographer_slam/config
 ros2 run nav2_map_server map_saver_cli -f limo_area
 ````
+>IMPORTANT: Call the node inside the directory where you want to save the map.
 
-Then start the cartographer mapping algorithm. Open another new terminal and enter the command:
-````shell
-ros2 launch limo_bringup cartographer.launch.py
-````
-
-After launching successfully, you need to move the robot slowly to generate the map.
-
-After mapping, the map should be saved. Enter the map saving directory.
-````shell
-cd /home/agilex/limo_ros2_ws/src/limo_ros2/limo_bringup/maps
-````
-Enter the following command in terminal to save the map with speciffic map11 name.
-````shell
-ros2 run nav2_map_server map_saver_cli -f map11
-````
 ### **Navigation framework**
 The key to navigation is robot positioning and path planning. For these, ROS provides the following two packages.
 
