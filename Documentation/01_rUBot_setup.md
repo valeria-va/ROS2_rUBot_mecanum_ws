@@ -34,6 +34,12 @@ source /opt/ros/humble/setup.bash
 source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
 cd /home/user/ROS2_rUBot_mecanum_ws
 ````
+- If the compilation process returns warnings on "Deprecated setup tools":
+````shell
+sudo apt install python3-pip
+pip3 list | grep setuptools
+pip3 install setuptools==58.2.0
+````
 - If the compilation process returns wardings on PREFIX_PATH:
 ````shell
 unset COLCON_PREFIX_PATH
