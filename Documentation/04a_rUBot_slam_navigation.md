@@ -63,17 +63,30 @@ ros2 run nav2_map_server map_saver_cli -f maps/my_map
 ## **4.3. Navigate inside Map**
 
 - Fist of all we have to make a correction because sometimes the Map is not read correctly or ontime:
-````shell
-sudo apt update
-sudo apt install ros-humble-rmw-cyclonedds-cpp
-````
-- Add the environment variable in .bashrc
-````shell
-export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-````
+    - Install ros-humble-rmw-cyclonedds-cpp
+    ````shell
+    sudo apt update
+    sudo apt install ros-humble-rmw-cyclonedds-cpp
+    ````
+    - Add the environment variable in .bashrc
+    ````shell
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    ````
+    - Modify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml:
+    ````shell
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    or
+    robot_model_type: "nav2_amcl::OmniMotionModel"
+    ````
+
 - Let`s now make the robot navigate using the Map
 ````shell
 ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=maps/my_map.yaml
 ````
 > If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
+- Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
+- Navigate on the MAP with Nav2
+    - Selecty 1 target point
+    - Select multiple waypoints with "Waypoint/Nav through Poses Mode" option
+    - Select a unique trajectory following the different Waypoints with the "Start Nav Through Poses" option
