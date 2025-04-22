@@ -57,6 +57,17 @@ Here we will review the Computer onboard used for each robot and the designed se
 
 The setup process is based on a custom Docker to properly interface with the ROS2 environment.
 
+For **Limo** robot the Docker compose is started. In case you want to do it manually:
+````shell
+cd ~/limo_docker
+docker compose -f docker-compose-v2.yaml up -d
+````
+- Connect to TheConstruct environment
+````shell
+ros2 topic list
+````
+
+
 ### **2.1. Setup the rUBot mecanum**
 
 The rUBot mecanum custom made robot is based on:
