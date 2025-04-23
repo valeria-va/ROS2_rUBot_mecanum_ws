@@ -2,6 +2,7 @@ name: limo_humble
 
 services:
   limo-humble-container:
+    pull_policy: always
     image: theconstructai/limo:humble-v2
     privileged: true
     network_mode: host

@@ -90,3 +90,32 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:
     - Selecty 1 target point
     - Select multiple waypoints with "Waypoint/Nav through Poses Mode" option
     - Select a unique trajectory following the different Waypoints with the "Start Nav Through Poses" option
+
+## **4.4. Interact Programmatically with Nav2**
+
+You will use Simple Commander API to interact with Topics subscribers, Service clients and Action clients.
+
+The interesting topics used:
+- /initialpose (geometry_msgs)
+The interesting actions used:
+- /navigate_to_pose
+-/follow_waypoints
+
+we need to install:
+````shell
+sudo apt install ros-humble-nav2-simple-commander
+sudo apt install ros-humble-tf-transformations
+````
+We can create a python file to interact with topics and actions:
+- we bringup the robot on the world
+````shell
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+````
+- we start the navigation2.launch.py with rviz to see the evolution or without rviz
+````shell
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=maps/my_map.yaml
+or
+ros2 launch nav2_bringup bringup.launch.py use_sim_time:=True map:=maps/my_map.yaml
+````
+- we launch the created python file to define the Initial point and the targets waypoints
+
