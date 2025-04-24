@@ -46,18 +46,19 @@ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 - move your robot with:
 ````shell
 ros2 run turtlebot3_teleop teleop_keyboard
-ros2 run teleop_twist_keyboardteleop_twist_keyboard
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ````
 - to generate the map type:
 ````shell
 ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=True
+ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=True
 ````
 >use_sim_time have to be True when using Gazebo for Virtual simulation
 - Navigate on the world to store the map
 - Save the map with:
 ````shell
-mkdir maps
-ros2 run nav2_map_server map_saver_cli -f maps/my_map
+cd src/Navigation_Projects/my_robot_navigation2/map/
+ros2 run nav2_map_server map_saver_cli -f my_map
 ````
 
 ## **4.3. Navigate inside Map**
@@ -72,7 +73,7 @@ ros2 run nav2_map_server map_saver_cli -f maps/my_map
     ````shell
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ````
-    - Modify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml:
+    - Verify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml:
     ````shell
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     or
@@ -82,7 +83,7 @@ ros2 run nav2_map_server map_saver_cli -f maps/my_map
 - Let`s now make the robot navigate using the Map
 ````shell
 ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=maps/my_map.yaml
+ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=my_map.yaml
 ````
 > If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
