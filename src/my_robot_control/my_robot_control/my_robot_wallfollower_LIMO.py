@@ -4,6 +4,7 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 
+
 class WallFollower(Node):
 
     def __init__(self):
@@ -14,6 +15,10 @@ class WallFollower(Node):
             history=QoSHistoryPolicy.KEEP_LAST,
             depth=10
         )
+
+        self.declare_parameter('distance_laser', 0.5)
+        self.base_distance = self.get_parameter('distance_laser').get_parameter_value().double_value
+        self.d = 0.05
 
         self.subscription = self.create_subscription(
             LaserScan,
@@ -26,71 +31,58 @@ class WallFollower(Node):
         self.timer = self.create_timer(1.0, self.log_info)
 
         self.closest = (float('inf'), 'unknown')
-        self.d = 0.1  # Umbral de ajuste
 
     def laser_callback(self, msg):
         ranges = msg.ranges
         angle_min = msg.angle_min * 180.0 / 3.14159
         angle_increment = msg.angle_increment * 180.0 / 3.14159
 
-        sections = {
-            'delante': [],
-            'superior_izquierda': [],
-            'izquierda': [],
-            'superior_derecha': [],
-            'derecha': []
-        }
+        delante = []
+        derecha = []
 
         for i, distance in enumerate(ranges):
             angle = angle_min + i * angle_increment
             if distance == float('inf') or distance == 0.0:
                 continue
-            if -45 <= angle <= 45:
-                sections['delante'].append(distance)
-            elif 45 < angle <= 80:
-                sections['superior_izquierda'].append(distance)
-            elif 80 < angle <= 110:
-                sections['izquierda'].append(distance)
-            elif -80 <= angle < -45:
-                sections['superior_derecha'].append(distance)
-            elif -110 <= angle < -80:
-                sections['derecha'].append(distance)
+            if -15 <= angle <= 15:
+                delante.append(distance)
+            elif -110 <= angle < -15:
+                derecha.append(distance)
 
-        min_distances = {
-            region: min(values) if values else float('inf')
-            for region, values in sections.items()
-        }
+        min_delante = min(delante) if delante else float('inf')
+        min_derecha = min(derecha) if derecha else float('inf')
 
-        # Usamos el valor real para la comparación, no el nombre
-        self.closest = min(min_distances.items(), key=lambda x: x[1])
+        self.closest = (min(min_delante, min_derecha), 'delante' if min_delante < min_derecha else 'derecha')
 
-        distancia_derecha = min_distances['derecha']
         twist = Twist()
+        action_log = ""
 
-        if min_distances['delante'] < 0.5:
-            twist.angular.z = 0.5
-            self.get_logger().info('Giro por obstáculo delante')
-        elif distancia_derecha < 0.5 - self.d:
-            twist.angular.z = 0.3  # Alejarse
-            self.get_logger().info('Demasiado cerca - girar izquierda para alejarse')
-        elif distancia_derecha > 0.5 + self.d:
-            twist.angular.z = -0.3  # Acercarse
-            self.get_logger().info('Demasiado lejos - girar derecha para acercarse')
+        if min_delante < self.base_distance:
+            twist.angular.z = 0.3
+            action_log = "Giro por obstáculo delante"
+        elif min_derecha < self.base_distance - self.d:
+            twist.angular.z = 0.3
+            action_log = "Demasiado cerca - girar izquierda para alejarse"
+        elif min_derecha > self.base_distance + self.d:
+            twist.angular.z = -0.3
+            action_log = "Demasiado lejos - girar derecha para acercarse"
         else:
-            twist.linear.x = 0.2  # Seguir pared
-            self.get_logger().info('Siguiendo pared')
+            twist.linear.x = 0.2
+            action_log = "Siguiendo pared"
+
+        self.get_logger().info(f"{action_log}")
+        # self.get_logger().info(f"Lecturas válidas -> Delante: {len(delante)}, Derecha: {len(derecha)}")
 
         self.publisher.publish(twist)
 
     def log_info(self):
-        try:
-            self.get_logger().info(
-                f"Objeto más cercano a {float(self.closest[0]):.2f} m en región: {self.closest[1].upper()}"
-            )
-        except Exception as e:
-            self.get_logger().warn(f"No se pudo mostrar info de objeto más cercano: {e}")
+        dist, region = self.closest
+        if isinstance(dist, (float, int)) and isinstance(region, str):
+            self.get_logger().info(f"Objeto más cercano a {dist:.2f} m en región: {region.upper()}")
+        else:
+            self.get_logger().warn(f"Distancia inválida ({dist}) de tipo {type(dist)} recibida, no se puede formatear.")
 
-        self.get_logger().info(f"Umbral de distancia láser (self.d): {self.d:.2f} m")
+        # self.get_logger().info(f"Distancia base: {self.base_distance:.2f} m | Umbral: ±{self.d:.2f} m")
 
 
 def main(args=None):
