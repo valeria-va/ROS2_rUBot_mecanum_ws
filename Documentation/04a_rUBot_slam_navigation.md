@@ -45,12 +45,10 @@ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 ````
 - move your robot with:
 ````shell
-ros2 run turtlebot3_teleop teleop_keyboard
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ````
 - to generate the map type:
 ````shell
-ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=True
 ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=True
 ````
 >use_sim_time have to be True when using Gazebo for Virtual simulation
@@ -73,7 +71,7 @@ ros2 run nav2_map_server map_saver_cli -f my_map
     ````shell
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ````
-    - Verify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml:
+    - Verify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml (every ):
     ````shell
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     or
@@ -83,9 +81,7 @@ ros2 run nav2_map_server map_saver_cli -f my_map
 - Let`s now make the robot navigate using the Map
 ````shell
 ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=my_map.yaml
-or in map folder
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=my_map.yaml
+ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
 ````
 > If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
@@ -104,21 +100,48 @@ The interesting actions used:
 - /navigate_to_pose
 -/follow_waypoints
 
-we need to install:
+we need to install (usually is already installed):
 ````shell
 sudo apt install ros-humble-nav2-simple-commander
 sudo apt install ros-humble-tf-transformations
 ````
 We can create a python file to interact with topics and actions:
+
+**Using a Virtual environment**
+
+When we use Gazebo for robot simulation environment:
 - we bringup the robot on the world
 ````shell
 ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 ````
 - we start the navigation2.launch.py with rviz to see the evolution or without rviz
 ````shell
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=maps/my_map.yaml
-or
-ros2 launch nav2_bringup bringup.launch.py use_sim_time:=True map:=maps/my_map.yaml
+ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
 ````
-- we launch the created python file to define the Initial point and the targets waypoints
+>When simulation use_sim_time:=True
+>We use "waffle.yaml" file in "param" folder where base_frame_id: "base_footprint" (as described in the model)
 
+- we launch the created python file to define the Initial point and the targets waypoints
+````shell
+ros2 run my_robot_nav_control my_robot_nav_target1_exec
+````
+>First time we pass the 2D-Pose-Estimate but not the successive times
+
+**Using the Real robots**
+
+When we use the real LIMO robot:
+- The bringup is done without the LIMO robot model. The only frames available are
+    - odom: as a fixed frame
+    - base_link: as the robot frame
+- We have to create "LIMO_real.yaml" file in "param" folder substituing base_frame_id: "odom" (instead of base_footprint)
+- we start the navigation2.launch.py with rviz to see the evolution. The map can be passed as argument.
+````shell
+ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=$(find my_robot_navigation2/map/my_map.yaml)
+````
+>When Real robot use_sim_time:=False
+
+- we launch the created python file to define the Initial point and the targets waypoints
+````shell
+ros2 run my_robot_nav_control my_robot_nav_target1_exec
+````
+>First time we pass the 2D-Pose-Estimate but not the successive times

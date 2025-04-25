@@ -37,7 +37,7 @@ def generate_launch_description():
             'map',
             'my_map.yaml'))
 
-    param_file_name = 'waffle.yaml'
+    param_file_name = 'Limo_real.yaml'
     param_dir = LaunchConfiguration(
         'params_file',
         default=os.path.join(
