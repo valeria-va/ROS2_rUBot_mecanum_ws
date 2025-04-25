@@ -84,6 +84,8 @@ ros2 run nav2_map_server map_saver_cli -f my_map
 ````shell
 ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=my_map.yaml
+or in map folder
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=my_map.yaml
 ````
 > If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
