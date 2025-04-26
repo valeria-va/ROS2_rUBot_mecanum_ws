@@ -30,7 +30,7 @@ colcon build
 
 3. Take photos from USB camera
     ````bash
-    rosrun rubot_projects rubot_take_photo.py
+    ros2 run my_robot_AI_identification take_photo_exec
     ````
     You can use a more performand program to take photos continuously, add data in picture name for model generation and also to detect traffic signs when model is created.
     ````bash
