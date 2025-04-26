@@ -159,6 +159,6 @@ To navigate programmatically using Simple Commander API, you have to proceed wit
         >We use "LIMO_real.yaml" file in "param" folder 
 - Launch the created python file to define the Initial point and the targets waypoints
     ````shell
-    ros2 run my_robot_nav_control my_robot_nav_target1_exec
+    ros2 run my_robot_nav_control nav_target0_exec
     ````
     >First time we pass the 2D-Pose-Estimate but not the successive times

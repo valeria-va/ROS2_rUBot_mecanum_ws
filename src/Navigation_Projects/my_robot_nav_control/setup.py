@@ -24,7 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
             'nav_target_exec = my_robot_nav_control.nav_target:main', # Canviat per al nou nom del fitxer
-            'my_robot_nav_target1_exec = my_robot_nav_control.simple_commander_nav_target1:main',
+            'nav_waypoints_exec = my_robot_nav_control.nav_waypoints:main', # Canviat per al nou nom del fitxer
+            'nav_target0_exec = my_robot_nav_control.nav_target0:main',
         ],
     },
 )
