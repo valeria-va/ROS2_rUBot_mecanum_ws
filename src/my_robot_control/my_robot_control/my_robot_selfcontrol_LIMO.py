@@ -10,7 +10,7 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy
 class RobotSelfControl(Node):
 
     def __init__(self):
-        super().__init__('robot_selfcontrol')
+        super().__init__('robot_selfcontrol_node')
 
         # Parámetros configurables
         self.declare_parameter('distance_laser', 0.3)

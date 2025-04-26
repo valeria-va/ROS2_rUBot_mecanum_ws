@@ -9,7 +9,7 @@ import time #add time module
 class RobotSelfControl(Node):
 
     def __init__(self):
-        super().__init__('robot_selfcontrol')
+        super().__init__('robot_selfcontrol_node')
         self.declare_parameter('distance_laser', 0.3)
         self.declare_parameter('speed_factor', 1.0)
         self.declare_parameter('forward_speed', 0.2)

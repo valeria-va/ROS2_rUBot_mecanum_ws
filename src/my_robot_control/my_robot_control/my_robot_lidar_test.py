@@ -7,7 +7,7 @@ from sensor_msgs.msg import LaserScan
 class ScanValues(Node):
 
     def __init__(self):
-        super().__init__('lidar_test')
+        super().__init__('lidar_test_node')
         self.subscription = self.create_subscription(
             LaserScan,
             '/scan',

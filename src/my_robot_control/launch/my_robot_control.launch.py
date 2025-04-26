@@ -7,7 +7,7 @@ def generate_launch_description():
 
     my_robot_control_node = Node(
         package="my_robot_control",
-        executable="my_robot_control_node",
+        executable="my_robot_control_exec",
         name="robot_control",
         parameters=[
             {"vx": 0.3},

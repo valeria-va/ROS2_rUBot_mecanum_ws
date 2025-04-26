@@ -9,7 +9,7 @@ from tf_transformations import euler_from_quaternion, quaternion_from_euler
 class Rubot(Node):
 
     def __init__(self):
-        super().__init__('rubot_control')
+        super().__init__('rubot_control_node')
 
         # Define goal odometry from parameters
         self.declare_parameter('x', 0.0)

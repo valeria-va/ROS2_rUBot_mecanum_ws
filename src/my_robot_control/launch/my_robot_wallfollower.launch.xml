@@ -6,7 +6,7 @@
     <let name="backward_speed" value="-0.2"/>
     <let name="rotation_speed" value="0.5"/>
 
-    <node pkg="my_robot_control" exec="my_robot_wallfollower_node" name="wall_follower" output="screen">
+    <node pkg="my_robot_control" exec="my_robot_wallfollower_exec" name="wall_follower_node" output="screen">
         <param name="distance_laser" value="$(var distance_laser)"/>
         <param name="speed_factor" value="$(var speed_factor)"/>
         <param name="forward_speed" value="$(var forward_speed)"/>

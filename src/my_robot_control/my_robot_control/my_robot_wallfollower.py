@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 class WallFollower(Node):
 
     def __init__(self):
-        super().__init__('wall_follower')
+        super().__init__('wall_follower_node')
         
         self.declare_parameter('distance_laser', 0.3)
         self.declare_parameter('forward_speed', 0.2)

@@ -8,7 +8,7 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 class WallFollower(Node):
 
     def __init__(self):
-        super().__init__('wall_follower')
+        super().__init__('wall_follower_node')
 
         qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,

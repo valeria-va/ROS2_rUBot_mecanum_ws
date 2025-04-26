@@ -7,7 +7,7 @@ import tf_transformations
 
 class RobotController(Node):
     def __init__(self):
-        super().__init__('robot_control')
+        super().__init__('robot_control_node')
         
         # Initialize robot state
         self.robot_x = 0.0
