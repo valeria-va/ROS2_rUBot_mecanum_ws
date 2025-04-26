@@ -34,7 +34,7 @@ colcon build
     ````
     You can use a more performand program to take photos continuously, add data in picture name for model generation and also to detect traffic signs when model is created.
     ````bash
-    rosrun rubot_projects keras_takePictures_detect_signs.py
+    ros2 run my_robot_AI_identification takePhoto_detectSign_keras_exec
     ````
 4. Open RVIZ to see the picture frame
     ````bash
@@ -48,76 +48,37 @@ colcon build
 
 8. Verify topics (theConstruct):
    ```bash
-   rostopic list
+   ros2 topic list
    ````
-   Verify the topic name: /usb_cam/image_raw to place it in "keras_detect_signs.py" node
+   Verify the topic name: /usb_cam/image_raw to place it in "takePhoto_detectSign_keras.py" file
    
-9. Launch classification node (theConstruct):
+9. Launch classification node and take photos (theConstruct):
    ```bash
-   roslaunch rubot_projects detect_signs.launch
-   ````
-10. Launch classification node and take photos (v2) (theConstruct):
-   ```bash
-   roslaunch rubot_projects detect_signs_take_pictures.launch
+   ros2 launch my_robot_AI_identification takePhoto_detectSign_keras.launch.py
    ````
 10.1. Stop doing photos (theConstruct) (in a new Terminal):
    ```bash
-   rostopic pub /capture_toggle std_msgs/Bool "data: false"
+   ros2 topic pub /capture_toggle std_msgs/Bool "data: false"
    ````
    If you want to do photos again set false value to true 
    ```bash
-   rostopic pub /capture_toggle std_msgs/Bool "data: true"
+   ros2 topic pub /capture_toggle std_msgs/Bool "data: true"
    ````
-### How to send a sequence of goals to ROS NavStack
-
-* [Sending a sequence of Goals to ROS NavStack with Python](https://hotblackrobotics.github.io/en/blog/2018/01/29/seq-goals-py/)
-
-
 
 ### Final Exercise:
-#### First scenario: Image processing
+
+#### Navigate to a target point taking care of traffic signals 
 
 * Load the room map 
 * Start the navigation stack. 
 * Get the coordinates of all the traffic sign using Rviz.
 * Write a Python node with the folowing behaviour:
-	* Go to the first sign.
-	* When the robot stops:
-		* take an image. 
-		* recognize the object using image processing by coulour and shape. 
-		* go to next sign according the signs:
-			* Left: go to next sign on the left
-			* Right: go to next sign on the right
-			* STOP: Shutdown node.
-			* Forbidden: continues to the next sign  	 
-
-#### Second scenario: Computer Vision
-
-* Load the room map 
-* Start the navigation stack. 
-* Get the coordinates of all the traffic sign using Rviz.
-* Write a Python node with the folowing behaviour:
-	* Go to the first sign.
-	* When the robot stops:
-		* take an image. 
-        * recognize the object using TensorFlow model and do inference on each image
-		* go to next sign according the signs:
-			* Left: go to next sign on the left
-			* Right: go to next sign on the right
-			* STOP: Shutdown node.
-			* Forbidden: continues to the next sign  
-
-### How to train and use a TensorFlow model for object recognition:
-* Go to https://teachablemachine.withgoogle.com/ and create an image project.
-* Collect images with your mobile for each sign and upload them to the project.
-* Train the model.
-* Export the model as a keras .h5 model: 
-* Create a ROS node that uses the model for inference:
-  
-
-Here's how you can adapt your code to create a ROS node that subscribes to the USB camera topic and identifies traffic signs in real time:
-
-- Set Up ROS Environment: Ensure ROS Noetic is installed and configured on your Raspberry Pi 4.
-
-- Create ROS Node: Develop a ROS node that subscribes to the USB camera topic, processes the images using the Keras model, and publishes the detected traffic signs.
+	* Go to the target point. Nav2 finds an optimat trajectory and starts to move
+    * robot takes photos and identifies if there is a traffic sign
+    * if robot finds a traffic sign, it obey the traffic signal
+        * Left: turn left
+        * Right: turn right
+        * STOP: stops
+        * Forbidden: turn 180º  
+    * the nav2 package finds a new optimal trajectory to reach the target point
 
