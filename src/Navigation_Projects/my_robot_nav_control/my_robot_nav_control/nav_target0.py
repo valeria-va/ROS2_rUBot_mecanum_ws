@@ -32,24 +32,24 @@ def main():
     nav.waitUntilNav2Active()
 
     # --- Create some Nav2 goal poses ---
-    goal_pose1 = create_pose_stamped(nav, 0.2, -1.5, 1.57)
-    #goal_pose2 = create_pose_stamped(nav, 2.0, 2.5, 3.14)
-    #goal_pose3 = create_pose_stamped(nav, 0.5, 1.0, 1.57)
+    goal_pose1 = create_pose_stamped(nav, 0.0, 0.0, 0.0)
+    goal_pose2 = create_pose_stamped(nav, 0.2, -1.5, 1.57)
+    goal_pose3 = create_pose_stamped(nav, 0.0, 0.0, 3.14)
 
     # --- Going to one pose ---
-    nav.goToPose(goal_pose1)
-    while not nav.isTaskComplete():
-            feedback = nav.getFeedback()
-            print(feedback)
+    # nav.goToPose(goal_pose1)
+    # while not nav.isTaskComplete():
+            # feedback = nav.getFeedback()
+            # print(feedback)
 
     # --- Follow Waypoints ---
-    # waypoints = [goal_pose1, goal_pose2, goal_pose3]
-    # for i in range(3):
-    #     nav.followWaypoints(waypoints)
+    waypoints = [goal_pose1, goal_pose2, goal_pose3]
+    for i in range(3):
+        nav.followWaypoints(waypoints)
 
-    #     while not nav.isTaskComplete():
-    #         feedback = nav.getFeedback()
-    #         # print(feedback)
+        while not nav.isTaskComplete():
+            feedback = nav.getFeedback()
+            print(feedback)
 
     # --- Get the result ---
     print(nav.getResult())
