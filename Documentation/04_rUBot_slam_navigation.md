@@ -70,7 +70,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
     >use_sim_time have to be True when using Gazebo for Virtual simulation
     - In the case of real robot:
     ````shell
-    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=True
+    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=False
     ````
 - Navigate on the world to store the map
 - Save the map in my_robot_navigation2/map folder with:
@@ -112,7 +112,7 @@ ros2 run nav2_map_server map_saver_cli -f my_map
             - base_link: as the robot frame
         - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
     ````shell
-    ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=$(find my_robot_navigation2/map/my_map.yaml)
+    ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
     ````
     > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
