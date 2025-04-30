@@ -70,7 +70,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
     >use_sim_time have to be True when using Gazebo for Virtual simulation
     - In the case of real robot:
     ````shell
-    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=True
+    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=False
     ````
 - Navigate on the world to store the map
 - Save the map in my_robot_navigation2/map folder with:
