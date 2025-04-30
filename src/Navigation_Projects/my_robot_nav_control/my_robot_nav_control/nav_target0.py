@@ -32,9 +32,9 @@ def main():
     nav.waitUntilNav2Active()
 
     # --- Create some Nav2 goal poses ---
-    goal_pose1 = create_pose_stamped(nav, 3.5, 1.0, 1.57)
+    goal_pose1 = create_pose_stamped(nav, 0.2, -1.5, 1.57)
     #goal_pose2 = create_pose_stamped(nav, 2.0, 2.5, 3.14)
-    #goal_pose3 = create_pose_stamped(nav, 0.5, 1.0, 0.0)
+    #goal_pose3 = create_pose_stamped(nav, 0.5, 1.0, 1.57)
 
     # --- Going to one pose ---
     nav.goToPose(goal_pose1)

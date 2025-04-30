@@ -35,9 +35,9 @@ def generate_launch_description():
         default=os.path.join(
             get_package_share_directory('my_robot_navigation2'),
             'map',
-            'my_map.yaml'))
+            'my_map_casa.yaml'))
 
-    param_file_name = 'Limo_real.yaml'
+    param_file_name = 'Limo_real_lidar.yaml'
     param_dir = LaunchConfiguration(
         'params_file',
         default=os.path.join(
