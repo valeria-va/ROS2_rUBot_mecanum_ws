@@ -18,7 +18,8 @@ Because of we have different robots, we have created:
 - "Robot_drivers" folder: for different driving packages for each robot
 - "Robot_bringup" folder: for different bringup packages for each robot
 
-In "Robot_drivers" folder:
+**In "Robot_drivers" folder:**
+
 1.- Create "serial_motor" package for **fastbot** robot:
 ````shell
 cd src/Robot_drivers
@@ -30,12 +31,15 @@ ros2 pkg create --build-type ament_python serial_motor --dependencies rclpy seri
 ````shell
 ros2 pkg create --build-type ament_cmake serial_motor_msgs
 ````
-    - Create /msg directory inside /serial_motor_msgs:
-    - Create the different messages inside the msgs folder
-3.- Compile serial_motor_msgs:
+- Create /msg directory inside /serial_motor_msgs:
+- Create the different messages inside the msgs folder
+
+3.- Compile serial_motor_msgs
+
 4.- Compile the "serial_motor" package
 
-"Robot_bringup" folder:
+**In "Robot_bringup" folder:**
+
 1.- Create "fastbot_bringup" package:
 ````shell
 cd src/Robot_bringup
