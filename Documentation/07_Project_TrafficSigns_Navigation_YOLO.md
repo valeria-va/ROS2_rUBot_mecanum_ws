@@ -5,8 +5,73 @@ We will describe the Computer Vision based method to identify the Traffic Sign
 Webgraphy:
 - https://github.com/xvrobotics/yolov9_ros/tree/main
 - TheConstruct Class n.197: 3D Object Detection & Navigation with YOLO https://www.robotigniteacademy.com/rosjects/890667/
+- For Yolo-v7: https://github.com/ros2/openrobotics_darknet_ros
+- For Yolo-v9: https://github.com/xvrobotics/yolov9_ros
 
-## ROS packages installation
+## **1. ROS packages installation**
+
+We will analyse for YOLO-v7 and YOLO-v9
+
+### **1.1. YOLO-v7**
+
+Follow the instructions on: https://github.com/ros2/openrobotics_darknet_ros
+
+- Install needed packages:
+````shell
+sudo apt update
+sudo apt install python3-pip
+sudo apt install python3-opencv
+pip3 install numpy matplotlib
+sudo apt install ros-humble-cv-bridge
+````
+- Clone the YOLO ROS Package: There are several repositories that integrate YOLO with ROS2:
+    - Clone the repository:
+    ````shell
+    cd src/AI_Projects
+    git clone https://github.com/ros2/openrobotics_darknet_ros.git
+    cd ../..
+    ````
+- Compiling this package with
+    ````shell
+    colcon build --cmake-args -DDOWNLOAD_YOLO_CONFIG=ON
+    ````
+    **You have an error because there is not installed Darkned**
+
+    >will automatically download the pretrained YOLO v3, v4 and v7 configuration files.
+
+- You can then launch the detector node with:
+    ````shell
+    ros2 launch openrobotics_darknet_ros detector_launch.py rgb_image:=/topic
+    ````
+    >optionally supplying a desired parameter file detector_parameters:=path/to/detector_node_params.yaml.
+
+- You can also train YOLO to detect custom objects like described here: 
+    - https://github.com/AlexeyAB/darknet#how-to-train-tiny-yolo-to-detect-your-custom-objects
+ and create the following as detector_node_params.yaml:
+    - and create the following as detector_node_params.yaml:
+    ````shell
+    /**:
+  ros__parameters:
+    network:
+      config: "./your-yolo-config.cfg"
+      weights: "./your-yolo-weights.weights"
+      class_names: "./your-cocos.names"
+    detection:
+      threshold: 0.25
+      nms_threshold: 0.45
+    ````
+- Finally you can run the detector node with
+    ````shell
+    $ ros2 run openrobotics_darknet_ros detector_node --ros-args --params-file path/to/detector_node_params.yaml
+    ````
+- and publish images on ~/images to get the node to detect objects. You can also manually remap an external topic to the ~/images topic with:
+    ````shell
+    $ ros2 run openrobotics_darknet_ros detector_node --ros-args --params-file path/to/detector_node_params.yaml -r '~/images:=/your/camera/topic'
+    ````
+
+
+
+### **1.1. YOLO-v9**
 
 - The needed to install:
 ````shell
@@ -14,12 +79,13 @@ sudo apt update
 sudo apt install python3-pip
 sudo apt install python3-opencv
 pip3 install numpy matplotlib
-pip3 install torch torchvision opencv-python
 sudo apt install ros-humble-cv-bridge
+pip3 install torch torchvision opencv-python
 ````
 - Clone the YOLO ROS Package: There are several repositories that integrate YOLO with ROS2:
     - Clone the repository:
     ````shell
+    cd src
     git clone https://github.com/xvrobotics/yolov9_ros.git
     cd yolov9_ros
     ````
@@ -95,71 +161,4 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ````
-
-We will create a new "my_robot_AI_identification" package with:
-````shell
-ros2 pkg create --build-type ament_python my_robot_AI_identification --dependencies rclpy std_msgs sensor_msgs geometry_msgs nav_msgs nav2_simple_commander tf_transformations cv_bridge
-cd ..
-colcon build
-````
-
-## Getting started
-
-1. Bringup the rUBot: This is done when robot turn-on
-   
-2. Place the rUBot in front of the Traffic Signal
-
-3. Take photos from USB camera
-    ````bash
-    ros2 run my_robot_AI_identification take_photo_exec
-    ````
-    You can use a more performand program to take photos continuously, add data in picture name for model generation and also to detect traffic signs when model is created.
-    ````bash
-    ros2 run my_robot_AI_identification takePhoto_detectSign_keras_exec
-    ````
-4. Open RVIZ to see the picture frame
-    ````bash
-    rviz
-    ````
-- Open the "teachablemachine" app to create a model for "Traffic Signs". Go to https://teachablemachine.withgoogle.com/ and create an image project.  
-- Collect images with rUBot USB_CAM for each sign and upload them to the project.  
-- Train the model.  
-- Export the model as a keras .h5 model. The model can be created with some pictures, but this would be improved with some more pictures.  
-- The models will be uploaded in "models" folder  
-
-8. Verify topics (theConstruct):
-   ```bash
-   ros2 topic list
-   ````
-   Verify the topic name: /usb_cam/image_raw to place it in "takePhoto_detectSign_keras.py" file
-   
-9. Launch classification node and take photos (theConstruct):
-   ```bash
-   ros2 launch my_robot_AI_identification takePhoto_detectSign_keras.launch.py
-   ````
-10.1. Stop doing photos (theConstruct) (in a new Terminal):
-   ```bash
-   ros2 topic pub /capture_toggle std_msgs/Bool "data: false"
-   ````
-   If you want to do photos again set false value to true 
-   ```bash
-   ros2 topic pub /capture_toggle std_msgs/Bool "data: true"
-   ````
-
-### Final Exercise:
-
-#### Navigate to a target point taking care of traffic signals 
-
-* Load the room map 
-* Start the navigation stack. 
-* Get the coordinates of all the traffic sign using Rviz.
-* Write a Python node with the folowing behaviour:
-	* Go to the target point. Nav2 finds an optimat trajectory and starts to move
-    * robot takes photos and identifies if there is a traffic sign
-    * if robot finds a traffic sign, it obey the traffic signal
-        * Left: turn left
-        * Right: turn right
-        * STOP: stops
-        * Forbidden: turn 180º  
-    * the nav2 package finds a new optimal trajectory to reach the target point
 
