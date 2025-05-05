@@ -36,6 +36,18 @@ sudo apt install ros-humble-cv-bridge
     colcon build --cmake-args -DDOWNLOAD_YOLO_CONFIG=ON
     ````
     **You have an error because there is not installed Darkned**
+- Download and install Darknet
+    ````shell
+    cd ~/ROS2_rUBot_mecanum_ws/src/AI_Projects/openrobotics_darknet_ros
+    git clone https://github.com/AlexeyAB/darknet.git
+    cd darknet
+    make
+    ````
+- Download yolo7.weights
+    ````shell
+    cd ~/ROS2_rUBot_mecanum_ws/src/AI_Projects/openrobotics_darknet_ros/darknet
+    wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7.weights
+    ````
 
     >will automatically download the pretrained YOLO v3, v4 and v7 configuration files.
 
@@ -45,6 +57,11 @@ sudo apt install ros-humble-cv-bridge
     ````
     >optionally supplying a desired parameter file detector_parameters:=path/to/detector_node_params.yaml.
 
+- Train your model:
+    ````shell
+    ./darknet detector train data/obj.data yolov7-custom.cfg yolov7.weights
+    ````
+    
 - You can also train YOLO to detect custom objects like described here: 
     - https://github.com/AlexeyAB/darknet#how-to-train-tiny-yolo-to-detect-your-custom-objects
  and create the following as detector_node_params.yaml:
