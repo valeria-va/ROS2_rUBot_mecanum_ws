@@ -15,7 +15,7 @@ def generate_launch_description():
     limo_base_dir = get_package_share_directory("limo_base")
     limo_bringup_dir = get_package_share_directory("limo_bringup")
     limo_gazebo = get_package_share_directory("limo_car")
-    astra_camera_dir = get_package_share_directory("astra_camera")
+    orbbec_camera_dir = get_package_share_directory("orbbec_camera")
 
     pub_tf = Node(
         package="limo_base",
@@ -49,13 +49,10 @@ def generate_launch_description():
             ),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    [astra_camera_dir, "/launch", "/dabai.launch.py"]
+                    [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
                 ),
             ),
-            # IncludeLaunchDescription(
-            #     PythonLaunchDescriptionSource([limo_bringup_dir,'/launch/humble','/ekf_odom.launch.py']),
-            # ),
-            # pub_tf
+            
             base_link_to_laser_tf_node,
         ]
     )
