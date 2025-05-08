@@ -30,6 +30,19 @@ The file format for a robotic model is:
 - **URDF** (Unified Robot Description Format): XML-based format to describe the physical configuration of a robot, including its links, joints, and sensors.
 - **XACRO** (XML Macros): XML-based, but with macro capabilities for generating URDF files. This format will help you to better organize and scale your model with more functionalities.
 
+For this purpose we have already created:
+- a "my_robot_description" package with the instruction:
+  ````shell
+  ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_description --dependencies rclcpp
+  ´´´´ 
+- New folders inside: launch, meshes, rviz, urdf. For that we have to add these lines on VMakeLists.txt:
+  ````shell
+  install(
+  DIRECTORY meshes urdf launch rviz
+  DESTINATION share/${PROJECT_NAME}/
+  )
+  ````
+
 #### **rUBot Mecanum Model design**
 
 The geometrical definition of our rUBot is graphically described by:
@@ -314,7 +327,7 @@ We will first use RVIZ to check that the model is properly built.
 
 RViz only represents the robot visual features. You have available all the options to check every aspect of the appearance of the model.
 
-We use a specific "display.launch" launch file where we specify the robot model we want to open in rviz with a configuration specified in "urdf.rviz":
+We use a specific "display.launch.xml" launch file where we specify the robot model we want to open in rviz with a configuration specified in "urdf.rviz":
 ```xml
 <launch>
     <let name="urdf_path" 
@@ -368,9 +381,19 @@ ros2 launch my_robot_description display.launch.xml
 
 In robotics research, always before working with a real robot, we simulate the robot behaviour in a virtual environment close to the real one. **Gazebo** is an open source 3D robotics simulator and includes an ODE physics engine and OpenGL rendering, and supports code integration for closed-loop control in robot drives. This is sensor simulation and actuator control.
 
-For this purpose, a new package "my_robot_bringup" is created.
+For this purpose, a new package "my_robot_bringup" is created with the instruction:
+````shell
+ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_bringup --dependencies rclcpp my_robot_description
+´´´´ 
+New folders inside: launch, rviz, worlds. For that we have to add these lines on VMakeLists.txt:
+  ````shell
+  install(
+  DIRECTORY launch rviz worls
+  DESTINATION share/${PROJECT_NAME}/
+  )
+  ````
 
-We have also created a new "my_robot_bringup_sw.launch.xml" file to spawn the robot in a virtual designed world (square2.world):
+Inside launch folder we have created a new "my_robot_bringup_sw.launch.xml" file to spawn the robot in a virtual designed world (square2.world):
 ```xml
 <launch>
      <let name="x0" value="0.5"/>

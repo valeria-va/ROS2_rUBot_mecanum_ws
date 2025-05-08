@@ -18,8 +18,8 @@ Webgraphy:
 To create a fast and robust image of ROS2 Humble for our robot, an improved method is to use Docker.
 
 References:
-- Docker for LIMO robot (ROS2): https://hub.docker.com/repository/docker/theconstructai/limo/general
-
+- TheConstruct DockerHub: https://hub.docker.com/u/theconstructai
+- TheConstruct Final Image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
 
 ### **2.1. Install Raspberrypi Desktop**
 
@@ -139,33 +139,13 @@ To verify if the container is working type on terminal:
 docker exec -it rubot-humble-container /bin/bash
 ````
 
-### **2.5. PIGPIO verification**
+**Use TheConstruct Limo Docker image**
 
-To install pigpio package in ubuntu for gpio from raspberrypi, we had to follow instructions in: https://abyz.me.uk/rpi/pigpio/download.html
+We can use the image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
 
-The installation is done with theses instructions already defined in Dockerfile:
+In Files/Docker_limo you will find all the needed files to launch the docker-compose-v3.yaml. Copy them to the Limo home at ~/limo_docker
 ````shell
-wget https://github.com/joan2937/pigpio/archive/master.zip
-unzip master.zip
-cd pigpio-master
-make
-sudo make install
+cd limo_docker
+docker system prune
+docker compose -f docker-compose-v3.yaml up -d
 ````
-To verify that the installation was succesfully in Container, we could open a new container terminal:
-````shell
-docker exec -it rubot-humble-container bash
-````
-- test the pigpio installation
-````shell
-python3 -c "import pigpio; print('pigpio is installed')"
-````
-- Test the deamon is running
-````shell
-pidof pigpiod
-````
->If the daemon is running, this command will return the PID (process identifier) ​​of pigpiod.
-- Verify the file permissions:
-````shell
-stat -c "%a %U:%G %n" /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver/rubot_mecanum_driver.py
-````
->The result will show the permissions (the first number should be 4777), the owner (root), the group (root), and the file name.

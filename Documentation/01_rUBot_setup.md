@@ -17,6 +17,7 @@ Webgraphy:
 - https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md
 - bitbucket: https://bitbucket.org/theconstructcore/limo_robot/src/main/
 - https://bitbucket.org/theconstructcore/workspace/projects/ROB
+- TheConstruct image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
 
 ## **1. Setup the robot in virtual environment for simulation**
 
@@ -60,7 +61,7 @@ The setup process is based on a custom Docker to properly interface with the ROS
 For **Limo** robot the Docker compose is started. In case you want to do it manually:
 ````shell
 cd ~/limo_docker
-docker compose -f docker-compose-v2.yaml up -d
+docker compose -f docker-compose-v3.yaml up -d
 ````
 - Connect to TheConstruct environment
 ````shell

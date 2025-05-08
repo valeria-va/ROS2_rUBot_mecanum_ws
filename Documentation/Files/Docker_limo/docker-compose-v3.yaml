@@ -12,7 +12,7 @@ services:
       - /dev:/dev
       - ./limo_base.launch.py:/root/agilex_ws/install/limo_base/share/limo_base/launch/limo_base.launch.py
       - ./limo_start.launch.py:/root/agilex_ws/install/limo_bringup/share/limo_bringup/launch/humble/limo_start.launch.py
-      - ./limo_entrypoint-v2.sh:/limo_entrypoint-v2.sh
-    entrypoint: /limo_entrypoint-v2.sh
+      - ./limo_entrypoint-v3.sh:/limo_entrypoint-v3.sh
+    entrypoint: /limo_entrypoint-v3.sh
     command: ["ros2", "launch", "limo_bringup", "limo_start.launch.py"]
     restart: always
