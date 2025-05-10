@@ -6,8 +6,8 @@ The objectives of this section are:
 - Install needed interfaces
 
 We have two kind of rbots:
-- UB custom made rUBot_mecanum
-- LIMO robot
+- UB custom made **rUBot_mecanum**
+- **LIMO** robot
 
 Webgraphy:
 - https://github.com/AntoBrandi/Self-Driving-and-ROS-2-Learn-by-Doing-Odometry-Control/tree/main
