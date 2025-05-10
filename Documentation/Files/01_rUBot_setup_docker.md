@@ -138,10 +138,21 @@ To verify if the container is working type on terminal:
 ````shell
 docker exec -it rubot-humble-container /bin/bash
 ````
+## **3. Setup the LIMO robot**
 
-**Use TheConstruct Limo Docker image**
+The LIMO robot has a Jetson Nano computer onboard with Ubuntu20 and ROS Noetic & Foxy installed.
 
-We can use the image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
+On Local you have a complete workspace:
+- limo_ros: for ROS1 Noetic
+- ros2_limo_ws: for ROS2
+
+TheConstruct has made custom Limo Docker image to fast and proper operate:https://hub.docker.com/r/theconstructai/limo/tags
+- theconstructai/limo:humble-v2: for astra camera model
+- theconstructai/limo:humble-v3: for orbbec camera model
+
+Our camera model is Orbbec
+
+We follow the instructions on https://hub.docker.com/r/theconstructai/limo
 
 In Files/Docker_limo you will find all the needed files to launch the docker-compose-v3.yaml. Copy them to the Limo home at ~/limo_docker
 ````shell
@@ -149,3 +160,8 @@ cd limo_docker
 docker system prune
 docker compose -f docker-compose-v3.yaml up -d
 ````
+Add to the .bashrc file:
+````bash
+export ROS_DOMAIN_ID=0
+````
+>To be sure to point at the same robot. If you work simultaneously with 2 robots, the second one will have another ROS_DOMAIN_ID

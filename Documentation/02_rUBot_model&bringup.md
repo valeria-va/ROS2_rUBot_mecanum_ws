@@ -243,8 +243,8 @@ The gazebo plugin we have used is:
         <horizontal>
           <samples>720</samples>
           <resolution>1.00000</resolution>
-          <min_angle>0.000000</min_angle>
-          <max_angle>6.280000</max_angle>
+          <min_angle>-3.14</min_angle>
+          <max_angle>3.14</max_angle>
         </horizontal>
       </scan>
       <range>
@@ -268,6 +268,29 @@ The gazebo plugin we have used is:
     </sensor>
   </gazebo>
 ```
+We have to consider 2 kind of robots:
+- **rUBot**: its Lidar has scan range from -180º to +180º with 1 laser beam/degree
+  ````xml
+  <scan>
+    <horizontal>
+      <samples>720</samples>
+      <resolution>1.00000</resolution>
+      <min_angle>-3.14</min_angle>
+      <max_angle>3.14</max_angle>
+    </horizontal>
+  </scan>
+  ````
+- **Limo**: its Lidar has scan range from -110º to +110º with 1 laser beam/degree
+  ````xml
+  <scan>
+    <horizontal>
+      <samples>220</samples>
+      <resolution>1.00000</resolution>
+      <min_angle>-1.92</min_angle>
+      <max_angle>1.92</max_angle>
+    </horizontal>
+  </scan>
+  ````
 >To view the LIDAR rays be sure to add 
 > ```xml
 ><visualize>true</visualize>"
