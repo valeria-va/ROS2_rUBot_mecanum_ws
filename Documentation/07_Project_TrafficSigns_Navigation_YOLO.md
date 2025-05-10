@@ -1,6 +1,6 @@
 # Project for Traffic Signal Detection with YOLO
 
-We will describe the Computer Vision based method to identify the Traffic Sign
+We will describe the Computer Vision based method to identify the Traffic Sign.
 
 Webgraphy:
 - https://github.com/xvrobotics/yolov9_ros/tree/main
@@ -85,8 +85,6 @@ sudo apt install ros-humble-cv-bridge
     ````shell
     $ ros2 run openrobotics_darknet_ros detector_node --ros-args --params-file path/to/detector_node_params.yaml -r '~/images:=/your/camera/topic'
     ````
-
-
 
 ### **1.1. YOLO-v9**
 
