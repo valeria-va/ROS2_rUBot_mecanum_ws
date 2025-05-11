@@ -13,6 +13,13 @@ References:
 - https://index.ros.org/p/usb_cam/#humble-overview
 - https://github.com/ros-drivers/usb_cam/tree/main
 
+**Resolution configuration**:
+
+We have a params1.yaml file with all the parameters. You ca change them with:
+````shell
+ros2 launch usb_cam camera.launch.py image_width:=320 image_height:=240
+````
+
 ## **2. Orbbec camera configuration**
 
 The Orbbec camera is a 3D camera.
