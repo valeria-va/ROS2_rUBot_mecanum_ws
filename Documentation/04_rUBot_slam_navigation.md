@@ -54,14 +54,20 @@ cd /home/user/ROS2_rUBot_mecanum_ws
 
 - Fist of all you have to bringup the robot in the desired environment:
     - In the case of Virtual environment:
-    ````shell
-    ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-    ````
+        - Turtlebot3 robot
+        ````shell
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+        ````
+        - rUBot or LIMO robot
+        ````shell
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+        ````
+        >Change the URDF file for each robot
     - In the case of a real robot, the bringup is already made when turned on
 - move your robot with:
-````shell
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-````
+    ````shell
+    ros2 run teleop_twist_keyboard teleop_twist_keyboard
+    ````
 - to generate the map:
     - In the case of Virtual environment:
     ````shell
@@ -74,10 +80,10 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
     ````
 - Navigate on the world to store the map
 - Save the map in my_robot_navigation2/map folder with:
-````shell
-cd src/Navigation_Projects/my_robot_navigation2/map/
-ros2 run nav2_map_server map_saver_cli -f my_map
-````
+    ````shell
+    cd src/Navigation_Projects/my_robot_navigation2/map/
+    ros2 run nav2_map_server map_saver_cli -f my_map
+    ````
 
 ## **4.3. Navigate inside Map**
 
@@ -101,20 +107,29 @@ ros2 run nav2_map_server map_saver_cli -f my_map
 
 - Let`s now make the robot navigate using the Map:
     - In the case of Virtual environment:
-    ````shell
-    ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-    ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
-    ````
-    >We use "waffle.yaml" file in "param" folder where base_frame_id: "base_footprint" (as described in the model)
+        - Turtlebot3 robot
+        ````shell
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+        ````
+        - or rUBot or LIMO robot
+        ````shell
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+        ````
+        >Change the URDF file for each robot
+        - Launch Navigation node:
+        ````bash
+        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
+        ````
+        >We use "waffle.yaml" file in "param" folder where base_frame_id: "base_footprint" (as described in the model)
     - In the case of real robot:
         - The bringup is done without the LIMO robot model. The only frames available are
             - odom: as a fixed frame
             - base_link: as the robot frame
         - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
-    ````shell
-    ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
-    ````
-    > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
+        ````shell
+        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
+        ````
+        > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
 - Navigate on the MAP with Nav2
     - Selecty 1 target point
@@ -141,14 +156,19 @@ We can create a python file to interact with topics and actions.
 To navigate programmatically using Simple Commander API, you have to proceed with:
 - Bringup the robot in the desired environment:
     - In the case of Virtual environment:
-    ````shell
-    ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-    ````
+        - For Turtlebot3 robot
+        ````shell
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+        ````
+        - For rUBot or LIMO robot
+        ````shell
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+        ````
+        >Change the URDF file for each robot
     - In the case of a real robot, the bringup is already made when turned on
 - Start the navigation2.launch.py with rviz to see the evolution of robot navigation
     - In the case of Virtual environment:
         ````shell
-        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
         ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
         ````
         >We use "waffle.yaml" file in "param" folder 

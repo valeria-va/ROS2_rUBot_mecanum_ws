@@ -51,6 +51,14 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource(
                     [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
                 ),
+                launch_arguments={
+                'color_width': '320',
+                'color_height': '240',
+                'depth_width': '320',
+                'depth_height': '240',
+                'ir_width': '320',
+                'ir_height': '240',
+                }.items(),
             ),
             
             base_link_to_laser_tf_node,
