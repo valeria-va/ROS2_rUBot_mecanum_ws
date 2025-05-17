@@ -56,6 +56,15 @@ RUN apt-get update && apt-get install -y \
     libgoogle-glog0v5 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install pigpio from source
+WORKDIR /tmp
+RUN wget https://github.com/joan2937/pigpio/archive/master.zip && \
+    unzip master.zip && \
+    cd pigpio-master && \
+    make && \
+    make install && \
+    setcap cap_sys_rawio=ep /usr/local/bin/pigpiod
+
 # Set up the working directory for ROS workspace
 WORKDIR /root
 
