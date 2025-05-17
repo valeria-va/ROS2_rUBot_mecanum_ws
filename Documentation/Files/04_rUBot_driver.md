@@ -1,11 +1,13 @@
 # **ROS2 rUBot driver**
-The objective of this section is to create a proper driver for rUBot using Arduino nano ESP
+The objective of this section is to create a proper driver for rUBot. We have made 2 different drivers:
+- using Arduino Nano: https://store.arduino.cc/products/arduino-nano
+- using Arduino Nano-ESP: https://store.arduino.cc/products/nano-esp32
 
 Webgraphy:
 - TheConstruct course:Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
 - https://github.com/joshnewans/ros_arduino_bridge
 
-## **Serial driver Open-loop**
+## **1. Driver based on Arduino Nano**
 
 In our PC we will have a running program that sends the ROS 2 velocity commands to the microcontroller over serial (UART) communication with a USB-USB-mini cable.
 
@@ -50,5 +52,38 @@ ros2 pkg create --build-type ament_cmake fastbot_bringup
 4. Compile the package
 
 
-## **Serial driver Closed-loop**
+### **Serial driver Closed-loop**
+
+## **2. Driver based on Arduino Nano-ESP32**
+
+**In "Robot_drivers" folder:**
+
+1.- Create "serial_motor" package for **fastbot** robot:
+````shell
+cd src/Robot_drivers
+ros2 pkg create --build-type ament_python serial_motor --dependencies rclpy serial_motor_msgs
+````
+- Inside the "serial_motor" folder, create "motor_driver.py" file 
+
+2.- Create serial_motor_msgs package:
+````shell
+ros2 pkg create --build-type ament_cmake serial_motor_msgs
+````
+- Create /msg directory inside /serial_motor_msgs:
+- Create the different messages inside the msgs folder
+
+3.- Compile serial_motor_msgs
+
+4.- Compile the "serial_motor" package
+
+**In "Robot_bringup" folder:**
+
+1.- Create "fastbot_bringup" package:
+````shell
+cd src/Robot_bringup
+ros2 pkg create --build-type ament_cmake fastbot_bringup
+````
+2. Add a "bringup.launch.xml" in launch file
+3. remember to modify the CMakeLists.txt to include the launch file
+4. Compile the package
 
