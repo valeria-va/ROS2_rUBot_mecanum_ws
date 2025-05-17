@@ -150,7 +150,7 @@ TheConstruct has made custom Limo Docker image to fast and proper operate:https:
 - theconstructai/limo:humble-v2: for astra camera model
 - theconstructai/limo:humble-v3: for orbbec camera model
 
-Our camera model is Orbbec
+Our camera model is Orbbec: https://github.com/orbbec/OrbbecSDK_ROS2/tree/main
 
 We follow the instructions on https://hub.docker.com/r/theconstructai/limo
 
@@ -159,6 +159,25 @@ In Files/Docker_limo you will find all the needed files to launch the docker-com
 cd limo_docker
 docker system prune
 docker compose -f docker-compose-v3.yaml up -d
+````
+In limo_start.launch.py we can modify the image resolution and published frames per second with the corresponding parameters:
+````shell
+IncludeLaunchDescription(
+    PythonLaunchDescriptionSource(
+        [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
+    ),
+    launch_arguments={
+    'color_width': '320',
+    'color_height': '240',
+    'color_fps': '15',  # Nova freqüència per a color
+    'depth_width': '320',
+    'depth_height': '240',
+    'depth_fps': '10',  # Nova freqüència per a profunditat
+    'ir_width': '320',
+    'ir_height': '240',
+    'ir_fps': '20', # Nova freqüència per a IR
+    }.items(),
+),
 ````
 Add to the .bashrc file:
 ````bash

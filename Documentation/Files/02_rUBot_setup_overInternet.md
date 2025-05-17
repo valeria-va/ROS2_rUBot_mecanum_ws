@@ -1,12 +1,17 @@
 # **ROS2 rUBot setup over Internet**
 
-With this guide we will show you how to configure your ROS system to work not only in LAN but also over the internet.
+With this guide we will show you how to configure your ROS system to work not only in LAN but also over the internet. We will have to create a Virtual Network (VPN)
+
+We will scan 2 possibilities:
+- Husarnet
+- Zerotier
+
+
+## **HUSARNET VPN**
 
 Webgraphy:
 - https://husarnet.com/docs/tutorial-ros2/
 - https://husarnet.com/blog/ros2-docker
-
-## **Connecting Remote Robots Using ROS2, Docker & VPN**
 
 ROS 2 nodes can automatically discover each other when ROS 2 powered robots or computers are connected to the same Wi-Fi network. Doing the same over the internet is more challenging.
 
@@ -35,3 +40,12 @@ Follow the steps:
   husarnet status
   ````
   - execute Container ROS2
+
+  
+## **2. ZEROTIER VPN**
+
+Webgraphy:
+- https://www.zerotier.com/
+- https://www.youtube.com/watch?v=1BtkGzWkYE8
+
+ROS 2 nodes

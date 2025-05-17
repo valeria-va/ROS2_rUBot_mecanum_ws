@@ -54,10 +54,13 @@ def generate_launch_description():
                 launch_arguments={
                 'color_width': '320',
                 'color_height': '240',
+                'color_fps': '15',  # Nova freqüència per a color
                 'depth_width': '320',
                 'depth_height': '240',
+                'depth_fps': '10',  # Nova freqüència per a profunditat
                 'ir_width': '320',
                 'ir_height': '240',
+                'ir_fps': '20', # Nova freqüència per a IR
                 }.items(),
             ),
             
