@@ -22,7 +22,7 @@ Because of we have different robots, we have created:
 
 **In "Robot_drivers" folder:**
 
-1.- Create "serial_motor" package for **fastbot** robot:
+1.- Create "my_robot_driver" package for **fastbot** robot:
 ````shell
 cd src/Robot_drivers
 ros2 pkg create --build-type ament_python serial_motor --dependencies rclpy serial_motor_msgs

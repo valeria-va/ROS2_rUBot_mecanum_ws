@@ -9,7 +9,7 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
 import tf2_ros
 import transforms3d.quaternions as quat  # For quaternion calculations
-from rubot_mecanum_library import Encoder, MPID, DCMotorController
+from rubot_pi_library import Encoder, MPID, DCMotorController
 
 class RubotDrive(Node):
     def __init__(self):

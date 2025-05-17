@@ -20,7 +20,7 @@ class MotorDriver(Node):
 
     def __init__(self, args) -> None:
         """Initialize the MotorDriver node with serial communication, parameters, and publishers/subscribers."""
-        super().__init__("motor_driver")
+        super().__init__("rubot_nano_driver")
         self.argument_parsing(args)
 
         # Logger

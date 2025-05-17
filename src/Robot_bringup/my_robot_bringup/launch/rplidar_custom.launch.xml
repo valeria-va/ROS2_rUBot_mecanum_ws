@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="rplidar_ros" exec="rplidarNode" name="rplidarNode" output="screen">
+    <param name="serial_port" value="/dev/ttyUSB0"/>
+    <param name="serial_baudrate" value="115200" type="int"/> 
+    <param name="frame_id" value="base_link"/>
+    <param name="inverted" value="false" type="bool"/>
+    <param name="angle_compensate" value="true" type="bool"/>
+  </node>
+</launch>

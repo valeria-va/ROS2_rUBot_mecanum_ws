@@ -23,7 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'rubot_mecanum_driver_node = my_robot_driver.rubot_mecanum_driver:main',
+            'rubot_pi_driver_exec = my_robot_driver.rubot_pi_driver:main',
+            'rubot_nano_driver_exec = my_robot_driver.rubot_nano_driver:main',
         ],
     },
 )
