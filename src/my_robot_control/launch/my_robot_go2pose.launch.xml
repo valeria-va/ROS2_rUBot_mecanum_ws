@@ -1,7 +1,11 @@
 <launch>
+    <arg name="x" default="1.0"/>
+    <arg name="y" default="1.0"/>
+    <arg name="f" default="90.0"/>
+
     <node pkg="my_robot_control" exec="my_robot_go2pose_exec" name="rubot_control_node" output="screen">
-        <param name="x" value="1.0" />
-        <param name="y" value="1.0" />
-        <param name="f" value="90.0" />
+        <param name="x" value="$(var x)"/>
+        <param name="y" value="$(var y)"/>
+        <param name="f" value="$(var f)"/>
     </node>
 </launch>

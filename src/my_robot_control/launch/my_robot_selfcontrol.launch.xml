@@ -1,11 +1,11 @@
 <launch>
     <!-- Navigation Program   -->
-    <let name="distance_laser" value="0.4"/>
-    <let name="speed_factor" value="1.0"/>
-    <let name="forward_speed" value="0.2"/>
-    <let name="backward_speed" value="-0.2"/>
-    <let name="rotation_speed" value="0.5"/>
-    <let name="time_to_stop" value="20.0"/>
+    <arg name="distance_laser" default="0.4"/>
+    <arg name="speed_factor" default="1.0"/>
+    <arg name="forward_speed" default="0.2"/>
+    <arg name="backward_speed" default="-0.2"/>
+    <arg name="rotation_speed" default="0.5"/>
+    <arg name="time_to_stop" default="10.0"/>
 
     <node
         pkg="my_robot_control" exec="my_robot_selfcontrol_exec" name="robot_selfcontrol_node" output="screen">
