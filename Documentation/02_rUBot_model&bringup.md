@@ -406,9 +406,9 @@ In robotics research, always before working with a real robot, we simulate the r
 
 For this purpose, a new package "my_robot_bringup" is created with the instruction:
 ````shell
-ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_bringup --dependencies rclcpp my_robot_description
+ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_bringup --dependencies rclcpp my_robot_description my_robot_driver serial_motor_msgs
 ´´´´ 
-New folders inside: launch, rviz, worlds. For that we have to add these lines on VMakeLists.txt:
+New folders inside: launch, rviz, worlds. For that we have to add these lines on CMakeLists.txt:
   ````shell
   install(
   DIRECTORY launch rviz worls
