@@ -10,7 +10,6 @@ We have created different activities in this section:
     - Python programming control
 - Autonomous control with obstacle avoidance
 - Robot Wall follower
-- Robot go to pose
 
 The final model represents the real robots we will use in the laboratory:
 - rUBot mecanum custom made robot
@@ -22,6 +21,9 @@ The final model represents the real robots we will use in the laboratory:
 | **rUBot** | **LIMO** |
 
 **Bibliography:**
+- TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
+- LIMO repository: https://github.com/agilexrobotics/limo_ros2/tree/humble
+- LIMO Doc: https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md
 
 
 ## **3.1. Robot performances**
@@ -109,7 +111,7 @@ A first simple navigation program is created to move the robot according to a sp
 ```python
     entry_points={
         'console_scripts': [
-            'my_robot_control_node = my_robot_control.my_robot_control:main',
+            'my_robot_control_exec = my_robot_control.my_robot_control:main',
         ],
     },
 ```
