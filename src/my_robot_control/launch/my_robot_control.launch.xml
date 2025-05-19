@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <arg name="vx" default="0.2"/>
     <arg name="vy" default="0.0"/>
