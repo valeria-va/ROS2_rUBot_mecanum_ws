@@ -22,47 +22,36 @@ Because of we have different robots, we have created:
 
 **In "Robot_drivers" folder:**
 
-1.- Create "my_robot_driver" package for custom UB rUBot:
-````shell
-cd src/Robot_drivers
-ros2 pkg create --build-type ament_python serial_motor --dependencies rclpy serial_motor_msgs
-````
-- Inside the "my_robot_driver" folder, create "rubot_nano_driver.py" file 
+- Create a "Arduino" folder. Place inside the different Arduino codes (i.e. rubot_driver_nano.ino)
+- Create "my_robot_driver" package for custom UB rUBot:
+    ````shell
+    cd src/Robot_drivers
+    ros2 pkg create --build-type ament_python my_robot_driver --dependencies rclpy serial_motor_msgs
+    ````
+    - Inside the "my_robot_driver" folder, create "rubot_nano_driver.py" file 
 
-2.- Create "serial_motor_msgs" package:
-````shell
-ros2 pkg create --build-type ament_cmake serial_motor_msgs
-````
-- Create /msg directory inside /serial_motor_msgs:
-- Create the different messages inside the msgs folder
+- Create "serial_motor_msgs" package:
+    ````shell
+    ros2 pkg create --build-type ament_cmake serial_motor_msgs --dependencies rclcpp
+    ````
+    - Create /msg directory inside /serial_motor_msgs:
+    - Create the different messages inside the msgs folder
 
-3.- Compile serial_motor_msgs
+**In "my_robot_bringup" package:**
 
-4.- Compile the "my_robot_driver" package
-
-5.- Create a custom "my_robot_bringup_hw_nano.launch.xml"
-````xml
-<launch>
-    <let name="urdf_path" 
-        value="$(find-pkg-share my_robot_description)/urdf/my_mecanum_robot.urdf.xacro" />
-    <let name="rviz_config_path"
-        value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
-
-    <node pkg="joint_state_publisher" exec="joint_state_publisher" />
-    <node pkg="robot_state_publisher" exec="robot_state_publisher">
-    <param name="robot_description"
-            value="$(command 'xacro $(var urdf_path)')" />
-    </node>
-    <!-- launch rUBot mecanum  -->
-    <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver.launch.xml">
-    </include>
-    <!-- launch Lidar  -->
-    <include file="$(find-pkg-share my_robot_bringup)/launch/rplidar_custom.launch.xml">
-    </include>
-    <!-- launch USB-cam  -->
-    <include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
-    </include>
-</launch>
-````
+- Create a custom "my_robot_nano_bringup_hw.launch.xml"
+    ````xml
+    <launch>
+        <!-- launch rUBot mecanum  -->
+        <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver.launch.xml">
+        </include>
+        <!-- launch Lidar  -->
+        <include file="$(find-pkg-share my_robot_bringup)/launch/rplidar_custom.launch.xml">
+        </include>
+        <!-- launch USB-cam  -->
+        <include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
+        </include>
+    </launch>
+    ````
 
 
