@@ -4,6 +4,7 @@ We will describe the Computer Vision based method to identify the Traffic Sign.
 
 Webgraphy:
 - https://github.com/xvrobotics/yolov9_ros/tree/main
+- TheConstruct Course: https://www.robotigniteacademy.com/courses/239
 - TheConstruct Class n.197: 3D Object Detection & Navigation with YOLO https://www.robotigniteacademy.com/rosjects/890667/
 - For Yolo-v7: https://github.com/ros2/openrobotics_darknet_ros
 - For Yolo-v9: https://github.com/xvrobotics/yolov9_ros
