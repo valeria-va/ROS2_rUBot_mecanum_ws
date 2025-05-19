@@ -7,7 +7,5 @@
     </include>
     <!-- launch USB-cam  -->
     <include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
-        <set_param name="/usb_cam/image_width" value="160"/>
-        <set_param name="/usb_cam/image_height" value="120"/>
     </include>
 </launch>
