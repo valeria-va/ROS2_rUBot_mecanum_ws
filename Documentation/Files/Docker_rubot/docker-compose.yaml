@@ -10,5 +10,5 @@ services:
       - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
     entrypoint: /root/rubot_entrypoint.sh
-    command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.xml"]
+    command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
     restart: always
