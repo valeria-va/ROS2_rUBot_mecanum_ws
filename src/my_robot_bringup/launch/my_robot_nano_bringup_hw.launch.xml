@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver.launch.xml">
     </include>

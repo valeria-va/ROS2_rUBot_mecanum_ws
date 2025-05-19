@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="rplidar_ros" exec="rplidarNode" name="rplidarNode" output="screen">
     <param name="serial_port" value="/dev/ttyUSB0"/>
