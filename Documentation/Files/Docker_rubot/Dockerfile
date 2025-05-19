@@ -73,8 +73,10 @@ RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
     echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
-COPY rubot_entrypoint.sh /rubot_entrypoint.sh
-RUN chmod +x /rubot_entrypoint.sh
+COPY rubot_entrypoint.sh /root/rubot_entrypoint.sh
+RUN cd /root &&\
+    chown root:root /root/rubot_entrypoint.sh &&\
+    chmod 755 /root/rubot_entrypoint.sh
 
 # Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
 RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \

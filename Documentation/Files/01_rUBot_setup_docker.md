@@ -105,7 +105,7 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 - my_robot_nano_bringup_hw.launch.xml
 - docker-compose.yaml
 
->**Important: make all files executable!
+>**Important**: make all files executable!
   ````shell
   cd Docker
   sudo chmod +x *
