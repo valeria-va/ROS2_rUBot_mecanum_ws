@@ -11,5 +11,5 @@ services:
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
       - ./rubot_entrypoint.sh:/rubot_entrypoint.sh
     entrypoint: /rubot_entrypoint.sh
-    command: ["ros2", "launch", "my_robot_bringup", "my_robot_bringup_hw_nano.launch.xml"]
+    command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.xml"]
     restart: always

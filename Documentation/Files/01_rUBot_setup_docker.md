@@ -102,11 +102,20 @@ sudo reboot
 We first create a home/ubuntu/Desktop/Docker folder where we place:
 - ROS2_rUBot_mecanum_ws.zip
 - Dockerfile
-- rubot_bringup.sh (in executable mode!)
+- my_robot_nano_bringup_hw.launch.xml
 - docker-compose.yaml
 
 Documentation is in: https://hub.docker.com/r/theconstructai/limo
 
+**usb_cam resolution**
+
+We have defined a low resolution camera in "usb_cam_custom_low-launch-xml" called by "my_robot_nano_bringup_hw.launch.xml" with:
+````xml
+<include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
+    <set_param name="/usb_cam/image_width" value="160"/>
+    <set_param name="/usb_cam/image_height" value="120"/>
+</include>
+````
 These files are located in this repository on Documentation/files/Docker_rubot folder
 
 Follow the instructions:
@@ -119,11 +128,11 @@ docker build -t rubot_humble_image .
 ````shell
 docker compose up -d
 ````
-- Stop the Container
+- If you want to Stop the Container
 ````shell
 docker compose down
 ````
-- Enable Docker to Start on Boot
+- Enable Docker to Start on Boot (only the first time)
 ````shell
 sudo systemctl enable docker
 ````
@@ -132,7 +141,7 @@ sudo systemctl enable docker
 docker ps
 docker logs rubot-humble-container
 ````
-- To modify the rubot_bringup.sh file: Simply edit rubot_bringup.sh on your host machine. Changes will reflect in the container on the next restart.
+- To modify the rubot_bringup.sh file: Simply edit rubot_bringup.launch.xml on your host machine. Changes will reflect in the container on the next restart.
 
 To verify if the container is working type on terminal:
 ````shell

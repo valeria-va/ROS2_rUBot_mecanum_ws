@@ -1,0 +1,11 @@
+<launch>
+    <!-- launch rUBot mecanum  -->
+    <include file="$(find-pkg-share my_robot_driver)/launch/rubot_mecanum_driver.launch.xml">
+    </include>
+    <!-- launch Lidar  -->
+    <include file="$(find-pkg-share my_robot_description)/launch/rplidar_custom.launch.xml">
+    </include>
+    <!-- launch USB-cam  -->
+    <include file="$(find-pkg-share my_robot_description)/launch/usb_cam_custom.launch.xml">
+    </include>
+</launch>

@@ -76,10 +76,10 @@ RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
 COPY rubot_entrypoint.sh /rubot_entrypoint.sh
 RUN chmod +x /rubot_entrypoint.sh
 
-# Set permissions for rubot_mecanum_driver.py (assuming it's in your workspace)
-RUN cd /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver && \
-    chown root:root rubot_mecanum_driver.py && \
-    chmod 4777 rubot_mecanum_driver.py
+# Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
+RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
+    chown root:root rubot_nano_driver.py && \
+    chmod 4777 rubot_nano_driver.py
 
 # Set the default command to run when the container starts
 CMD ["bash"]
