@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     wget \
     unzip \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ROS 2 and other ROS dependencies
@@ -53,6 +54,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-tf2-sensor-msgs \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \
+    ros-humble-usb-cam \
     libgoogle-glog0v5 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -63,6 +65,8 @@ WORKDIR /root
 COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
 RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
     rm /root/ROS2_rUBot_mecanum_ws.zip
+# Clone the rplidar_ros package
+RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
 
 # Build the ROS workspace
 RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
