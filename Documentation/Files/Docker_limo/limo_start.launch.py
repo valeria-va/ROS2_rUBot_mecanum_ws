@@ -52,15 +52,15 @@ def generate_launch_description():
                     [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
                 ),
                 launch_arguments={
-                'color_width': '320',
-                'color_height': '240',
-                'color_fps': '15',  # Nova freqüència per a color
-                'depth_width': '320',
-                'depth_height': '240',
+                'color_width': '160'
+                'color_height': '120'
+                'color_fps': '10,  # Nova freqüència per a color
+                'depth_width': '160'
+                'depth_height': '120'
                 'depth_fps': '10',  # Nova freqüència per a profunditat
-                'ir_width': '320',
-                'ir_height': '240',
-                'ir_fps': '20', # Nova freqüència per a IR
+                'ir_width': '160'
+                'ir_height': '120'
+                'ir_fps': '10' # Nova freqüència per a IR
                 }.items(),
             ),
             
