@@ -1,4 +1,4 @@
-name: limo_humble
+name: limo_humble_v3
 
 services:
   limo-humble-container:

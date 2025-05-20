@@ -175,22 +175,22 @@ cd limo_docker
 docker system prune
 docker compose -f docker-compose-v3.yaml up -d
 ````
-In limo_start.launch.py we can modify the image resolution and published frames per second with the corresponding parameters:
+In limo_start.launch.py we can modify the image resolution and published frames per second with the corresponding parameters, but the parameter value set has to be accepted by the camera driver:
 ````shell
 IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
         [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
     ),
     launch_arguments={
-    'color_width': '320',
-    'color_height': '240',
-    'color_fps': '15',  # Nova freqüència per a color
-    'depth_width': '320',
-    'depth_height': '240',
-    'depth_fps': '10',  # Nova freqüència per a profunditat
-    'ir_width': '320',
-    'ir_height': '240',
-    'ir_fps': '20', # Nova freqüència per a IR
+    'color_width': '640',
+    'color_height': '480',
+    'color_fps': '30',
+    'depth_width': '640',
+    'depth_height': '400',
+    'depth_fps': '30',
+    'ir_width': '640',
+    'ir_height': '400',
+    'ir_fps': '30'
     }.items(),
 ),
 ````

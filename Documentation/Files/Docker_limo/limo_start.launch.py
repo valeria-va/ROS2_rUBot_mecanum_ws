@@ -52,18 +52,19 @@ def generate_launch_description():
                     [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
                 ),
                 launch_arguments={
-                'color_width': '160'
-                'color_height': '120'
-                'color_fps': '10,  # Nova freqüència per a color
-                'depth_width': '160'
-                'depth_height': '120'
-                'depth_fps': '10',  # Nova freqüència per a profunditat
-                'ir_width': '160'
-                'ir_height': '120'
-                'ir_fps': '10' # Nova freqüència per a IR
+                'color_width': '640',
+                'color_height': '480',
+                'color_fps': '30', 
+                'depth_width': '640',
+                'depth_height': '400',
+                'depth_fps': '30',
+                'ir_width': '640',
+                'ir_height': '400',
+                'ir_fps': '30'
                 }.items(),
             ),
             
             base_link_to_laser_tf_node,
         ]
     )
+    
