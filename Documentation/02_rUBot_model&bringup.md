@@ -3,13 +3,16 @@ The main objective of this section is to simulate the robot behaviour in virtual
 
 The particular objectives of this section are:
 - Create a complete robot model of our robots
+- Review the main tools:
+  - rviz to visualization of robot geometry and messages published in topics
+  - Gazebo as a physical simulator containing the main drivers for robot functionalities (sensors and actuators)
 - Create a world model of the virtual environment
 - Bringup the robot in virtual environment
 - Bringup the real robot.
 
 The robots we will work are:
-- Differential-Drive robot
-- Mecanum-Drive robot
+- Differential-Drive robot: movement like turtlesim
+- Mecanum-Drive robot: more performand movement in x and y directions
 
 These are represented in the picture below:
 ![](./Images/01_Setup/rUBot_Limo.png)
@@ -39,7 +42,7 @@ For this purpose we have already created:
   ````shell
   ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_description --dependencies rclcpp
   ````
-- New folders inside: launch, meshes, rviz, urdf. For that we have to add these lines on VMakeLists.txt:
+- New folders inside: launch, meshes, rviz, urdf. For that we have to add these lines on CMakeLists.txt:
   ````shell
   install(
   DIRECTORY meshes urdf launch rviz
@@ -354,7 +357,7 @@ We will first use RVIZ to check that the model is properly built.
 
 RViz only represents the robot visual features. You have available all the options to check every aspect of the appearance of the model.
 
-We use a specific "display.launch.xml" launch file where we specify the robot model we want to open in rviz with a configuration specified in "urdf.rviz":
+We use a specific "display.launch.xml" launch file where we specify the robot model we want to open in rviz with a configuration specified in "rviz" folder:
 ```xml
 <launch>
     <let name="urdf_path" 
@@ -404,6 +407,8 @@ ros2 launch my_robot_description display.launch.xml
     </visual>
 ```
 
+Do **not close the rviz** because this will be used in next section!
+
 ### **2.2. Bringup the rUBot in virtual world environment**
 
 In robotics research, always before working with a real robot, we simulate the robot behaviour in a virtual environment close to the real one. **Gazebo** is an open source 3D robotics simulator and includes an ODE physics engine and OpenGL rendering, and supports code integration for closed-loop control in robot drives. This is sensor simulation and actuator control.
@@ -415,7 +420,7 @@ ros2 pkg create --build-type ament_cmake --license Apache-2.0 my_robot_bringup -
 New folders inside: launch, rviz, worlds. For that we have to add these lines on CMakeLists.txt:
   ````shell
   install(
-  DIRECTORY launch rviz worls
+  DIRECTORY launch models rviz wordls
   DESTINATION share/${PROJECT_NAME}/
   )
   ````
@@ -464,6 +469,22 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 
 > Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
 
+**Camera and lidar messages visualization**
+
+Now go to RVIZ screen and add the topics where Gazebo Driver publish the Camera Images and Lidar information:
+- /limo/limo_camera/image_raw topic where Image message is published
+- /scan topic where LaserScan message is published
+
+You have to add these messages on RVIZ
+
+
+![](./Images/02_rubot_model/06_topics_limo1.png)
+
+You can see the Images and the Lidar laser spots in RVIZ tool!!!
+
+![](./Images/02_rubot_model/06_topics_limo2.png)
+
+
 #### **Design a custom world**
 
 Here we have first to design the project world, for exemple a maze from where our rUBot mecanum has to navigate autonomously.
@@ -498,7 +519,7 @@ You can create model parts like walls of 60cm or 90cm or 120cm with a geometry a
 - in ~/.gazebo/models/ (this is the default folder)
 - in speciffic folder in your package (i.e. rUBot_mecanum_ws/src/rubot_mecanum_description/models). In this case, to add the path in Gazebo, add this line in .bashrc file:
   ```xml
-  export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_description/models:$GAZEBO_MODEL_PATH
+  export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:$GAZEBO_MODEL_PATH
   ```
 - When a model is created with "Building Editor", this path is saved in gazebo environment and you can use it in the future.
 - You can allways select "Add folder path" in "insert" gazebo menu tab, and select the models folder you have created in your project ws 
