@@ -9,6 +9,8 @@ We have two kind of rbots:
 - UB custom made **rUBot_mecanum**
 - Commercial **LIMO** robot
 
+![](./Images/01_Setup/rUBot_Limo.png)
+
 Webgraphy:
 - TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
 - LIMO repository: https://github.com/agilexrobotics/limo_ros2/tree/humble

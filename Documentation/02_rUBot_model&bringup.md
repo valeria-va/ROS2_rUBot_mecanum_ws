@@ -1,24 +1,28 @@
-## **2. ROS2 rUBot model and Bringup**
-The main objective of this section is to simulate the rUBot behaviour in virtual environment.
+## **2. ROS2 my robot model and Bringup**
+The main objective of this section is to simulate the robot behaviour in virtual environment.
 
 The particular objectives of this section are:
-- Create a complete robot model of our rUBot Mecanum
+- Create a complete robot model of our robots
 - Create a world model of the virtual environment
 - Bringup the robot in virtual environment
 - Bringup the real robot.
 
-The rUBot mecanum robot we will work is represented in the picture:
-![](./Images/01_Setup/01_rubot_pi.jpg)
+The robots we will work are:
+- Differential-Drive robot
+- Mecanum-Drive robot
+
+These are represented in the picture below:
+![](./Images/01_Setup/rUBot_Limo.png)
 
 A very good guide is described in: https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview
 
 ### **2.1. Create a robot model of our rUBot mecanum**
 
 Different robot models have been created to be used in ROS2 Virtual environment:
-- Differential-Drive robot
-- Mecanum-Drive robot
+- 2-wheel Differential Drive robot-based model
+- 4-wheel Mecanum Drive robot-based model
 
-These 2 kind of robot models can be equipped with a robotic arm:
+These kind of robot models can be equipped with a robotic arm:
 
 ![](./Images/02_rubot_model/02_models.png)
 
