@@ -2,15 +2,17 @@
 <launch>
     <arg name="rplidar_serial_port" default="/dev/ttyUSB0"/>
     <arg name="rplidar_frame_id" default="base_link"/>
+    <arg name="camera_width" default="160"/>
+    <arg name="camera_height" default="120"/>
 
     <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver.launch.py">
     </include>
-    <!-- launch Lidar  -->
     <include file="$(find-pkg-share rplidar_ros)/launch/rplidar_a1_launch.py">
         <arg name="serial_port" value="$(var rplidar_serial_port)"/>
         <arg name="frame_id" value="$(var rplidar_frame_id)"/>
     </include>
-    <!-- launch USB-cam  -->
-    <include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
+    <include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.py">
+        <arg name="image_width" value="$(var camera_width)"/>
+        <arg name="image_height" value="$(var camera_height)"/>
     </include>
 </launch>

@@ -13,12 +13,28 @@ References:
 - https://index.ros.org/p/usb_cam/#humble-overview
 - https://github.com/ros-drivers/usb_cam/tree/main
 
-**Resolution configuration**:
+**Launch the usb-cam**
 
-We have a params1.yaml file with all the parameters. You ca change them with:
+- run the executable with default settings (without params file)
 ````shell
-ros2 launch usb_cam camera.launch.py image_width:=320 image_height:=240
+ros2 run usb_cam usb_cam_node_exe
 ````
+
+- run the executable while passing in parameters via a yaml file:
+````shell
+ros2 run usb_cam usb_cam_node_exe --ros-args --params-file /path/to/colcon_ws/src/usb_cam/config/params.yaml
+````
+
+- launch the usb_cam executable that loads parameters from the same `usb_cam/config/params.yaml` file as above along with an additional image viewer node 
+````shell
+ros2 launch usb_cam camera.launch.py
+````
+
+- Change Resolution configuration:
+
+We have a params1.yaml file with all the parameters in the original installed package. You have 2 options:
+- Change the values in the original params1.yaml
+- Create a new "usb_cam_custom.launch.py" file where you create the arguments you want to change (because camera.launch.py has no declared arguments) and change these arguments in the "my_robot_nano_bringup_hw.launch.xml"
 
 ## **2. Orbbec camera configuration**
 
