@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     wget \
     unzip \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ROS 2 and other ROS dependencies
@@ -53,17 +54,9 @@ RUN apt-get update && apt-get install -y \
     ros-humble-tf2-sensor-msgs \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \
+    ros-humble-usb-cam \
     libgoogle-glog0v5 \
     && rm -rf /var/lib/apt/lists/*
-
-# Install pigpio from source
-WORKDIR /tmp
-RUN wget https://github.com/joan2937/pigpio/archive/master.zip && \
-    unzip master.zip && \
-    cd pigpio-master && \
-    make && \
-    make install && \
-    setcap cap_sys_rawio=ep /usr/local/bin/pigpiod
 
 # Set up the working directory for ROS workspace
 WORKDIR /root
@@ -72,6 +65,8 @@ WORKDIR /root
 COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
 RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
     rm /root/ROS2_rUBot_mecanum_ws.zip
+# Clone the rplidar_ros package
+RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
 
 # Build the ROS workspace
 RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
@@ -82,13 +77,15 @@ RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
     echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
-COPY rubot_entrypoint.sh /rubot_entrypoint.sh
-RUN chmod +x /rubot_entrypoint.sh
+COPY rubot_entrypoint.sh /root/rubot_entrypoint.sh
+RUN cd /root &&\
+    chown root:root /root/rubot_entrypoint.sh &&\
+    chmod 755 /root/rubot_entrypoint.sh
 
-# Set permissions for rubot_mecanum_driver.py (assuming it's in your workspace)
-RUN cd /root/ROS2_rUBot_mecanum_ws/src/my_robot_driver/my_robot_driver && \
-    chown root:root rubot_mecanum_driver.py && \
-    chmod 4777 rubot_mecanum_driver.py
+# Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
+RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
+    chown root:root rubot_nano_driver.py && \
+    chmod 4777 rubot_nano_driver.py
 
 # Set the default command to run when the container starts
 CMD ["bash"]

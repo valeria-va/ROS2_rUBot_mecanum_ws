@@ -10,18 +10,28 @@ Webgraphy:
 - https://github.com/AntoBrandi/Self-Driving-and-ROS-Learn-by-Doing-Odometry-Control
 - https://github.com/AntoBrandi/Arduino-Bot/tree/humble
 
-## **1. Setup the rUBot mecanum in virtual environment for simulation**
+## **1. Setup the Robot in virtual environment for simulation**
 
 
-## **2. Setup the rUBot mecanum in raspberrypi4 for real control**
+## **2. Setup the Robot in real control**
 
-To create a fast and robust image of ROS2 Humble for our robot, an improved method is to use Docker.
+To create a fast and robust image of ROS2 Humble for our robot, an improved method is to use a Docker.
 
 References:
 - TheConstruct DockerHub: https://hub.docker.com/u/theconstructai
 - TheConstruct Final Image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
 
-### **2.1. Install Raspberrypi Desktop**
+We have 2 different robots:
+- UB custom made rUBot mecanum
+- Commercial LIMO robot
+
+Each one has speciffic Docker configuration characteristics.
+
+### **2.1. Setup UB custom made rUBot mecanum**
+
+For this robot we will use a computero onboard based on Raspberrypi4 where we will install a RaspberryPi OS (64Bits)-
+
+#### **a) Install Raspberrypi Desktop**
 
 - Run Raspberry Pi Imager (https://www.raspberrypi.org/software/)
   - select Device: Raspberrypi4
@@ -56,7 +66,7 @@ References:
     - Add DNS server (8.8.8.8) for google DNS
     - Apply and reboot
 
-### **2.2. Install VNC connections**
+#### **b) Install VNC connections**
 
 - Connect to the raspberrypi with ssh and activate **VNC connections**:
   - type: sudo raspi-config
@@ -67,7 +77,7 @@ References:
 - If you want to connect to another network, you have to be connected first manually to the different networks to enable raspberrypi to connect to on reboot
 - reboot and it will be connected to the first network available
 
-### **2.3. Using VScode remote explorer**
+#### **c) Using VScode remote explorer**
 
 You can install the Extension "Remote explorer" on VScode:
 
@@ -77,7 +87,7 @@ You can install the Extension "Remote explorer" on VScode:
   ssh-keygen -R IP-raspberrypi
   ````
 
-### **2.4. Install Docker**
+#### **d) Install Docker**
 
 In raspberrypi, add Docker’s official repository for Ubuntu
 ````shell
@@ -113,17 +123,6 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 
 Documentation is in: https://hub.docker.com/r/theconstructai/limo
 
-**usb_cam resolution**
-
-We have defined a low resolution camera in "usb_cam_custom_low-launch-xml" called by "my_robot_nano_bringup_hw.launch.xml" with:
-````xml
-<include file="$(find-pkg-share my_robot_bringup)/launch/usb_cam_custom.launch.xml">
-    <set_param name="/usb_cam/image_width" value="160"/>
-    <set_param name="/usb_cam/image_height" value="120"/>
-</include>
-````
-These files are located in this repository on Documentation/files/Docker_rubot folder
-
 Follow the instructions:
 - Build the Image
 ````shell
@@ -153,7 +152,7 @@ To verify if the container is working type on terminal:
 ````shell
 docker exec -it rubot-humble-container /bin/bash
 ````
-## **3. Setup the LIMO robot**
+### **2.2. Setup the commercial LIMO robot**
 
 The LIMO robot has a Jetson Nano computer onboard with Ubuntu20 and ROS Noetic & Foxy installed.
 
