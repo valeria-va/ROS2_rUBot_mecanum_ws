@@ -1,7 +1,7 @@
 # Stage 1: Build stage
 FROM ros:humble-ros-core AS build
 
-# Install basic dependencies
+# Install basic dependencies including X11 client libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -10,6 +10,15 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     git \
+    # X11 client libraries and related tools
+    x11-apps \
+    libx11-6 \
+    libxext6 \
+    libxrender1 \
+    libxtst6 \
+    libgl1-mesa-glx \
+    # libglu1-mesa \ # Descomenta si és necessari per a aplicacions OpenGL més complexes
+    # mesa-utils \   # Descomenta per a 'glxinfo', útil per a debugging
     && rm -rf /var/lib/apt/lists/*
 
 # Install ROS 2 and other ROS dependencies
@@ -43,17 +52,11 @@ RUN apt-get update && apt-get install -y \
     ros-humble-image-geometry \
     ros-humble-image-publisher \
     ros-humble-image-transport \
-    ros-humble-robot-state-publisher \
-    ros-humble-joint-state-publisher \
-    ros-humble-tf-transformations \
-    ros-humble-teleop-twist-keyboard \
     ros-humble-tf2 \
     ros-humble-tf2-ros \
     ros-humble-tf2-msgs \
-    ros-humble-tf2-geometry-msgs \
     ros-humble-tf2-sensor-msgs \
     ros-humble-rmw-cyclonedds-cpp \
-    ros-humble-cv-bridge \
     ros-humble-usb-cam \
     libgoogle-glog0v5 \
     && rm -rf /var/lib/apt/lists/*
@@ -65,15 +68,17 @@ WORKDIR /root
 COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
 RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
     rm /root/ROS2_rUBot_mecanum_ws.zip
+
 # Clone the rplidar_ros package
 RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
 
 # Build the ROS workspace
 RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
 
-# Add workspace and ROS environment setup to .bashrc
+# Add workspace, ROS environment setup, and QT_QPA_PLATFORM to .bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
     echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc && \
+    echo 'export QT_QPA_PLATFORM=xcb' >> /root/.bashrc && \
     echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
@@ -83,9 +88,15 @@ RUN cd /root &&\
     chmod 755 /root/rubot_entrypoint.sh
 
 # Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
-RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
-    chown root:root rubot_nano_driver.py && \
-    chmod 4777 rubot_nano_driver.py
+# Make sure the path to rubot_nano_driver.py is correct
+RUN if [ -f /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver/rubot_nano_driver.py ]; then \
+        chown root:root /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver/rubot_nano_driver.py && \
+        chmod 755 /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver/rubot_nano_driver.py; \
+    else \
+        echo "Warning: rubot_nano_driver.py not found, skipping chmod/chown." ; \
+    fi
 
 # Set the default command to run when the container starts
+# Consider using ENTRYPOINT if rubot_entrypoint.sh is meant to always run first
+# ENTRYPOINT ["/root/rubot_entrypoint.sh"]
 CMD ["bash"]

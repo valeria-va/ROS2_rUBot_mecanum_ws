@@ -8,6 +8,11 @@ services:
     container_name: rubot-humble-container
     volumes:
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
+      - /tmp/.X11-unix:/tmp/.X11-unix # Munta el socket X11 de l'amfitrió
+    environment:
+      - DISPLAY=${DISPLAY} # Passa la variable DISPLAY de l'amfitrió
+      - QT_QPA_PLATFORM=xcb # (Recomanat): Assegura el backend Qt per X11
+
     entrypoint: /root/rubot_entrypoint.sh
     #command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.xml"]
     restart: always

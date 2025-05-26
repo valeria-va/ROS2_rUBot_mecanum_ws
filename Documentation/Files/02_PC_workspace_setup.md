@@ -9,9 +9,23 @@ The robots will be connectes to internet and we will connect to the robots usin 
 This is the fastest method to connect to my_robot when PC and robot are in the same laboratory connected to a local network within a router.
 
 We will proceed with:
-- Setup the ROS2 environment in the control PC using Docker Desktop
+- Install in the control PC Docker Desktop
+- Create a "Docker_PC" folder in your control PC with the contents of "Docker_PC"
 - A custon ``Dockerfile`` is created for ROS2-Humble environment (located in Documentation/Files/Docker_PC)
+- To create this custom "rubot_humble_image", type in a new terminal:
+  ````shell
+  cd /home/ubuntu/Desktop/Docker
+  docker build -t rubot_humble_image .
+  ````
 - A custom ``docker-compose.yaml`` file is created to setup the Custom container already connected to the robot over the local network
+- Remember that on your host machine (outside of Docker), you need to allow container connections to your X11 server. Run this in your host terminal once before starting the container with docker-compose up:
+  ````shell
+  xhost +local:docker
+  ````
+- execute in a terminal:
+  ````shell
+  docker compose up
+  ````
 - Open VScode in your PC, identify the running containers and Attach a ``VScode Workspace to this Container``
 - Open a new ``terminal`` and type:
   ````shell
