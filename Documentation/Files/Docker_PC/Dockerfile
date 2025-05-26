@@ -65,21 +65,21 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /root
 
 # Copy and unzip the ROS2_rUBot_mecanum_ws.zip file
-COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
-RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
-    rm /root/ROS2_rUBot_mecanum_ws.zip
+#COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
+#RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
+#    rm /root/ROS2_rUBot_mecanum_ws.zip
 
 # Clone the rplidar_ros package
-RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
+#RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
 
 # Build the ROS workspace
-RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
+#RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
 
 # Add workspace, ROS environment setup, and QT_QPA_PLATFORM to .bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
-    echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc && \
-    echo 'export QT_QPA_PLATFORM=xcb' >> /root/.bashrc && \
-    echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
+    echo 'export QT_QPA_PLATFORM=xcb' >> /root/.bashrc 
+    #echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc && \
+    #echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
 COPY rubot_entrypoint.sh /root/rubot_entrypoint.sh
