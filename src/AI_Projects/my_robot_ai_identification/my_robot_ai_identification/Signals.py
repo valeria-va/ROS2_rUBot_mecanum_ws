@@ -16,7 +16,7 @@ train_results = model.train(
 metrics = model.val()
 
 # Perform object detection on an image
-results = model("test/images/Foto_77_jpg.rf.34d8e25dfabc6ff512c83619a62eed88.jpg")  # Predict on an image from test set
+results = model("ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/photos/Give/Foto_4.jpg")  # Predict on an image from test set
 results[0].show()  # Display results
 
 # Save the model's weights
