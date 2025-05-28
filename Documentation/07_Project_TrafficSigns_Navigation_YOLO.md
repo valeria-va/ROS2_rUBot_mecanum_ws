@@ -23,8 +23,14 @@ pip install ultralytics
 To properly train a model we will use "roboflow":
 - Open a new google tab: https://roboflow.com/
     ![](./Images/07_Yolo/01_roboflow.png)
-- ``Select ..``
-
+- Select "Get Started" or "Sign In" and "Continue with Google"
+- Select a Name of the workspace (i.e. TrafficSignals)
+- Select "Public Plan"
+- You will have 2 invites available for your project partners to collaborate in the model generation
+- Create a workspace
+- Answer some objective questions
+- Select "What type of model would you like to deploy?"
+- There is a short Roboflow tutorial video: https://blog.roboflow.com/getting-started-with-roboflow/
 In roboflow:
 - make pictures for each traffic signal
 - open Roboflow project
