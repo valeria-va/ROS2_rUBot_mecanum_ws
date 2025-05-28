@@ -7,15 +7,23 @@ Training models:
 - https://github.com/ultralytics/ultralytics
 - https://docs.ultralytics.com/es/usage/python/#how-do-i-train-a-custom-yolo-model-using-my-dataset
 
+For this project we have created a new package "my_robot_ai_identification" where we have used 2 strategies to perform signal identification:
+- Keras with tensorflow
+- YOLO 
 
-## **1. ROS packages installation**
+## **1. ROS2 packages installation**
 
-Installation:
+The needed Installation for YOLO identification is only to install "ultralytics" on the ROS2 Humble environment. Open a terminal and type:
 ````shell
 pip install ultralytics
 ````
 
 ## **1. Model Training**
+
+To properly train a model we will use "roboflow":
+- Open a new google tab: https://roboflow.com/
+    ![](./Images/07_Yolo/01_roboflow.png)
+- ``Select ..``
 
 In roboflow:
 - make pictures for each traffic signal

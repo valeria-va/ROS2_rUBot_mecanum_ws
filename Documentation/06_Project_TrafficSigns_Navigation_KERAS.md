@@ -40,7 +40,9 @@ colcon build
     ````bash
     rviz
     ````
-- Open the "teachablemachine" app to create a model for "Traffic Signs". Go to https://teachablemachine.withgoogle.com/ and create an image project.  
+- Open the "teachablemachine" app to create a model for "Traffic Signs". Go to https://teachablemachine.withgoogle.com/, select "Get Started", "Image Project", "New Image Project", "Standard Image Model" and create an image project.  
+    ![](./Images/06_Keras/01_Teachable_machine1.png)
+
 - Collect images with rUBot USB_CAM for each sign and upload them to the project.  
 - Train the model.  
 - Export the model as a keras .h5 model. The model can be created with some pictures, but this would be improved with some more pictures.  
