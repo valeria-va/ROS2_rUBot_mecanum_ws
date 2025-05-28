@@ -1,0 +1,92 @@
+# **Driver robot mecanum**
+
+Here is described the Driver designed for rUBot mecanum in ROS2 using:
+- Arduino Nano
+- Arduino Nano ESP32
+
+The first created packages are designed for a differential drive 2 wheeled robots considering the course designed by TheConstruct:
+- TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
+
+The general architecture is based on:
+- ROS2 Humble environment with a custom Docker contained in a Raspberrypi4
+- A local ROS2_rubot_mecanum_ws responsible of the custom UB robot bringup
+- Arduino nano with a "robot_driver.ino" program to drive the wheels in CL with a serial messaging protocol
+- A labtop/PC server with a global ROS2_rubot_mecanum_ws responsible to high level control of the robot
+
+We will analyse:
+- PCB interconnection board design
+- Robot Driver program for Arduino nano
+- Robot Driver program for Arduino nanoESP32
+- Robot control program in ROS2 environment
+- Robot bringup program in ROS2 environment
+
+
+## **PCB interconnection board design**
+
+A speciffic PCB board is designed to interface the Arduino nano (or Arduino nanoESP32) with the 4 DC-motors with encoder and an IMU sensor.
+
+``gràfics de la PCB i relació dels pins amb Arduino nano``
+
+``fotos de la PCB i la connexió amb Raspberrypi``
+
+## **Robot Driver program for Arduino nano**
+
+The robot driver created for Arduino nano is located in the folder "rubot_driver_nano".
+
+Its main characteristics are:
+- Differential Drive Control: Provides commands for controlling the speed of a two-wheeled robot.
+- Sensor Data Acquisition: Enables receiving sensor data and odometry information from the Arduino.
+- Configurable Hardware: Supports Arduino Mega, Pololu motor controller shield, and Robogaia Mega Encoder shield by default, with adaptable functions for other hardware.
+- Serial Communication: Uses simple serial commands for communication between ROS and Arduino.
+- Modular Design: Includes separate files for commands, sensors, motor drivers, and encoders.
+- PID Control (Optional): Implements a Proportional-Integral-Derivative (PID) controller for precise motor control (if USE_BASE is defined).
+- Servo Control (Optional): Supports control of PWM servos (if USE_SERVOS is defined).
+- Automatic Stop: Features an auto-stop mechanism if no motor commands are received for a defined interval.
+- Command Parsing: Includes functionality to parse serial commands with arguments.
+
+## **Robot Driver program for Arduino nanoESP32**
+
+The robot driver created for Arduino nano is located in the folder "rubot_driver_nano_esp32".
+
+Its main characteristics related to the previous program are:
+
+``- Pins PWM diferents``
+
+``- lectura de encoder``
+
+``- escriptura de PWM ``
+
+``- etc.``
+
+## **Robot control program in ROS2 environment**
+
+The ROS2 package "my_robot_driver" is designed to:
+- communicate with Arduino Nano 
+- subscribe to /cmd_vel topic and generate the proper velocities to each of 4 robot wheels to perform the differential-drive or mecanum-drive driving model
+- perform the bringup concerning the driving model
+
+Here are the main characteristics of the `MotorDriver` Python program, with short explanations for each point:
+
+* **ROS 2 Node:** It's a ROS 2 node named "motor\_driver," the fundamental building block for running processes in ROS 2.
+* **Serial Communication:** Establishes and manages serial communication with a motor controller (typically an Arduino or similar) to send commands and receive data.
+* **Differential Drive Control:** Interprets `cmd_vel` (Twist messages) to calculate and send appropriate motor commands for a two-wheeled robot.
+* **Encoder Reading:** Sends commands to the motor controller to read encoder values from the motors.
+* **Velocity Calculation:** Calculates the angular velocities of the robot's wheels based on the changes in encoder values over time.
+* **Odometry Publishing:** Estimates and publishes the robot's position and orientation (odometry) as an `nav_msgs/Odometry` message based on wheel velocities.
+* **Motor Velocity Publishing:** Publishes the calculated angular velocities of the individual motors as a `serial_motor_msgs/MotorVels` message.
+* **Encoder Value Publishing:** Publishes the raw encoder readings received from the motor controller as a `serial_motor_msgs/EncoderVals` message.
+* **Parameterization:** Utilizes ROS 2 parameters for configuration such as serial port, baud rate, encoder counts per revolution (CPR), loop rate, wheel diameter, and wheel separation.
+* **Command Sending:** Provides functions to send specific commands (PWM control, feedback control, encoder read) to the motor controller via the serial port.
+* **Thread Safety:** Employs a mutex lock to ensure thread-safe access to the serial port, preventing race conditions when sending commands.
+* **Reentrant Callbacks:** Uses a reentrant callback group to allow concurrent execution of the `cmd_vel` callback and the timer callback, improving responsiveness.
+* **Argument Parsing:** Includes basic argument parsing for setting the robot's name, which is used in the odometry frame IDs.
+* **Error Handling:** Includes `try-except` blocks for handling potential serial communication errors and invalid parameter values.
+* **Debugging Output:** Offers an optional "serial\_debug" parameter to log sent and received serial commands for debugging purposes.
+* **Loop Rate Control:** Uses a timer to periodically check encoders and potentially publish odometry at a configurable rate.
+* **Euler to Quaternion Conversion:** Contains a utility function to convert Euler angles (roll, pitch, yaw) to quaternion representation for the orientation in the odometry message.
+
+## **Robot bringup program in ROS2 environment**
+
+The ROS2 package "my_robot_driver" is designed to:
+- communicate with Arduino Nano 
+- subscribe to /cmd_vel topic and generate the

@@ -1,0 +1,14 @@
+name: rubot_humble
+
+services:
+  rubot-humble-container:
+    image: rubot_humble_image
+    privileged: true
+    network_mode: host # Si fas servir 'host', el port ja està obert
+    container_name: rubot-humble-container
+    volumes:
+      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
+      - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
+    entrypoint: /root/rubot_entrypoint.sh
+    command: ["bash"]
+    restart: always
