@@ -118,9 +118,11 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >Change the URDF file for each robot
         - Launch Navigation node:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
+        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=`ros2 pkg prefix my_robot_navigation2`/share/my_robot_navigation2/map/my_map.yaml
         ````
-        >We use "waffle.yaml" file in "param" folder where base_frame_id: "base_footprint" (as described in the model)
+        >For Turtlebot: We use "waffle.yaml" file in "param" folder where base_frame_id: "base_footprint" (as described in the model)
+
+        >For LIMO: We use "Limo_real.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_real_lidar.yaml
     - In the case of real robot:
         - The bringup is done without the LIMO robot model. The only frames available are
             - odom: as a fixed frame

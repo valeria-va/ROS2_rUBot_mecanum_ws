@@ -35,10 +35,17 @@ source install/local_setup.bash
 ```
 - Add in .bashrc the lines:
 ````shell
+export ROS_DOMAIN_ID=0
+export TURTLEBOT3_MODEL=waffle
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:$GAZEBO_MODEL_PATH
 source /opt/ros/humble/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+source /home/user/ROS2_rUBot_tutorial_ws/install/setup.bash
 source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
+#cd /home/user/ROS2_rUBot_tutorial_ws
 cd /home/user/ROS2_rUBot_mecanum_ws
+
 ````
 - If the compilation process returns warnings on "Deprecated setup tools":
 ````shell
