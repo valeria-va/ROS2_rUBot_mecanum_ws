@@ -24,20 +24,17 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-#TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
-#ROS_DISTRO = os.environ.get('ROS_DISTRO')
-
 
 def generate_launch_description():
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     map_dir = LaunchConfiguration(
         'map',
         default=os.path.join(
             get_package_share_directory('my_robot_navigation2'),
             'map',
-            'my_map.yaml'))
+            'my_map4m.yaml'))
 
-    param_file_name = 'Limo_sw.yaml'
+    param_file_name = 'limo_sw.yaml'
     param_dir = LaunchConfiguration(
         'params_file',
         default=os.path.join(
