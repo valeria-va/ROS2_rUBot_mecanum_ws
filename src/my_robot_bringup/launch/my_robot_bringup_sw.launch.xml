@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
      <let name="x0" value="0.5"/>
-     <let name="y0" value="0.5"/>
+     <let name="y0" value="-1.5"/>
      <let name="yaw0" value="1.57"/>
 
      <let name="urdf_path" 
@@ -16,7 +16,7 @@
      </node>
 
      <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
-          <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square2.world" />
+          <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square4m_sign_right.world" />
      </include>
 
      <node pkg="gazebo_ros" exec="spawn_entity.py"

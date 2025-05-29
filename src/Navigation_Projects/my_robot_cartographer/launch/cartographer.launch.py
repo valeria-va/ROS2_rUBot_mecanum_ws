@@ -40,7 +40,7 @@ def generate_launch_description():
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
 
     rviz_config_dir = os.path.join(get_package_share_directory('my_robot_cartographer'),
-                                   'rviz', 'my_robot_cartographer.rviz')
+                                   'rviz', 'my_robot_cartographer2.rviz')
 
     return LaunchDescription([
         DeclareLaunchArgument(
