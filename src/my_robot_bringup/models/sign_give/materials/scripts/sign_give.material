@@ -1,0 +1,15 @@
+material sign_give/Diffuse
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture give.png
+        filtering anistropic
+        max_anisotropy 16
+      }
+    }
+  }
+}
