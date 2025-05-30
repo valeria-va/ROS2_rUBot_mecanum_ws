@@ -18,7 +18,47 @@ The needed Installation for YOLO identification is only to install "ultralytics"
 pip install ultralytics
 ````
 
-## **1. Model Training**
+## **2. Robot Navigation**
+
+To proceed with the signal identification we first bringup the robot and navigate from initial pose to final target.
+
+- Bringup the robot
+    - In simulation:
+    ````shell
+    ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+    ````
+    - In real robot LIMO the bringup is already made when turned on
+
+- Generate a map
+    - In simulation:
+    ````shell
+    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=True
+    ````
+    - In real robot LIMO:
+    ````shell
+    ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=False
+    ````
+    - Save the map in my_robot_navigation2/map folder with:
+    ````shell
+    cd src/Navigation_Projects/my_robot_navigation2/map/
+    ros2 run nav2_map_server map_saver_cli -f my_map_yolo
+    ````
+- Navigate using the Map:
+    - In simulation:
+        ````bash
+        ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py
+        ````
+        >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
+    - In the case of real robot:
+        - Because the bringup is done without the LIMO robot model. The only frames available are
+            - odom: as a fixed frame
+            - base_link: as the robot frame
+        - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
+        ````shell
+        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
+        ````
+
+## **3. Model Training**
 
 To properly train a model we will use "roboflow":
 - Open a new google tab: https://roboflow.com/
@@ -38,9 +78,9 @@ In roboflow:
 - select % of training (80%) / Validating (15%) / Test (5%)
 - Download dataset: signal.yaml file
 
-## **3. Signal prediction**
+## **4. Signal prediction**
 
-In TheConstruct,
+In TheConstruct environment
 - Train the model on pre-trained model (i.e. yolov8n.pt) with the custom dataset obtained from Roboflow (i.e. signal.yaml)
 
 ````python
