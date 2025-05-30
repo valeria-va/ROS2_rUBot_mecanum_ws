@@ -126,3 +126,24 @@ results[0].show()  # Display results
 - You can make a prediction with the signals the robot find on the path to target pose:
     - for 1 test image (picture_prediction_yolo.py). 
     - for video images from robot camera when moving to target (rt_prediction_yolo.py)
+- Test de rt detection:
+    - On the Limo robot container:
+    ````shell
+    apt update
+    apt install python3-pip
+    pip install ultralytics
+    apt install git
+    git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+    source /opt/ros/humble/setup.bash
+    apt install python3-colcon-common-extensions
+    apt install build-essential
+    colcon build
+    source install/setup.bash
+    ros2 run my_robot_ai_identification rt_prediction_yolo_exec
+    ````
+    - cal resoldre incompatibilitats:
+    ````shell
+    pip3 uninstall numpy
+    pip3 install "numpy<2.0"
+    ````
+    

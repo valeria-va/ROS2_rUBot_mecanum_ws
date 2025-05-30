@@ -1,26 +1,21 @@
 cmake_minimum_required(VERSION 3.8)
-project(serial_motor_msgs)
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+project(custom_msgs)
 
 # Find required packages
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(std_msgs REQUIRED)  # if your messages use it
+find_package(std_msgs REQUIRED) # Si Yolov8Inference.msg utilitza std_msgs/Header
 
 # Message files
 set(msg_files
-  "msg/MotorVels.msg"
-  "msg/MotorCommands.msg"
-  "msg/EncoderVals.msg"
+  "msg/InferenceResult.msg"
+  "msg/Yolov8Inference.msg"
 )
 
 # Generate messages
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
-  DEPENDENCIES std_msgs
+  DEPENDENCIES std_msgs # Si és necessari
 )
 
 # Export dependencies
@@ -28,4 +23,3 @@ ament_export_dependencies(rosidl_default_runtime)
 
 # Package export
 ament_package()
-
