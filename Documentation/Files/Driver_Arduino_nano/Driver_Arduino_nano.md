@@ -87,6 +87,31 @@ Here are the main characteristics of the `MotorDriver` Python program, with shor
 
 ## **Robot bringup program in ROS2 environment**
 
-The ROS2 package "my_robot_driver" is designed to:
-- communicate with Arduino Nano 
-- subscribe to /cmd_vel topic and generate the
+The ROS2 workspace is ros2_ws in our simple code exemple.
+
+To test the performances follow the instructions:
+- Power the raspberrypi. This will connect to the Biorobotics lab with IP (192.168.1.50) and start the container if the Docker service is enabled
+- Open VScode and connect to the robot with ssh on the robot's IP
+- Open the container with
+    ````shell
+    docker compose up -d
+    ````
+- Attach a VScode window to the container
+- Bringup the robot driver with:
+    ````shell
+    ros2 launch fastbot_bringup bringup.launch.xml
+    ````
+    > Be sure the serial_port parameter is on /dev/ttyUSB0
+- open a new terminal in container and publish a Twist message to move the robot
+    ````shell
+    ros2 topic list
+    ros2 topic pub -r 1 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+    ````
+- the robot is moving forward
+- to see the encoder values
+    ````shell
+    ros2 topic echo /encoder_val
+    ````
+- The motor_driver.py is located on package serial_motor package is designed to:
+    - communicate with Arduino Nano 
+    - subscribe to /cmd_vel topic and generate the serial instructions to move the individual wheels

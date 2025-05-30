@@ -36,6 +36,39 @@ Because of we have different robots, we have created:
     ````
     - Create /msg directory inside /serial_motor_msgs:
     - Create the different messages inside the msgs folder
+    - modify the CMakeLists.txt to setup the messages names
+    ````shell
+    cmake_minimum_required(VERSION 3.8)
+    project(serial_motor_msgs)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    # Find required packages
+    find_package(ament_cmake REQUIRED)
+    find_package(rosidl_default_generators REQUIRED)
+    find_package(std_msgs REQUIRED)  # if your messages use it
+
+    # Message files
+    set(msg_files
+    "msg/MotorVels.msg"
+    "msg/MotorCommands.msg"
+    "msg/EncoderVals.msg"
+    )
+
+    # Generate messages
+    rosidl_generate_interfaces(${PROJECT_NAME}
+    ${msg_files}
+    DEPENDENCIES std_msgs
+    )
+
+    # Export dependencies
+    ament_export_dependencies(rosidl_default_runtime)
+
+    # Package export
+    ament_package()
+    ````
 
 **In "my_robot_bringup" package:**
 
