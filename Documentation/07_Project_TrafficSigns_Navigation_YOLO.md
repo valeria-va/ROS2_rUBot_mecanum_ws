@@ -123,3 +123,6 @@ model = YOLO("yolov8n_custom.pt")  # Load the YOLOv8n model
 results = model("test/images/prohibido.jpg")  # Predict on an image from test set
 results[0].show()  # Display results
 ````
+- You can make a prediction with the signals the robot find on the path to target pose:
+    - for 1 test image (picture_prediction_yolo.py). 
+    - for video images from robot camera when moving to target (rt_prediction_yolo.py)

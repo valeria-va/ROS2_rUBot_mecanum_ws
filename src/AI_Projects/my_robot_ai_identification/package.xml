@@ -15,6 +15,8 @@
   <depend>nav2_simple_commander</depend>
   <depend>tf_transformations</depend>
   <depend>cv_bridge</depend>
+  <depend>tf2_ros</depend>
+  <depend>vision_msgs</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

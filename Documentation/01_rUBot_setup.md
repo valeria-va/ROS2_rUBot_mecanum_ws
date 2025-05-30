@@ -25,7 +25,7 @@ Webgraphy:
 
 ## **1. Setup the robot project in virtual environment for simulation**
 
-Using TheConstruct interface, we will have to clone the github repository:
+a) For **simulation** Using TheConstruct interface, we will have to clone the github repository:
 
 ```shell
 git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
@@ -63,6 +63,20 @@ rm -rf build/ install/ log/
 colcon build
 ````
 - Open a new terminal to ensure the .bashrc is read again
+
+b) For **real robot HW**:
+- Using a PC connected with robot within ssh
+  - Attach a new VScode window on the Limo container
+    ````shell
+    source /limo_entrypoint-v3.sh
+    ros2 topic list
+    ````
+- Using the RRL service
+  - Install the robot on your account
+  - Connect to the robot
+    ````shell
+    ros2 topic list
+    ````
 
 ## **2. Setup the robot project for real control**
 
