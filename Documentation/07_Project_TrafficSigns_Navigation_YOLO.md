@@ -52,6 +52,8 @@ To proceed with the signal identification we first bringup the robot and navigat
         ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
+
+        ![](./Images/07_Yolo/10_nav_sw.png)
     - In the case of real robot:
         - Because the bringup is done without the LIMO robot model. The only frames available are
             - odom: as a ``base_frame_id``
@@ -76,21 +78,30 @@ To properly train a model we will use "roboflow":
     ![](./Images/07_Yolo/02_Object_detection1.jpg)
 - There is a short Roboflow tutorial video: https://blog.roboflow.com/getting-started-with-roboflow/
 
-- Create a project in our created Workspace":
+- Create a project in our created "Workspace":
     - Select Projects and choose ``new project``
+        ![](./Images/07_Yolo/02_Object_detection1.jpg)
     - Upload all the images on this project (stop, right, left, give, etc)
+        ![](./Images/07_Yolo/04_Project2.png)
     - Type ``save&continue`` and ``start labeling`` to label all traffic signs pictures
     - You can assign some pictures to different Invited team members
     - Select ``start anotating``
+        ![](./Images/07_Yolo/05_Label.png)
     - If you make an error, type ``layers`` 3point menu and change class
+        ![](./Images/07_Yolo/06_Label_error.png)
     - When finished go back (left corner arrow) and select ``add xx images to Dataset``.
     - Select Method ``use existing values`` and press ``add images``
     - Select ``train model`` and ``custom training``
     - Edit ``train test/split`` select ``balance`` (select % of training (80%) / Validating (15%) / Test (5%))
+        ![](./Images/07_Yolo/07_train_balance.png)
     - select ``continue`` for the other options
     - select ``augmentation`` and ``shear`` to proper consider rotations in x and y axis
+        ![](./Images/07_Yolo/08_shear.png)
     - type ``create``
     - type ``download Data set`` choose format ``yolov8`` and ``Download zip to computer``. Save this zip file to your computer. This contains images (for train, valid and test) and data.yaml used in the next section to obtain the final model.
+
+ <img src="./Images/07_Yolo/09_DataSet.png" width="400"/>  <img src="./Images/07_Yolo/09_DataSet2.png" width="200"/> 
+
 
 ## **4. Signal prediction**
 
@@ -145,6 +156,9 @@ results[0].show()  # Display results
     - for 1 test image (use ``picture_prediction_yolo.py``). 
     - for video images from robot camera when moving to target (use ``rt_prediction_yolo.py``)
 - **Software** test in Gazebo: Use the ``rt_prediction_yolo.py`` after the navigation node is launched.
+- To see the image with prediction on RVIZ2, select a new Image message on topic /inference_result
+![](./Images/07_Yolo/11_prediction_sw.png)
+![](./Images/07_Yolo/11_prediction_sw2.png)
 
 - **Hardware** Test in real LIMO robot:
     - You have to install on the Limo robot container:
@@ -173,5 +187,3 @@ results[0].show()  # Display results
         ros2 run my_robot_ai_identification rt_prediction_yolo_exec
         ````
         > You have to change the model path to '/home/user/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt
-
-    - To see the image with prediction on RVIZ2, select a new Image message on topic /inference_result
