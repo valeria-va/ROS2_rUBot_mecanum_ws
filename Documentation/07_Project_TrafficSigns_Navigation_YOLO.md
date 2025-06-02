@@ -52,8 +52,8 @@ To proceed with the signal identification we first bringup the robot and navigat
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
         - Because the bringup is done without the LIMO robot model. The only frames available are
-            - odom: as a fixed frame
-            - base_link: as the robot frame
+            - odom: as a ``base_frame_id``
+            - base_link: as the ``robot_base_frame``
         - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
         ````shell
         ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
@@ -67,25 +67,36 @@ To properly train a model we will use "roboflow":
 - Select "Get Started" or "Sign In" and "Continue with Google"
 - Select a Name of the workspace (i.e. TrafficSignals)
 - Select "Public Plan"
-- You will have 2 invites available for your project partners to collaborate in the model generation
+- You will have a maximum of 4 invites available for your project partners to collaborate in the model generation. We suggest a role of "Admin" for Invite team members
 - Create a workspace
 - Answer some objective questions
-- Select "What type of model would you like to deploy?"
+- Select "What type of model would you like to deploy?". Type "Object Detection"
+    ![](./Images/07_Yolo/02_Object_detection1.jpg)
 - There is a short Roboflow tutorial video: https://blog.roboflow.com/getting-started-with-roboflow/
-In roboflow:
-- make pictures for each traffic signal
-- open Roboflow project
-- label all traffic signs pictures
-- select % of training (80%) / Validating (15%) / Test (5%)
-- Download dataset: signal.yaml file
+
+- Create a project in our created Workspace":
+    - Select Projects and choose ``new project``
+    - Upload all the images on this project (stop, right, left, give, etc)
+    - Type ``save&continue`` and ``start labeling`` to label all traffic signs pictures
+    - You can assign some pictures to different Invited team members
+    - Select ``start anotating``
+    - If you make an error, type ``layers`` 3point menu and change class
+    - When finished go back (left corner arrow) and select ``add xx images to Dataset``.
+    - Select Method ``use existing values`` and press ``add images``
+    - Select ``train model`` and ``custom training``
+    - Edit ``train test/split`` select ``balance`` (select % of training (80%) / Validating (15%) / Test (5%))
+    - select ``continue`` for the other options
+    - select ``augmentation`` and ``shear`` to proper consider rotations in x and y axis
+    - type ``create``
+    - type ``download Data set`` choose format ``yolov8`` and ``Download zip to computer``. Save this zip file to your computer. This contains images (for train, valid and test) and data.yaml used in the next section to obtain the final model.
 
 ## **4. Signal prediction**
 
 In TheConstruct environment
-- Train the model on pre-trained model (i.e. yolov8n.pt) with the custom dataset obtained from Roboflow (i.e. signal.yaml). The suggested value for "epochs=100" to obtain a more accurate model. This program performs:
+- Train the model on pre-trained model (i.e. yolov8n.pt) with the custom dataset obtained from Roboflow (i.e. data.yaml). The suggested value for "epochs=100" to obtain a more accurate model. This program performs:
     - Generates a model "yolo8n_custom.pt"
     - Evaluates the model performances
-    - makes a prediction for a speciffic test image
+    - makes a prediction for a speciffic test image in the corresponding folder from zip file
     - save the model to be used in the next section for real time prediction
 
 ````python
@@ -97,7 +108,7 @@ model = YOLO("yolov8n.pt")  # Load the YOLOv8n model
 
 # Train the model on the our dataset for 100 epochs
 train_results = model.train(
-    data="signal.yaml",  # Path to dataset configuration file (Roboflow dataset)
+    data="data.yaml",  # Path to dataset configuration file (Roboflow dataset)
     epochs=20,  # Number of training epochs
     imgsz=640,  # Image size for training
     device="cpu",  # Device to run on (e.g., 'cpu', 0, [0,1,2,3])
@@ -129,7 +140,7 @@ results = model("test/images/prohibido.jpg")  # Predict on an image from test se
 results[0].show()  # Display results
 ````
 - You can make a prediction with the signals the robot find on the path to target pose:
-    - for 1 test image (use ``picture_prediction_yolo.p``). 
+    - for 1 test image (use ``picture_prediction_yolo.py``). 
     - for video images from robot camera when moving to target (use ``rt_prediction_yolo.py``)
 - **Software** test in Gazebo: Use the ``rt_prediction_yolo.py`` after the navigation node is launched.
 
