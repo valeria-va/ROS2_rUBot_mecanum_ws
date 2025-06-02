@@ -16,6 +16,8 @@ For this project we have created a new package "my_robot_ai_identification" wher
 The needed Installation for YOLO identification is only to install "ultralytics" on the ROS2 Humble environment. Open a terminal and type:
 ````shell
 pip install ultralytics
+pip3 uninstall numpy
+pip3 install "numpy<2.0"
 ````
 
 ## **2. Robot Navigation**
@@ -47,7 +49,7 @@ To proceed with the signal identification we first bringup the robot and navigat
 - Navigate using the Map:
     - In simulation:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py
+        ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
@@ -164,4 +166,12 @@ results[0].show()  # Display results
     pip3 uninstall numpy
     pip3 install "numpy<2.0"
     ````
-    
+
+    - Run The real-time prediction:
+        - In Software
+        ````shell
+        ros2 run my_robot_ai_identification rt_prediction_yolo_exec
+        ````
+        > You have to change the model path to '/home/user/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt
+
+    - To see the image with prediction on RVIZ2, select a new Image message on topic /inference_result

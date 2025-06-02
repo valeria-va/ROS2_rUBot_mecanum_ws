@@ -12,12 +12,12 @@ class YoloObjectDetection(Node):
         super().__init__('object_detection')
 
         # Load a pre-trained YOLOv8 object detection model
-        self.model = YOLO('/root/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt') 
+        self.model = YOLO('/home/user/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt') 
         self.yolov8_inference = Yolov8Inference()
 
         self.subscription = self.create_subscription(
             Image,
-            '/camera/color/image_raw',
+            '/limo/limo_camera/image_raw',
             self.camera_callback,
             10)
 

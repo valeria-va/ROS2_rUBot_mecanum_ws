@@ -32,7 +32,7 @@ def generate_launch_description():
         default=os.path.join(
             get_package_share_directory('my_robot_navigation2'),
             'map',
-            'my_map4m.yaml'))
+            'my_map2.yaml'))
 
     param_file_name = 'limo_sw.yaml'
     param_dir = LaunchConfiguration(
