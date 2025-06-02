@@ -50,11 +50,98 @@ The robot driver created for Arduino nano is located in the folder "rubot_driver
 
 Its main characteristics related to the previous program are:
 
-``- Pins PWM diferents``
+### **Pin Configuration for Arduino nanoESP32**
 
-``- lectura de encoder``
+Since the Arduino NanoESP32 has both Arduino and ESP32 chips the pins can be programmed using the Arduino configuration or by number of GPIO by ESP32 configuration.
+For every motor we will configure one PWM pin that will set the speed of the motor and two Digital Outputs that will set the direction at wich the motor is rotating,
+these signals will go from the Arduino NanoESP32 direcly to the TB6612fng (This is equal to the enable and the IN inputs of the LN298). Two inputs will come from the
+encoders directly to the arduino pins and will be used to determine the rotation speed of the motor.
 
-``- escriptura de PWM ``
+        MOTOR 1	MOTOR 2	MOTOR 3	MOTOR 4
+PWM	    A3/4	A7/14	D2/5	D7/10
+DIR1	A6/13	TX1/43	D4/7	D5/8
+DIR2	D8/17	RXO/44	D3/6	D6/9
+Enc1	D13/48	A1/2	D12/47	D10/21
+Enc2	A0/1	A2/3	D11/38	D9/18
+
+
+### **PWM Writting**
+
+For the Arduino NanoESP32 the configurations of the pins that output a PWM it's a little bit different from the Arduino Nano (No ESP32) ones since it provides the 
+possibility of choosing a channel, the frequency and the number of bits you wanna use to give the value of the PWM signal that the ESP32 generates. The functions
+for configutating the pins are the following:
+    ````shell
+  // Pin config as in Arduino
+  pinMode(LEFT_MOTOR_FORWARD, OUTPUT);
+  pinMode(LEFT_MOTOR_BACKWARD, OUTPUT);
+  pinMode(RIGHT_MOTOR_FORWARD, OUTPUT);
+  pinMode(RIGHT_MOTOR_BACKWARD, OUTPUT);
+
+  digitalWrite(LEFT_MOTOR_FORWARD, LOW);
+  digitalWrite(LEFT_MOTOR_BACKWARD, LOW);
+  digitalWrite(RIGHT_MOTOR_FORWARD, LOW);
+  digitalWrite(RIGHT_MOTOR_BACKWARD, LOW);
+
+  // Channel 0 for Motor 1 left
+  ledcSetup(0, 5000, 8); // canal 0, 1kHz, 8 bits
+  ledcAttachPin(LEFT_MOTOR_ENABLE, 0); 
+
+  // Channel 1 for Motor 2 right
+  ledcSetup(1, 5000, 8); 
+  ledcAttachPin(RIGHT_MOTOR_ENABLE, 1);  
+  }
+    ````
+And the functions for outputing the speeds depending on the direction are:
+    ````shell
+    if (i == LEFT) { 
+        if      (reverse == 0) { 
+            ledcWrite(0, spd); 
+            digitalWrite(LEFT_MOTOR_FORWARD, HIGH); 
+            digitalWrite(LEFT_MOTOR_BACKWARD, LOW); 
+        }
+        else if (reverse == 1) { 
+            ledcWrite(0, spd); 
+            digitalWrite(LEFT_MOTOR_FORWARD, LOW); 
+            digitalWrite(LEFT_MOTOR_BACKWARD, HIGH); 
+        }
+    }
+    else /*if (i == RIGHT) //no need for condition*/ {
+        if      (reverse == 0) { 
+            ledcWrite(1, spd); 
+            digitalWrite(RIGHT_MOTOR_FORWARD, HIGH); 
+            digitalWrite(RIGHT_MOTOR_BACKWARD, LOW); 
+        }
+        else if (reverse == 1) { 
+            ledcWrite(1, spd); 
+            digitalWrite(RIGHT_MOTOR_FORWARD, LOW); 
+            digitalWrite(RIGHT_MOTOR_BACKWARD, HIGH); 
+        }
+    }
+    ````
+
+### **Encoder Reading**
+
+Since we are using an ESP32 chip the programming of the interrupts for detecting the signals at the encoder pins is different from the Arduino Nano (without ESP32), due
+the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7 so the functions are different, in the encoder_driver.ino we set:
+
+    ````shell
+    const int leftPinA  = 47; // Left Encoder of motorA/1
+    const int leftPinB  = 21; // Left Encoder of motorB/2
+    const int rightPinA = 38; // Right Encoder of motorA/1
+    const int rightPinB = 18; // Right Encoder of motorB/2
+
+    // Rutina de interrupción para canal A izquierdo
+    void IRAM_ATTR handleLeftA() {
+        bool b = digitalRead(leftPinB);
+        left_enc_pos += b ? 1 : -1;
+    }
+
+    // Rutina de interrupción para canal A derecho
+    void IRAM_ATTR handleRightA() {
+        bool b = digitalRead(rightPinB);
+        right_enc_pos += b ? 1 : -1;
+    }
+    ````
 
 ``- etc.``
 
