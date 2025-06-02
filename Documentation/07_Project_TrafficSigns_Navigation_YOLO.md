@@ -27,6 +27,7 @@ To proceed with the signal identification we first bringup the robot and navigat
     ````shell
     ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
     ````
+    >Important: Include a traffic signal in the world. When using "square4m_sign.world" you can change the sign model on line 30 changing the traffic sign model name
     - In real robot LIMO the bringup is already made when turned on
 
 - Generate a map
@@ -81,7 +82,11 @@ In roboflow:
 ## **4. Signal prediction**
 
 In TheConstruct environment
-- Train the model on pre-trained model (i.e. yolov8n.pt) with the custom dataset obtained from Roboflow (i.e. signal.yaml)
+- Train the model on pre-trained model (i.e. yolov8n.pt) with the custom dataset obtained from Roboflow (i.e. signal.yaml). The suggested value for "epochs=100" to obtain a more accurate model. This program performs:
+    - Generates a model "yolo8n_custom.pt"
+    - Evaluates the model performances
+    - makes a prediction for a speciffic test image
+    - save the model to be used in the next section for real time prediction
 
 ````python
 # This script demonstrates how to train a YOLOv8n model using the Ultralytics YOLO library.
@@ -124,10 +129,12 @@ results = model("test/images/prohibido.jpg")  # Predict on an image from test se
 results[0].show()  # Display results
 ````
 - You can make a prediction with the signals the robot find on the path to target pose:
-    - for 1 test image (picture_prediction_yolo.py). 
-    - for video images from robot camera when moving to target (rt_prediction_yolo.py)
-- Test de rt detection:
-    - On the Limo robot container:
+    - for 1 test image (use ``picture_prediction_yolo.p``). 
+    - for video images from robot camera when moving to target (use ``rt_prediction_yolo.py``)
+- **Software** test in Gazebo: Use the ``rt_prediction_yolo.py`` after the navigation node is launched.
+
+- **Hardware** Test in real LIMO robot:
+    - You have to install on the Limo robot container:
     ````shell
     apt update
     apt install python3-pip
