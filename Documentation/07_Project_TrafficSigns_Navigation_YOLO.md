@@ -112,78 +112,87 @@ In TheConstruct environment
     - makes a prediction for a speciffic test image in the corresponding folder from zip file
     - save the model to be used in the next section for real time prediction
 
-````python
-# This script demonstrates how to train a YOLOv8n model using the Ultralytics YOLO library.
-from ultralytics import YOLO
+    ````python
+    # This script demonstrates how to train a YOLOv8n model using the Ultralytics YOLO library.
+    from ultralytics import YOLO
 
-# Load a pretrained YOLO8n model
-model = YOLO("yolov8n.pt")  # Load the YOLOv8n model
+    # Load a pretrained YOLO8n model
+    model = YOLO("yolov8n.pt")  # Load the YOLOv8n model
 
-# Train the model on the our dataset for 100 epochs
-train_results = model.train(
-    data="data.yaml",  # Path to dataset configuration file (Roboflow dataset)
-    epochs=20,  # Number of training epochs
-    imgsz=640,  # Image size for training
-    device="cpu",  # Device to run on (e.g., 'cpu', 0, [0,1,2,3])
-)
+    # Train the model on the our dataset for 100 epochs
+    train_results = model.train(
+        data="data.yaml",  # Path to dataset configuration file (Roboflow dataset)
+        epochs=20,  # Number of training epochs
+        imgsz=640,  # Image size for training
+        device="cpu",  # Device to run on (e.g., 'cpu', 0, [0,1,2,3])
+    )
 
-# Evaluate the model's performance on the validation set
-metrics = model.val()
+    # Evaluate the model's performance on the validation set
+    metrics = model.val()
 
-# Perform object detection on an image
-results = model("test/images/prohibido.jpg")  # Predict on an image from test set
-results[0].show()  # Display results
+    # Perform object detection on an image
+    results = model("test/images/prohibido.jpg")  # Predict on an image from test set
+    results[0].show()  # Display results
 
-# Save the model's weights
-model.save("yolov8n_custom.pt")  # Save the model with custom weights
-# Export the model to ONNX format for deployment
-path = model.export(format="onnx")  # Returns the path to the exported model
-````
+    # Save the model's weights
+    model.save("yolov8n_custom.pt")  # Save the model with custom weights
+    # Export the model to ONNX format for deployment
+    path = model.export(format="onnx")  # Returns the path to the exported model
+    ````
 - Make prediction using the saved custom model (i.e. yolov8n_custom.pt)
 
-````python
-# This script demonstrates how to train a YOLOv8n model using the Ultralytics YOLO library.
-from ultralytics import YOLO
+    ````python
+    # This script demonstrates how to train a YOLOv8n model using the Ultralytics YOLO library.
+    from ultralytics import YOLO
 
-# Load a pretrained YOLO8n model
-model = YOLO("yolov8n_custom.pt")  # Load the YOLOv8n model
+    # Load a pretrained YOLO8n model
+    model = YOLO("yolov8n_custom.pt")  # Load the YOLOv8n model
 
-# Perform object detection on an image
-results = model("test/images/prohibido.jpg")  # Predict on an image from test set
-results[0].show()  # Display results
-````
-- You can make a prediction with the signals the robot find on the path to target pose:
+    # Perform object detection on an image
+    results = model("test/images/prohibido.jpg")  # Predict on an image from test set
+    results[0].show()  # Display results
+    ````
+- You can make a prediction of the signal that the robot find on its path to target pose:
     - for 1 test image (use ``picture_prediction_yolo.py``). 
     - for video images from robot camera when moving to target (use ``rt_prediction_yolo.py``)
-- **Software** test in Gazebo: Use the ``rt_prediction_yolo.py`` after the navigation node is launched.
-- To see the image with prediction on RVIZ2, select a new Image message on topic /inference_result
-![](./Images/07_Yolo/11_prediction_sw.png)
-![](./Images/07_Yolo/11_prediction_sw2.png)
-
-- **Hardware** Test in real LIMO robot:
-    - You have to install on the Limo robot container:
-    ````shell
-    apt update
-    apt install python3-pip
-    pip install ultralytics
-    apt install git
-    git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
-    source /opt/ros/humble/setup.bash
-    apt install python3-colcon-common-extensions
-    apt install build-essential
-    colcon build
-    source install/setup.bash
-    ros2 run my_robot_ai_identification rt_prediction_yolo_exec
-    ````
-    - cal resoldre incompatibilitats:
-    ````shell
-    pip3 uninstall numpy
-    pip3 install "numpy<2.0"
-    ````
-
-    - Run The real-time prediction:
-        - In Software
+- **Software** test in Gazebo: 
+    - Use the ``rt_prediction_yolo.py`` after the navigation node is launched.
         ````shell
         ros2 run my_robot_ai_identification rt_prediction_yolo_exec
         ````
         > You have to change the model path to '/home/user/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt
+
+    - To see the image with prediction on RVIZ2, select a new Image message on topic /inference_result
+    ![](./Images/07_Yolo/11_prediction_sw.png)
+    ![](./Images/07_Yolo/11_prediction_sw2.png)
+
+- **Hardware** Test in real LIMO robot:
+    - You have to install on the Limo robot container:
+        ````shell
+        apt update
+        apt install python3-pip
+        pip install ultralytics
+        # needed numpy version compatible
+        pip3 uninstall numpy
+        pip3 install "numpy<2.0"
+        #
+        apt install git
+        git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+        source /opt/ros/humble/setup.bash
+        apt install python3-colcon-common-extensions
+        apt install build-essential
+        colcon build
+        source install/setup.bash
+        ros2 run my_robot_ai_identification rt_prediction_yolo_exec
+        ````
+    
+    - Run The real-time prediction:
+        ````shell
+        ros2 run my_robot_ai_identification rt_prediction_yolo_exec
+        ````
+        > You have to change the model path to '/root/ROS2_rUBot_mecanum_ws/src/AI_Projects/my_robot_ai_identification/models/yolov8n_custom.pt
+
+## **5. Robot actuation after prediction**
+
+In TheConstruct environment:
+- Once the traffic signal is identified, the robot has to actuate according to the detected traffic signal when its position is close (i.e. 1m) to the signal.
