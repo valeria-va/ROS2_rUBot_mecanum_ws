@@ -53,16 +53,18 @@ Its main characteristics related to the previous program are:
 ### **Pin Configuration for Arduino nanoESP32**
 
 Since the Arduino NanoESP32 has both Arduino and ESP32 chips the pins can be programmed using the Arduino configuration or by number of GPIO by ESP32 configuration.
+So, before compiling the code we need to set in **Tools -> Ping Numbering -> By GPIO Number(legacy)** to set the correct pin configuration.
 For every motor we will configure one PWM pin that will set the speed of the motor and two Digital Outputs that will set the direction at wich the motor is rotating,
 these signals will go from the Arduino NanoESP32 direcly to the TB6612fng (This is equal to the enable and the IN inputs of the LN298). Two inputs will come from the
 encoders directly to the arduino pins and will be used to determine the rotation speed of the motor.
 
-        MOTOR 1	MOTOR 2	MOTOR 3	MOTOR 4
-PWM	    A3/4	A7/14	D2/5	D7/10
-DIR1	A6/13	TX1/43	D4/7	D5/8
-DIR2	D8/17	RXO/44	D3/6	D6/9
-Enc1	D13/48	A1/2	D12/47	D10/21
-Enc2	A0/1	A2/3	D11/38	D9/18
+|          | **MOTOR 1** | **MOTOR 2** | **MOTOR 3** | **MOTOR 4** |
+|:--------:|:-----------:|:-----------:|:-----------:|:-----------:|
+| **PWM**  |     A3/4    |    A7/14    |     D2/5    |    D7/10    |
+| **DIR1** |    A6/13    |    TX1/43   |     D4/7    |     D5/8    |
+| **DIR2** |    D8/17    |    RXO/44   |     D3/6    |     D6/9    |
+| **Enc1** |    D13/48   |     A1/2    |    D12/47   |    D10/21   |
+| **Enc2** |     A0/1    |     A2/3    |    D11/38   |    D9/18    |
 
 
 ### **PWM Writting**
@@ -70,7 +72,8 @@ Enc2	A0/1	A2/3	D11/38	D9/18
 For the Arduino NanoESP32 the configurations of the pins that output a PWM it's a little bit different from the Arduino Nano (No ESP32) ones since it provides the 
 possibility of choosing a channel, the frequency and the number of bits you wanna use to give the value of the PWM signal that the ESP32 generates. The functions
 for configutating the pins are the following:
-    ````shell
+
+````c++
   // Pin config as in Arduino
   pinMode(LEFT_MOTOR_FORWARD, OUTPUT);
   pinMode(LEFT_MOTOR_BACKWARD, OUTPUT);
@@ -90,9 +93,11 @@ for configutating the pins are the following:
   ledcSetup(1, 5000, 8); 
   ledcAttachPin(RIGHT_MOTOR_ENABLE, 1);  
   }
-    ````
+````
+
 And the functions for outputing the speeds depending on the direction are:
-    ````shell
+
+````c++
     if (i == LEFT) { 
         if      (reverse == 0) { 
             ledcWrite(0, spd); 
@@ -117,33 +122,78 @@ And the functions for outputing the speeds depending on the direction are:
             digitalWrite(RIGHT_MOTOR_BACKWARD, HIGH); 
         }
     }
-    ````
+````
 
 ### **Encoder Reading**
 
 Since we are using an ESP32 chip the programming of the interrupts for detecting the signals at the encoder pins is different from the Arduino Nano (without ESP32), due
 the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7 so the functions are different, in the encoder_driver.ino we set:
 
-    ````shell
+````c++
     const int leftPinA  = 47; // Left Encoder of motorA/1
     const int leftPinB  = 21; // Left Encoder of motorB/2
     const int rightPinA = 38; // Right Encoder of motorA/1
     const int rightPinB = 18; // Right Encoder of motorB/2
 
-    // Rutina de interrupción para canal A izquierdo
+    // Pragma for Interruption of the left Motor 1
     void IRAM_ATTR handleLeftA() {
         bool b = digitalRead(leftPinB);
         left_enc_pos += b ? 1 : -1;
     }
 
-    // Rutina de interrupción para canal A derecho
+    // Pragma for Interruption of the right Motor 2
     void IRAM_ATTR handleRightA() {
         bool b = digitalRead(rightPinB);
         right_enc_pos += b ? 1 : -1;
     }
-    ````
+````
+### **Main Program Key Variables and modifications**
+From the main program ROSArduinoBridgeESP32.ino we first changed and added the modules for the encoder and TB6612FNG configurations. Nextly some important parameters are defined:
+````c++
+    /* Run the PID loop at 30 times per second */
+    #define PID_RATE           30     // Hz
+    /* Convert the rate into an interval */
+    const int PID_INTERVAL = 1000 / PID_RATE;
+    /* Stop the robot if it hasn't received a movement command
+    in this number of milliseconds */
+    #define AUTO_STOP_INTERVAL 2000
+    long lastMotorCommand = AUTO_STOP_INTERVAL;
+````
+The AUTO_STOP_INTERVAL will tell how much time the program will be executing the last command sent, if it was an o 255 255 the motors will be rotating at max speed in open loop for 2000 ms.
 
-``- etc.``
+- Another change that had to be made is the change of the variable index in the original code by argIndex since it seems that in ESP32 index enters in conflict with a function integrated of the system.
+
+- When compiling the program for ESP32 it had a problem with this line
+````c++
+    while ((str = strtok_r(p, ":", &p)) != '\0') {
+````
+So it had to be changed for this other equally equivalent one
+````c++
+    while ((str = strtok_r(p, ":", &p)) != nullptr) {
+````
+
+Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise signals at the serial that produced an error that changed the value of the variable cmd wich is the one where the values that come from the serial are stored and tell wich command has to be executed. This error caused the program to enter in a strange bucle executing the command ANALOG_READ continously so in the main loop a condition has been forced in order to skip when an invalid command has been recieved.
+
+````c++
+    if (commandReady) {
+    char cmdBackup = cmd;
+
+    if (cmd < 'a' || cmd > 'z') {
+        Serial.println("Comando corrupto o inválido. Ignorando.");
+        resetCommand();
+        commandReady = false;
+        return;
+    }
+
+    runCommand();  // It's only executed when cmd is valid
+    commandReady = false;
+    resetCommand();
+
+    cmd = cmdBackup;  // In case it was altered unexpectedly
+    commandReady = false;
+    }
+
+````
 
 ## **Robot control program in ROS2 environment**
 

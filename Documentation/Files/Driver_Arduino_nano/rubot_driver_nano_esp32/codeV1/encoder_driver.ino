@@ -76,10 +76,10 @@ volatile long left_enc_pos = 0L;
 volatile long right_enc_pos = 0L;
 
 // Define los pines de tus encoders (ajústalos según tu conexión)
-const int leftPinA  = D2; // GPIO para canal A izquierdo
-const int leftPinB  = A0; // GPIO para canal B izquierdo
-const int rightPinA = D3; // GPIO para canal A derecho
-const int rightPinB = A1; // GPIO para canal B derecho
+const int leftPinA  = 47; // Left Encoder of motorA/1
+const int leftPinB  = 21; // Left Encoder of motorB/2
+const int rightPinA = 38; // Right Encoder of motorA/1
+const int rightPinB = 18; // Right Encoder of motorB/2
 
 // Rutina de interrupción para canal A izquierdo
 void IRAM_ATTR handleLeftA() {

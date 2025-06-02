@@ -111,7 +111,7 @@ int runCommand() {
   arg2 = atoi(argv2);
 
   if (!(cmd >= 'a' && cmd <= 'z')) {
-    Serial.println(" Comando inválido detectado en runCommand, cancelando.");
+    Serial.println("Invalid command");
     return 0;
   }
 
@@ -120,10 +120,8 @@ int runCommand() {
     Serial.println(BAUDRATE);
     break;
   case ANALOG_READ:
-    Serial.print(">>> Entrando en ANALOG_READ con arg1 = ");
-    Serial.println(arg1);
     if (arg1 < 0 || arg1 >= 40) {
-      Serial.println("analogRead: arg1 fuera de rango válido. Cancelando.");
+      Serial.println("Not on the desired range.Cancelling.");
       break;
     }
     Serial.println(analogRead(arg1));
@@ -328,11 +326,11 @@ if (commandReady) {
     return;
   }
 
-  runCommand();  // Se ejecuta solo si cmd es válido
+  runCommand();  // It's only executed when cmd is valid
   commandReady = false;
   resetCommand();
 
-  cmd = cmdBackup;  // por si fue alterado accidentalmente
+  cmd = cmdBackup;  // In case it was altered unexpectedly
   commandReady = false;
 }
 
