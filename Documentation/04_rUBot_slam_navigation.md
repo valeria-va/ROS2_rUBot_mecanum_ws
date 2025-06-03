@@ -168,21 +168,23 @@ To navigate programmatically using Simple Commander API, you have to proceed wit
         ````
         - For rUBot or LIMO robot
         ````shell
-        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True
         ````
-        >Change the URDF file for each robot
+        > For simulation add use_sim_time:=True (by deffauld is False)
+        
+        > To change the URDF file add urdf_path:=$(ros2 pkg prefix my_robot_description)/share/my_robot_description/urdf/rubot/rubot_mecanum.urdf
     - In the case of a real robot, the bringup is already made when turned on
 - Start the navigation2.launch.py with rviz to see the evolution of robot navigation
     - In the case of Virtual environment:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=True map:=$(find my_robot_navigation2/map/my_map.yaml)
+        ros2 launch my_robot_navigation2 navigation2_limo.launch.py use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml
         ````
         >We use "waffle.yaml" file in "param" folder 
         - In the case of LIMO real robot:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=$(find my_robot_navigation2/map/my_map.yaml)
+        ros2 launch my_robot_navigation2 navigation2_limo.launch.py  use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml params_file:=$(ros2 pkg prefix my_robot_navigation2)/share/my_robot_navigation2/param/Limo_real.yaml
         ````
-        >We use "LIMO_real.yaml" file in "param" folder 
+        >We use "LIMO_real.yaml" file in "param" folder. You can see the different sintaxis to call the parameter
 - Launch the created python file to define the Initial point and the targets waypoints
     ````shell
     ros2 run my_robot_nav_control nav_target0_exec

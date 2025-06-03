@@ -26,13 +26,13 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    use_sim_time = LaunchConfiguration('use_sim_time', default='True')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='False')
     map_dir = LaunchConfiguration(
         'map',
         default=os.path.join(
             get_package_share_directory('my_robot_navigation2'),
             'map',
-            'my_map2.yaml'))
+            'my_map.yaml'))
 
     param_file_name = 'limo_sw.yaml'
     param_dir = LaunchConfiguration(
