@@ -64,20 +64,6 @@ colcon build
 ````
 - Open a new terminal to ensure the .bashrc is read again
 
-b) For **real robot HW**:
-- Using a PC connected with robot within ssh
-  - Attach a new VScode window on the Limo container
-    ````shell
-    source /limo_entrypoint-v3.sh
-    ros2 topic list
-    ````
-- Using the RRL service
-  - Install the robot on your account
-  - Connect to the robot
-    ````shell
-    ros2 topic list
-    ````
-
 ## **2. Setup the robot project for real control**
 
 Here we will review the Computer onboard used for each robot and the designed setup process.
@@ -92,6 +78,22 @@ The UB custom rUBot mecanum custom made robot is based on:
 
 When the real robot is plugged on, the docker-compose.yaml service is executed and the rUBot is ready to be controlled within the TheConstruct environment.
 
+- Using a PC connected to the same network 
+  - connect with robot within ssh using VScode
+  - review the running containers
+  - Attach a new VScode window on the Limo container
+  - to see the ros topics type
+    ````shell
+    source /limo_entrypoint-v3.sh
+    ros2 topic list
+    ````
+- Using the TheConstruct RRL service
+  - Install the robot on your account (this is already done for you)
+  - Connect to the robot and type in a new terminal
+    ````shell
+    ros2 topic list
+    ````
+
 ### **2.2. Setup the LIMO robot**
 
 The commercial LIMO robot is based on:
@@ -99,6 +101,8 @@ The commercial LIMO robot is based on:
 - Custom Dockerfile and docker-compose 
 
 When the commercial LIMO robot is plugged on, the docker-compose-v3.yaml service is executed and the LIMO robot is ready to be controlled within the TheConstruct environment.
+
+The same could be done to see the ros topics.
 
 ## **3. Update and syncronize the repository project**
 
@@ -117,15 +121,16 @@ The objective is to update the changes you have made, when working in ROS enviro
   ````shell
   git add .
   git commit -m "Message"
-  git push
   ````
 - When you will Push them, the first time you will be asked to link the repository to your github account:
 - Open a terminal in and type the first time:
   ```shell
   git config --global user.email "manel.puig@ub.edu"
   git config --global user.name "manelpuig"
+  git commit -m "Message"
+  git push
   ```
-- for succesive times, you only need to select changes, Commit a message and Push
+  > change the email and username
 - You will have to specify the Username and Password (Personal Access Token you have generated)
 
 To obtain the **PAT** in github follow the instructions:

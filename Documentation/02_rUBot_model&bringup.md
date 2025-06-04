@@ -567,7 +567,8 @@ When you are using the virtual environment to simulate the robot behavior you ha
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
-- If you want to change all the arguments defined by default:
+>Here you use a default argument values. Review thes values and decide if you need to change them
+- If you want to change the arguments defined by default:
 ````shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
     use_sim_time:=True \
@@ -576,7 +577,8 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
     yaw0:=0.0 \
     urdf_path:=$(ros2 pkg prefix my_robot_description)/share/my_robot_description/urdf/rubot/rubot_mecanum.urdf
 ````
-- Launch the teleop-twist-keyboard:
+>Here I show you some different argument values. Write the ones you wish for your project.
+- In a new terminal, launch the teleop-twist-keyboard:
 ```shell
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```

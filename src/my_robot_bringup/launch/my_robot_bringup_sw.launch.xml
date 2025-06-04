@@ -5,11 +5,14 @@
     <arg name="y0" default="-1.5" description="Initial Y position of the robot" />
     <arg name="yaw0" default="1.57" description="Initial Yaw orientation of the robot (radians)" />
     <arg name="urdf_path"
-         default="$(find-pkg-share my_robot_description)/urdf/limo/rubot_limo.urdf"
-         description="Path to the robot's URDF file" />
+          default="$(find-pkg-share my_robot_description)/urdf/limo/rubot_limo.urdf"
+          description="Path to the robot's URDF file" />
+    <arg name="world_file"
+          default="$(find-pkg-share my_robot_bringup)/worlds/square4m_sign.world"
+          description="Path to the Gazebo world file to load" />
 
     <let name="rviz_config_path"
-         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
+          value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
 
     <node pkg="joint_state_publisher" exec="joint_state_publisher">
         <param name="use_sim_time" value="$(var use_sim_time)" />
@@ -17,16 +20,16 @@
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
         <param name="robot_description"
-               value="$(command 'xacro $(var urdf_path) use_sim_time:=$(var use_sim_time)')" />
+                value="$(command 'xacro $(var urdf_path) use_sim_time:=$(var use_sim_time)')" />
         <param name="use_sim_time" value="$(var use_sim_time)" />
     </node>
 
     <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
-        <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square4m_sign.world" />
+        <arg name="world" value="$(var world_file)" />
         <arg name="use_sim_time" value="$(var use_sim_time)" />
     </include>
 
     <node pkg="gazebo_ros" exec="spawn_entity.py"
           args="-topic robot_description -entity my_robot -x $(var x0) -y $(var y0) -Y $(var yaw0)" />
 
-    </launch>
+</launch>
