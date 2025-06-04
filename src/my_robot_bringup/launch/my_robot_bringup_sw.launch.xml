@@ -8,7 +8,7 @@
           default="$(find-pkg-share my_robot_description)/urdf/limo/rubot_limo.urdf"
           description="Path to the robot's URDF file" />
     <arg name="world_file"
-          default="$(find-pkg-share my_robot_bringup)/worlds/square4m_sign.world"
+          default="$(find-pkg-share my_robot_bringup)/worlds/square2.world"
           description="Path to the Gazebo world file to load" />
 
     <let name="rviz_config_path"
