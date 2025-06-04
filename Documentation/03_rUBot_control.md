@@ -101,8 +101,8 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
     x0:=1.0 \
     y0:=-1.0 \
     yaw0:=0.0 \
-    urdf_path:=$(ros2 pkg prefix my_robot_description)/share/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
-    world_file:=$(find-pkg-share my_robot_bringup)/worlds/el_meu_nou_world.world
+    urdf_path:=src/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
+    world_file:=src/my_robot_bringup/worlds/square4m_sign.world
 ```
 ![](./Images/03_Control/06_bringup_sw.png)
 

@@ -7,6 +7,9 @@
     <arg name="urdf_path"
          default="$(find-pkg-share my_robot_description)/urdf/limo/rubot_limo.urdf"
          description="Path to the robot's URDF file" />
+    <arg name="world_file"
+          default="$(find-pkg-share my_robot_bringup)/worlds/square2.world"
+          description="Path to the Gazebo world file to load" />
 
     <let name="rviz_config_path"
          value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
@@ -22,7 +25,7 @@
     </node>
 
     <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
-        <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square4m_sign.world" />
+        <arg name="world" value="$(var world_file)" />
         <arg name="use_sim_time" value="$(var use_sim_time)" />
     </include>
 

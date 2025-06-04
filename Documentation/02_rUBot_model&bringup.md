@@ -575,10 +575,13 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
     x0:=1.0 \
     y0:=-1.0 \
     yaw0:=0.0 \
-    urdf_path:=$(ros2 pkg prefix my_robot_description)/share/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
-    world_file:=$(ros2 pkg prefix my_robot_bringup)/share/my_robot_bringup/worlds/square2_sign.world
+    urdf_path:=src/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
+    world_file:=$(ros2 pkg prefix my_robot_bringup)/share/my_robot_bringup/worlds/square4m_sign.world
 ````
 >Here I show you some different argument values. Write the ones you wish for your project.
+
+>You can see the different syntaxis you can use
+
 - In a new terminal, launch the teleop-twist-keyboard:
 ```shell
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
