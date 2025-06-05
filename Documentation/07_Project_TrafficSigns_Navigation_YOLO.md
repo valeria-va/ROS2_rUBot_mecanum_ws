@@ -27,7 +27,7 @@ To proceed with the signal identification we first bringup the robot and navigat
 - Bringup the robot
     - In simulation:
     ````shell
-    ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+    ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
     ````
     >Important: Include a traffic signal in the world. When using "square4m_sign.world" you can change the sign model on line 30 changing the traffic sign model name
     - In real robot LIMO the bringup is already made when turned on
@@ -49,7 +49,7 @@ To proceed with the signal identification we first bringup the robot and navigat
 - Navigate using the Map:
     - In simulation:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True map:=map_square4m_sign.yaml param:=limo_sw.yaml
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
 
@@ -60,7 +60,7 @@ To proceed with the signal identification we first bringup the robot and navigat
             - base_link: as the ``robot_base_frame``
         - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
         ````shell
-        ros2 launch my_robot_navigation2 navigation2.launch.py use_sim_time:=False map:=src/Navigation_Projects/my_robot_navigation2/map/my_map_casa.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False map:=map_square4m_sign.yaml param:=limo_real.yaml
         ````
 
 ## **3. Model Training**

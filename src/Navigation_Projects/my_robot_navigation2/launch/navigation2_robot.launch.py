@@ -43,9 +43,9 @@ def generate_launch_description():
         description='Use simulation (Gazebo) clock if true')
 
     # Assignar les configuracions de llançament des dels arguments declarats
-    use_sim_time = LaunchConfiguration('use_sim_time')
     map_file_name = LaunchConfiguration('map')
     params_file_name = LaunchConfiguration('params')
+    use_sim_time = LaunchConfiguration('use_sim_time')
 
     # Construir les rutes completes dels fitxers
     # Utilitzem PathJoinSubstitution per construir la ruta de manera més robusta
@@ -76,9 +76,9 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([nav2_launch_file_dir, '/bringup_launch.py']),
             launch_arguments={
-                'map': map_path,             # Passem la ruta completa construïda
+                'map': map_path,             # Passem la ruta completa construïda a l'argument map de bringup_launch.py
                 'use_sim_time': use_sim_time,
-                'params_file': param_path    # Passem la ruta completa construïda
+                'params_file': param_path    # Passem la ruta completa construïda a l'argumentparams_file de bringup_launch.py
             }.items(),
         ),
 
