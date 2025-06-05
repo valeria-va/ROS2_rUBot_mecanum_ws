@@ -60,9 +60,9 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         ````
         - rUBot or LIMO robot
         ````shell
-        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
         ````
-        >Change the URDF file for each robot
+        >Change the custom_world with the world name you have created
     - In the case of a real robot, the bringup is already made when turned on
 - move your robot with:
     ````shell

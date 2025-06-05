@@ -1,4 +1,4 @@
-image: my_map4m.pgm
+image: map_square4m_sign.pgm
 mode: trinary
 resolution: 0.05
 origin: [-0.8, -1.85, 0]

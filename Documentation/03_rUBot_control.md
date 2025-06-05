@@ -127,7 +127,7 @@ A first simple navigation program is created to move the robot according to a sp
     - In the launch file with the parameter values
 - Compile again and execute:
 ```
-ros2 launch my_robot_control my_robot_control.launch.xml
+ros2 launch my_robot_control my_robot_control.launch.xml td:=10.0
 ```
 **Real robot**
 
@@ -166,7 +166,7 @@ Let's verify first this behaviour in virtual environment
 We have to launch the "my_robot_selfcontrol.launch.xml" file in the "my_robot_control" package.
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
-ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml time_to_stop:=10.0
 ```
 
 >- Verify in rviz if you have to change the fixed frame to "odom" frame
@@ -185,7 +185,7 @@ Design the code using the Holonomic robot performances, and upload:
 
 We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
 ```shell
-ros2 launch my_robot_control my_robot_selfcontrol.launch.xml time_to_stop:=10
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml time_to_stop:=10.0
 ```
 >The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
@@ -230,33 +230,33 @@ The algorith is based on laser ranges test and depends on the LIDAR type:
 We have to launch the "my_robot_wallfollower.launch.xml" file in the "my_robot_control" package.
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
-ros2 launch my_robot_control my_robot_wallfollower.launch.xml time_to_stop:=10
+ros2 launch my_robot_control my_robot_wallfollower.launch.xml time_to_stop:=50.0
 ```
 >- You can test the behaviour when tunning the parameters defined
 
-**Activity: rUBot self-control**
+**Activity: rUBot wall-follower**
 
 The objective of this activity is to modify the code to move the robot in Holonomic way, for exemple:
 -  When the minimum distance is in the right side move the robot over the left side
 
 Design the code using the Holonomic robot performances, and upload:
-- the file "my_robot_selfcontrol_holonomic.py"
+- the file "my_robot_wallfollower_holonomic.py"
 - a video of the current behaviour in your designed world
 
 **REAL robot**
 
 We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
 ```shell
-ros2 launch my_robot_control my_robot_wallfollower.launch.xml
+ros2 launch my_robot_control my_robot_wallfollower.launch.xml time_to_stop:=50.0
 ```
 >The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
-**Lab Activity: rUBot self-control**
+**Lab Activity: rUBot wall-follower**
 
 The objective of this lab session is:
 - take into account the number of laser beams of your Lidar in the python code
-- verify the designed holonomic self-control node you have created for virtual environment in the previous activity.
+- verify the designed holonomic wall-follower node you have created for virtual environment in the previous activity.
 
 Upload the:
-- "my_robot_selfcontrol_holonomic.launch.xml" and "my_robot_selfcontrol_holonomic.py" files
+- "my_robot_wallfollower_holonomic.launch.xml" and "my_robot_wallfollower_holonomic.py" files
 - Video of the execution in REAL environment
