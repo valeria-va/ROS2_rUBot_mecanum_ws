@@ -96,7 +96,7 @@ A first simple control program is created to move the robot according to a speci
 
 - We first bringup our robot (rubot/rubot_mecanum.urdf) in a speciffic world on a desired POSE:
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=-0.5 y0:=0.5 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
 ```
 ![](./Images/03_Control/06_bringup_sw.png)
 
@@ -165,7 +165,7 @@ Let's verify first this behaviour in virtual environment
 
 We have to launch the "my_robot_selfcontrol.launch.xml" file in the "my_robot_control" package.
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
 ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
 ```
 
@@ -185,7 +185,7 @@ Design the code using the Holonomic robot performances, and upload:
 
 We have to launch the same "my_robot_selfcontrol.launch.xml" file designed for Virtual environment.
 ```shell
-ros2 launch my_robot_control my_robot_selfcontrol.launch.xml
+ros2 launch my_robot_control my_robot_selfcontrol.launch.xml time_to_stop:=10
 ```
 >The robot is not working as expected because the number of laser beams is not 720 as in simulation!
 
@@ -229,8 +229,8 @@ The algorith is based on laser ranges test and depends on the LIDAR type:
 
 We have to launch the "my_robot_wallfollower.launch.xml" file in the "my_robot_control" package.
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
-ros2 launch my_robot_control my_robot_wallfollower.launch.xml
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
+ros2 launch my_robot_control my_robot_wallfollower.launch.xml time_to_stop:=10
 ```
 >- You can test the behaviour when tunning the parameters defined
 
