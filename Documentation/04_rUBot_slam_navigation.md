@@ -60,7 +60,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         ````
         - rUBot or LIMO robot
         ````shell
-        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
         ````
         >Change the custom_world with the world name you have created
     - In the case of a real robot, the bringup is already made when turned on
@@ -124,7 +124,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >Change the URDF file for each robot
         - Launch Navigation node:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_limo_sw.launch.py use_sim_time:=True map:=src/Navigation_Projects/my_robot_navigation2/map/my_map4m.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True map:=map_square4m_sign.yaml
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:

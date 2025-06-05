@@ -44,8 +44,8 @@ def generate_launch_description():
 
     # Assignar les configuracions de llançament des dels arguments declarats
     use_sim_time = LaunchConfiguration('use_sim_time')
-    map_file_name = LaunchConfiguration('map_file_name')
-    params_file_name = LaunchConfiguration('params_file_name')
+    map_file_name = LaunchConfiguration('map')
+    params_file_name = LaunchConfiguration('params')
 
     # Construir les rutes completes dels fitxers
     # Utilitzem PathJoinSubstitution per construir la ruta de manera més robusta
