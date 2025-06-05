@@ -570,17 +570,9 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 >Here you use a default argument values. Review thes values and decide if you need to change them
 - If you want to change the arguments defined by default:
 ````shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
-    use_sim_time:=True \
-    x0:=1.0 \
-    y0:=-1.0 \
-    yaw0:=0.0 \
-    urdf_path:=src/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
-    world_file:=$(ros2 pkg prefix my_robot_bringup)/share/my_robot_bringup/worlds/square4m_sign.world
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-0.5 yaw0:=0.0 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
 ````
->Here I show you some different argument values. Write the ones you wish for your project.
-
->You can see the different syntaxis you can use
+>Here I show you some different argument values. Write the ones you wish for your project. If you not speciffy an argument the default value will be taken.
 
 - In a new terminal, launch the teleop-twist-keyboard:
 ```shell
