@@ -94,15 +94,9 @@ We will do it first in virtual environment and later with the real robot.
 
 A first simple control program is created to move the robot according to a speciffic Twist message.
 
-- We first bringup our robot (rubot_mecanum.urdf) in a speciffic world on a desired POSE:
+- We first bringup our robot (rubot/rubot_mecanum.urdf) in a speciffic world on a desired POSE:
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml \
-    use_sim_time:=True \
-    x0:=1.0 \
-    y0:=-1.0 \
-    yaw0:=0.0 \
-    urdf_path:=src/my_robot_description/urdf/rubot/rubot_mecanum.urdf \
-    world_file:=src/my_robot_bringup/worlds/square4m_sign.world
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=-0.5 y0:=0.5 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
 ```
 ![](./Images/03_Control/06_bringup_sw.png)
 
