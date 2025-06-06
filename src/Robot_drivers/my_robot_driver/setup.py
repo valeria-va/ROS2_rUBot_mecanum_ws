@@ -25,6 +25,8 @@ setup(
         'console_scripts': [
             'rubot_pi_driver_exec = my_robot_driver.rubot_pi_driver:main',
             'rubot_nano_driver_exec = my_robot_driver.rubot_nano_driver:main',
+            'rubot_nano_driver_diff_exec = my_robot_driver_diff.rubot_nano_driver:main',
+            'rubot_nano_driver_mecanum_exec = my_robot_driver_mecanum.rubot_nano_driver:main',
         ],
     },
 )

@@ -15,6 +15,8 @@ set(msg_files
   "msg/MotorVels.msg"
   "msg/MotorCommands.msg"
   "msg/EncoderVals.msg"
+  "msg/MecanumMotorVels.msg"
+  "msg/MecanumEncoderVals.msg"
 )
 
 # Generate messages

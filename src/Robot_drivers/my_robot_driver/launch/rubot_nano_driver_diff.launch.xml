@@ -7,7 +7,7 @@
     <arg name="loop_rate" default="30"/>
     <arg name="encoder_cpr" default="2550"/>
 
-    <node pkg="my_robot_driver" exec="rubot_nano_driver_exec" name="rubot_nano_driver" output="screen">
+    <node pkg="my_robot_driver" exec="rubot_nano_driver_diff_exec" name="rubot_nano_driver_diff" output="screen">
         <arg name="robot_name" value="$(var robot_name)"/>
         <arg name="serial_port" value="$(var serial_port)"/>
         <arg name="baud_rate" value="$(var baud_rate)"/>

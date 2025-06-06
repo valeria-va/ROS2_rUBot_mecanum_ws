@@ -6,8 +6,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='False'),
-        DeclareLaunchArgument('robot_name', default_value='fastbot'),
-        DeclareLaunchArgument('serial_port', default_value='/dev/arduino_nano'),
+        DeclareLaunchArgument('robot_name', default_value='rUBot_mecanum'),
+        DeclareLaunchArgument('serial_port', default_value='/dev/ttyACM0'),
         DeclareLaunchArgument('baud_rate', default_value='57600'),
         DeclareLaunchArgument('loop_rate', default_value='30'),
         DeclareLaunchArgument('encoder_cpr', default_value='2550'),
