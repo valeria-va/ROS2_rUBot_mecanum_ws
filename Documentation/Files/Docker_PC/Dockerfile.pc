@@ -17,6 +17,7 @@ RUN apt-get update \
     build-essential \
     python3-colcon-common-extensions \
     git \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Add the ROS environment to .bashrc for convenience

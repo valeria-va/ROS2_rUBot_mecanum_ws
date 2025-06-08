@@ -1,4 +1,4 @@
-name: rubot_humble
+name: pc_humble_container
 
 services:
   pc-control-station:
@@ -7,11 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile.pc
     # Nom que li donarem a la imatge resultant
-    image: rubot_pc_image
-    container_name: pc_control_station
-    
-    # La clau per a la connexió de xarxa. El contenidor comparteix
-    # la xarxa del PC, veient els robots directament.
+    image: pc_humble_image
+    container_name: pc_humble_container
+    privileged: true
     network_mode: host
     
     # Essencial per a la visualització gràfica (RViz2, etc.)
@@ -20,13 +18,15 @@ services:
       - DISPLAY=192.168.1.3:0.0
       # Assegura que l'entorn gràfic funcioni correctament
       - QT_X11_NO_MITSHM=1
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # <-- CORRECTE! Ara està a la secció d'entorn.
 
     # Muntem volums per a persistència de dades
     volumes:
+      - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
       # Opcional: Munta un workspace local per a desenvolupament
       # - ./pc_ws:/root/pc_ws
       # Molt útil: Munta una carpeta local per guardar i carregar mapes
       #- ./maps:/root/maps
-
+    entrypoint: /entrypoint.pc.sh
     # Mantenim el contenidor actiu per a poder llançar comandes
     command: sleep infinity

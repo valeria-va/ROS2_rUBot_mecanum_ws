@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     git \
+    iputils-ping \
     # Dependències del teu robot (llista mínima)
     libusb-1.0-0-dev \
     libeigen3-dev \
