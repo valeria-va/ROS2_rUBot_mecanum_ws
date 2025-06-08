@@ -1,0 +1,32 @@
+# We use the explicit OSRF path for the ROS image to ensure it's found.
+FROM osrf/ros:humble-desktop-full
+
+# Fix for expired GPG key.
+# The base image has a correct sources.list, but the GPG key it points to is expired.
+# The most direct fix is to overwrite the existing key file with the new, valid one.
+# The conflicting key file is '/usr/share/keyrings/ros2-latest-archive-keyring.gpg'.
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros2-latest-archive-keyring.gpg
+
+# Now that the key is fixed, run apt-get update and install the required packages.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ros-humble-nav2-bringup \
+    ros-humble-cartographer-ros \
+    ros-humble-teleop-twist-keyboard \
+    build-essential \
+    python3-colcon-common-extensions \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add the ROS environment to .bashrc for convenience
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+
+# Copy and set permissions for our entrypoint script
+COPY entrypoint.pc.sh /entrypoint.pc.sh
+RUN chmod +x /entrypoint.pc.sh
+
+# Define the entrypoint
+ENTRYPOINT ["/entrypoint.pc.sh"]
+
+# By default, keep the container running with a terminal
+CMD ["bash"]

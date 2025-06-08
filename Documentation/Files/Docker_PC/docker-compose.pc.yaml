@@ -1,0 +1,32 @@
+name: rubot_humble
+
+services:
+  pc-control-station:
+    # Construeix la imatge utilitzant el Dockerfile.pc del directori actual
+    build:
+      context: .
+      dockerfile: Dockerfile.pc
+    # Nom que li donarem a la imatge resultant
+    image: rubot_pc_image
+    container_name: pc_control_station
+    
+    # La clau per a la connexió de xarxa. El contenidor comparteix
+    # la xarxa del PC, veient els robots directament.
+    network_mode: host
+    
+    # Essencial per a la visualització gràfica (RViz2, etc.)
+    environment:
+      # CANVIA 192.168.1.100 per la IP del TEU PC.
+      - DISPLAY=192.168.1.3:0.0
+      # Assegura que l'entorn gràfic funcioni correctament
+      - QT_X11_NO_MITSHM=1
+
+    # Muntem volums per a persistència de dades
+    volumes:
+      # Opcional: Munta un workspace local per a desenvolupament
+      # - ./pc_ws:/root/pc_ws
+      # Molt útil: Munta una carpeta local per guardar i carregar mapes
+      #- ./maps:/root/maps
+
+    # Mantenim el contenidor actiu per a poder llançar comandes
+    command: sleep infinity

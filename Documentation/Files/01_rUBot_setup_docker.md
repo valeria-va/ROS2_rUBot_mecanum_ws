@@ -34,16 +34,17 @@ For this robot we will use a computero onboard based on Raspberrypi4 where we wi
 #### **a) Install Raspberrypi Desktop**
 
 - Run Raspberry Pi Imager (https://www.raspberrypi.org/software/)
-  - select Device: Raspberrypi4
+  - select Device: Raspberrypi4 (or 5)
   - select OS: RaspberryPi OS (64Bits) to the SD card
   - Select the configurations:
-    - Name: rUBot_XX
+    - Name: rUBot01D
     - User: ubuntu
     - Pass: ubuntu1234
-    - LAN config: wifi you want to connect (i.e. rUBotics)
+    - LAN config: wifi you want to connect (i.e. Robotics_UB)
     - Regional settings: ES
     - Services: activate ssh
 - Insert the SD in a RBPi board and connect an ethernet cable to the router
+- Connect the RBPI Board to a display, with mouse and Keyboard
 - power the raspberrypi4 and login:
   - login: ubuntu
   - password: ubuntu1234
@@ -55,14 +56,14 @@ For this robot we will use a computero onboard based on Raspberrypi4 where we wi
   ````
 - If you want to change the hostname:
   ````shell
-  sudo hostnamectl set-hostname nou_hostname
+  sudo hostnamectl set-hostname new_hostname
   sudo reboot
   ````
 - If you want to configure a fixed IP:
     - "Edit connections"
     - Select the "Robotics_UB" wifi connection
     - In section "IPv4 settings" Select "Manual"
-    - Add IP address and choose the desired IP (192.168.0.61), Netmask (255.255.255.0), Gateway (192.168.0.1)
+    - Add IP address and choose the desired IP (192.168.1.110), Netmask (255.255.255.0), Gateway (192.168.1.1)
     - Add DNS server (8.8.8.8) for google DNS
     - Apply and reboot
 
@@ -79,7 +80,7 @@ For this robot we will use a computero onboard based on Raspberrypi4 where we wi
 
 #### **c) Using VScode remote explorer**
 
-You can install the Extension "Remote explorer" on VScode:
+You can install the Extension "Remote Development" on VScode:
 
 - Open VScode and connect remotelly to the Raspberrypi with ssh -X ubuntu@192.168.xxx.xxx
 - If you can not connect to the raspberrypi, perhaps you have to regenerate permissions (replace IP-raspberrypi by 192.168.xx.xx):
@@ -107,7 +108,7 @@ sudo usermod -aG docker $USER
 sudo reboot
 ````
 
-**Create a custom Docker image**
+#### **e) Create a custom Docker container with docker-compose**
 
 We first create a home/ubuntu/Desktop/Docker folder where we place:
 - ROS2_rUBot_mecanum_ws.zip
@@ -117,7 +118,7 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 
 >**Important**: make all files executable!
   ````shell
-  cd Docker
+  cd Desktop/Docker
   sudo chmod +x *
   ````
 
@@ -128,10 +129,15 @@ Follow the instructions:
 ````shell
 cd /home/ubuntu/Desktop/Docker
 docker build -t rubot_humble_image .
+or
+docker build -f Dockerfile3 -t rubot_humble_image .
 ````
+> You will take 4min aprox
 - Start the Container
 ````shell
 docker compose up -d
+or
+docker compose -f docker-compose3.yaml up -d
 ````
 - If you want to Stop the Container
 ````shell
@@ -152,6 +158,38 @@ To verify if the container is working type on terminal:
 ````shell
 docker exec -it rubot-humble-container /bin/bash
 ````
+
+The bringup of the robot is done automatically, but if you want to **work with the container using VScode**, proceed with:
+- Select "Remote Explorer" and "Dev Containers"
+- Right-click and attatch a new window to this container
+- In a new terminal, type:
+  ````shell
+  ./rubot_entrypoint.sh
+  ros2 node list
+  git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+  cd ROS2_rUBot_mecanum_ws
+  colcon build
+  ````
+- You will be ready to work within the container
+
+#### **f) Connect a PC to the rUBot**
+
+If we have a PC in the same network, we only need to:
+- Install Docker Desktop and run it
+- Have an X Server like VcXsrv running. Remember to start it with the "Disable access control" option checked.
+- Create folder with a custom Docker container (files in Documentation/Files/Docker_PC) with
+  - Dockerfile.pc
+  - entrypoint.pc.sh
+  - docker-compose.pc.yaml
+- Open this folder on VScode and type in a new terminal:
+  ````shell
+  docker compose -f docker-compose.pc.yaml up -d --build
+  ````
+- Attach the VScode window to the container
+- 
+
+
+
 ### **2.2. Setup the commercial LIMO robot**
 
 The LIMO robot has a Jetson Nano computer onboard with Ubuntu20 and ROS Noetic & Foxy installed.
