@@ -186,8 +186,18 @@ If we have a PC in the same network, we only need to:
   docker compose -f docker-compose.pc.yaml up -d --build
   ````
 - Attach the VScode window to the container
-- 
-
+- You need to ensure the network communication with:
+  - Allow "C:\Program Files\Docker\Docker\Docker Desktop.exe" to the windows firewall
+  -
+- To test the communication:
+  - In ROBOT: Open a terminal and run:
+    ````shell
+    ros2 run demo_nodes_cpp talker
+    ````
+  - In PC: Open a new terminal and run:
+    ````shell
+    ros2 run demo_nodes_cpp listener
+    ````
 
 
 ### **2.2. Setup the commercial LIMO robot**

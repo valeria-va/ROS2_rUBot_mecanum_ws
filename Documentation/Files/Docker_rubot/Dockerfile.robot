@@ -22,10 +22,12 @@ RUN apt-get update && apt-get install -y \
     ros-humble-image-publisher \
     ros-humble-image-transport \
     ros-humble-robot-state-publisher \
-    ros-humble-joint-state-publisher \ 
+    ros-humble-joint-state-publisher \
     ros-humble-tf2-ros \
     ros-humble-tf-transformations \
     ros-humble-usb-cam \
+    ros-humble-rmw-cyclonedds-cpp \
+    ros-humble-demo-nodes-cpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up the working directory for ROS workspace
@@ -49,10 +51,10 @@ RUN pip install pyserial
 #    echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
-COPY rubot_entrypoint3.sh /root/rubot_entrypoint3.sh
+COPY rubot_entrypoint.robot.sh /root/rubot_entrypoint.robot.sh
 RUN cd /root &&\
-    chown root:root /root/rubot_entrypoint3.sh &&\
-    chmod 755 /root/rubot_entrypoint3.sh
+    chown root:root /root/rubot_entrypoint.robot.sh &&\
+    chmod 755 /root/rubot_entrypoint.robot.sh
 
 # Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
 #RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
