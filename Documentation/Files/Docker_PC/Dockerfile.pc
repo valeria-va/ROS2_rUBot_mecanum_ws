@@ -10,6 +10,11 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
 # Now that the key is fixed, run apt-get update and install the required packages.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+    x11-apps \
+    libgl1-mesa-glx \
+    mesa-utils \
+    libqt5x11extras5 \
+    libxkbcommon-x11-0 \
     ros-humble-nav2-bringup \
     ros-humble-cartographer-ros \
     ros-humble-teleop-twist-keyboard \

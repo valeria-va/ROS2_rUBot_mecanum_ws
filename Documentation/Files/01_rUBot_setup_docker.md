@@ -172,23 +172,32 @@ The bringup of the robot is done automatically, but if you want to **work with t
   ````
 - You will be ready to work within the container
 
-#### **f) Connect a PC to the rUBot**
+#### **f) Connect a PC to the same rUBot network**
 
 If we have a PC in the same network, we only need to:
 - Install Docker Desktop and run it
-- Have an X Server like VcXsrv running. Remember to start it with the "Disable access control" option checked.
+- Have an X Server like VcXsrv running (https://sourceforge.net/projects/vcxsrv/). Remember to start it with the "Disable access control" option checked.
 - Create folder with a custom Docker container (files in Documentation/Files/Docker_PC) with
   - Dockerfile.pc
   - entrypoint.pc.sh
-  - docker-compose.pc.yaml
-- Open this folder on VScode and type in a new terminal:
-  ````shell
-  docker compose -f docker-compose.pc.yaml up -d --build
-  ````
+  - docker-compose.pcXlaunch.yaml
+  - docker-compose.pcWSL.yaml
+- You have 2 options to create the container:
+  - With graphical interface using Xlaunch
+    - Open this folder on VScode and type in a new Git Bash terminal:
+      ````shell
+      docker compose -f docker-compose.pcXlaunch.yaml up -d --build
+      ````
+      >Remember to change the IP of the PC in this network on docker-compose.pcXlaunch.yaml
+  - With graphical interface using WSL
+    - Open this folder on VScode and type in a new WSL terminal:
+      ````shell
+      UID=$(id -u) GID=$(id -g) docker compose -f docker-compose.pcWSL.yaml up -d --force-recreate
+      ````
 - Attach the VScode window to the container
 - You need to ensure the network communication with:
-  - Allow "C:\Program Files\Docker\Docker\Docker Desktop.exe" to the windows firewall
-  -
+  - Windows firewall: Allow "C:\Program Files\Docker\Docker\Docker Desktop.exe" to the windows firewall
+  - Router Port Forwarding
 - To test the communication:
   - In ROBOT: Open a terminal and run:
     ````shell

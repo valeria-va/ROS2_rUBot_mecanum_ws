@@ -1,0 +1,39 @@
+name: pc_humble_container
+
+services:
+  pc-control-station:
+    build:
+      context: .
+      dockerfile: Dockerfile.pc
+    image: pc_humble_image
+    container_name: pc_humble_container
+    privileged: true
+    # AFEGIT: Executa el contenidor amb el mateix usuari i grup que l'usuari del host.
+    # Això soluciona els problemes de permisos amb el socket de X11.
+    user: "${UID}:${GID}"
+
+    environment:
+      # Passem la configuració completa de l'entorn gràfic de WSLg
+      - DISPLAY
+      - WAYLAND_DISPLAY
+      - XDG_RUNTIME_DIR
+      - PULSE_SERVER
+      
+      # Mantenim aquestes variables útils
+      - QT_X11_NO_MITSHM=1
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    
+    volumes:
+      # Muntem els 'sockets' i directoris necessaris per a la comunicació amb WSLg
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /mnt/wslg:/mnt/wslg
+      
+      # Mantenim l'accés als dispositius del host.
+      - /dev:/dev
+      # Pots mantenir els teus altres volums sense canvis.
+      # - ./pc_ws:/root/pc_ws
+      # - ./maps:/root/maps
+
+    entrypoint: /entrypoint.pc.sh
+    command: sleep infinity
+  
