@@ -128,11 +128,11 @@ Follow the instructions:
 
 - Start the Container
 ````shell
-docker compose -f docker-compose.robot.yaml up -d
+docker compose -f docker-compose.robot.yaml up -d --build
 ````
 - If you want to Stop the Container
 ````shell
-docker compose -f docker-compose.robot.yaml up -d --build
+docker compose -f docker-compose.robot.yaml down 
 ````
 - Enable Docker to Start on Boot (only the first time)
 ````shell
