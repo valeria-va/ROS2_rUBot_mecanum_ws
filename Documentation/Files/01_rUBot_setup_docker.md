@@ -187,14 +187,14 @@ If we have a PC in the same network, we only need to:
       >Remember to change the IP of the PC in this network on docker-compose.pcXlaunch.yaml
   - With graphical interface using WSL
     - This is only usefull if you work inside your computer isolated without the possibility to communicate with other robots on the same network!
-    - Open this folder on VScode and type in a new WSL terminal:
+    - Open this folder on VScode and type in a new WSL terminal (type first wsl):
       ````shell
       UID=$(id -u) GID=$(id -g) docker compose -f docker-compose.pcWSL.yaml up -d --force-recreate
       ````
 - Attach the VScode window to the container
 - You need to ensure the network communication with:
-  - Windows firewall: Allow "C:\Program Files\Docker\Docker\Docker Desktop.exe" to the windows firewall
-  - Router Port Forwarding
+  - Windows Network status: WiFi properties to Network profile: "Private"
+  - ??
 - To test the communication:
   - In ROBOT: Open a terminal and run:
     ````shell

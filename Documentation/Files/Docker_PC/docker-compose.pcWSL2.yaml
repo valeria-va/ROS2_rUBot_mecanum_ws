@@ -1,0 +1,62 @@
+# =================================================================
+# =             Configuració Definitiva per a PC                  =
+# =      (Connexió a la xarxa del Robot + GUI amb Rviz2)          =
+# =================================================================
+#
+# REQUISITS PREVIS (Fer-los una sola vegada):
+# 1. Tenir el fitxer .wslconfig a C:\Users\ElTeuUsuari amb:
+#    [wsl2]
+#    networkingMode=mirrored
+#
+# 2. Tenir el fitxer .env en aquest mateix directori. Per crear-lo,
+#    executa a la terminal de WSL:
+#    echo -e "UID=$(id -u)\nGID=$(id -g)" > .env
+#    Això evita l'error "readonly variable".
+#
+# EXECUCIÓ (des d'una terminal de WSL):
+# docker compose -f docker-compose.pcWSL.yaml up -d --build
+
+name: pc_humble_container
+
+services:
+  pc-control-station:
+    build:
+      context: .
+      dockerfile: Dockerfile.pc
+    image: pc_humble_image
+    container_name: pc_humble_container
+    privileged: true
+    # ================= PART 1: CONNEXIÓ A LA XARXA =================
+    # Posa el contenidor a la xarxa del PC (192.168.1.x) gràcies
+    # a la configuració 'mirrored' de WSL2. Això és CRUCIAL.
+    network_mode: host
+
+    # ================= PART 2: PERMISOS PER A LA GUI =================
+    # Executa el contenidor amb el teu usuari per evitar problemes
+    # de permisos amb la interfície gràfica de WSLg.
+    # Llegeix els valors UID/GID del fitxer .env
+    user: "${UID}:${GID}"
+
+    # ================= PART 3: VARIABLES D'ENTORN =================
+    environment:
+      # --- Variables per a la GUI amb WSLg ---
+      - DISPLAY
+      - WAYLAND_DISPLAY
+      - XDG_RUNTIME_DIR
+      - PULSE_SERVER
+      - QT_X11_NO_MITSHM=1
+      
+      # --- Variables per a ROS2 ---
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+    # ================= PART 4: VOLUMS NECESSARIS =================
+    volumes:
+      # --- Volums per a la GUI amb WSLg ---
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /mnt/wslg:/mnt/wslg
+
+      # --- Volum per a l'accés a dispositius (càmeres, etc.) ---
+      - /dev:/dev
+
+    entrypoint: /usr/local/bin/entrypoint.pc.sh
+    command: sleep infinity
