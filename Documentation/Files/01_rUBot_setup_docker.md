@@ -125,23 +125,14 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
 Documentation is in: https://hub.docker.com/r/theconstructai/limo
 
 Follow the instructions:
-- Build the Image
-````shell
-cd /home/ubuntu/Desktop/Docker
-docker build -t rubot_humble_image .
-or
-docker build -f Dockerfile3 -t rubot_humble_image .
-````
-> You will take 4min aprox
+
 - Start the Container
 ````shell
-docker compose up -d
-or
-docker compose -f docker-compose3.yaml up -d
+docker compose -f docker-compose.robot.yaml up -d
 ````
 - If you want to Stop the Container
 ````shell
-docker compose down
+docker compose -f docker-compose.robot.yaml up -d --build
 ````
 - Enable Docker to Start on Boot (only the first time)
 ````shell
@@ -150,13 +141,13 @@ sudo systemctl enable docker
 - To check the running container and to check logs for troubleshooting:
 ````shell
 docker ps
-docker logs rubot-humble-container
+docker logs robot-humble-container
 ````
 - To modify the rubot_bringup.sh file: Simply edit rubot_bringup.launch.xml on your host machine. Changes will reflect in the container on the next restart.
 
 To verify if the container is working type on terminal:
 ````shell
-docker exec -it rubot-humble-container /bin/bash
+docker exec -it robot-humble-container /bin/bash
 ````
 
 The bringup of the robot is done automatically, but if you want to **work with the container using VScode**, proceed with:
@@ -164,13 +155,17 @@ The bringup of the robot is done automatically, but if you want to **work with t
 - Right-click and attatch a new window to this container
 - In a new terminal, type:
   ````shell
-  ./rubot_entrypoint.sh
+  ./entrypoint.robot.sh
   ros2 node list
   git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
   cd ROS2_rUBot_mecanum_ws
   colcon build
   ````
 - You will be ready to work within the container
+- In order to see a Plot:
+  ````shell
+  rqt -s rqt_plot /cmd_vel/linear/x /cmd_vel/linear/y
+  ````
 
 #### **f) Connect a PC to the same rUBot network**
 

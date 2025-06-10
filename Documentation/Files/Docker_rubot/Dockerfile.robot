@@ -3,7 +3,7 @@ FROM ros:humble-ros-base
 
 # Instal·la dependències essencials per construir i executar
 # Combinem les dues comandes apt-get en una per optimitzar les capes de la imatge
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     # Eines de construcció
     build-essential \
     cmake \
@@ -29,6 +29,16 @@ RUN apt-get update && apt-get install -y \
     ros-humble-usb-cam \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-demo-nodes-cpp \
+    # >>> AFEGIT: Eines gràfiques de ROS2 <<<
+    ros-humble-rviz2 \
+    ros-humble-rqt-graph \
+    ros-humble-rqt-plot \
+    # >>> AFEGIT: Dependències per a visualització remota (X11 Forwarding) <<<
+    x11-apps \
+    libgl1-mesa-glx \
+    mesa-utils \
+    libqt5x11extras5 \
+    libxkbcommon-x11-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up the working directory for ROS workspace
@@ -52,10 +62,10 @@ RUN pip install pyserial
 #    echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
-COPY rubot_entrypoint.robot.sh /root/rubot_entrypoint.robot.sh
+COPY entrypoint.robot.sh /root/entrypoint.robot.sh
 RUN cd /root &&\
-    chown root:root /root/rubot_entrypoint.robot.sh &&\
-    chmod 755 /root/rubot_entrypoint.robot.sh
+    chown root:root /root/entrypoint.robot.sh &&\
+    chmod 755 /root/entrypoint.robot.sh
 
 # Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
 #RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \

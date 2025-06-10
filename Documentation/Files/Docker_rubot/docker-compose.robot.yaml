@@ -1,7 +1,7 @@
-name: rubot_humble
+name: robot_humble_container
 
 services:
-  rubot-humble-container:
+  robot-humble-container:
     # Construeix la imatge utilitzant el Dockerfile.pc del directori actual
     build:
       context: .
@@ -10,9 +10,14 @@ services:
     container_name: robot-humble-container
     privileged: true
     network_mode: host # Si fas servir 'host', el port ja està obert
+    # Essencial per a la visualització gràfica (RViz2, etc.)
     environment:
+      # CANVIA 192.168.1.100 per la IP del TEU PC.
+      - DISPLAY=192.168.1.2:0.0
+      # Assegura que l'entorn gràfic funcioni correctament
+      - QT_X11_NO_MITSHM=1
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
     volumes:
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
-    entrypoint: /root/rubot_entrypoint.robot.sh
+    entrypoint: /root/entrypoint.robot.sh
     command: sleep infinity
