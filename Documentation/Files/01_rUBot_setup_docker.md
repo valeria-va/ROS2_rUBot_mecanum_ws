@@ -112,9 +112,10 @@ sudo reboot
 
 We first create a home/ubuntu/Desktop/Docker folder where we place:
 - ROS2_rUBot_mecanum_ws.zip
-- Dockerfile
 - my_robot_nano_bringup_hw.launch.xml
-- docker-compose.yaml
+- Dockerfile.robot
+- entrypoint.robot.yaml
+- docker-compose.robot.yaml
 
 >**Important**: make all files executable!
   ````shell
@@ -122,7 +123,7 @@ We first create a home/ubuntu/Desktop/Docker folder where we place:
   sudo chmod +x *
   ````
 
-Documentation is in: https://hub.docker.com/r/theconstructai/limo
+For LIMO robot, documentation is in: https://hub.docker.com/r/theconstructai/limo
 
 Follow the instructions:
 
@@ -164,7 +165,7 @@ The bringup of the robot is done automatically, but if you want to **work with t
 - You will be ready to work within the container
 - In order to see a Plot:
   ````shell
-  rqt -s rqt_plot /cmd_vel/linear/x /cmd_vel/linear/y
+  rqt -s rqt_plot /cmd_vel/linear/x
   ````
 
 #### **f) Connect a PC to the same rUBot network**
@@ -185,6 +186,7 @@ If we have a PC in the same network, we only need to:
       ````
       >Remember to change the IP of the PC in this network on docker-compose.pcXlaunch.yaml
   - With graphical interface using WSL
+    - This is only usefull if you work inside your computer isolated without the possibility to communicate with other robots on the same network!
     - Open this folder on VScode and type in a new WSL terminal:
       ````shell
       UID=$(id -u) GID=$(id -g) docker compose -f docker-compose.pcWSL.yaml up -d --force-recreate
@@ -202,7 +204,6 @@ If we have a PC in the same network, we only need to:
     ````shell
     ros2 run demo_nodes_cpp listener
     ````
-
 
 ### **2.2. Setup the commercial LIMO robot**
 

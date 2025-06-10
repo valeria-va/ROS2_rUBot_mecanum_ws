@@ -29,11 +29,11 @@ RUN apt-get update \
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
 # Copy and set permissions for our entrypoint script
-COPY entrypoint.pc.sh /entrypoint.pc.sh
-RUN chmod +x /entrypoint.pc.sh
+COPY entrypoint.pc.sh /root/entrypoint.pc.sh
+RUN chmod +x /root/entrypoint.pc.sh
 
 # Define the entrypoint
-ENTRYPOINT ["/entrypoint.pc.sh"]
+ENTRYPOINT ["/root/entrypoint.pc.sh"]
 
 # By default, keep the container running with a terminal
 CMD ["bash"]

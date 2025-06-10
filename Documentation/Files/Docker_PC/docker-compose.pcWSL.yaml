@@ -34,6 +34,6 @@ services:
       # - ./pc_ws:/root/pc_ws
       # - ./maps:/root/maps
 
-    entrypoint: /entrypoint.pc.sh
+    entrypoint: /root/entrypoint.pc.sh
     command: sleep infinity
   

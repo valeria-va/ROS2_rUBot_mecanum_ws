@@ -27,6 +27,6 @@ services:
       # - ./pc_ws:/root/pc_ws
       # Molt útil: Munta una carpeta local per guardar i carregar mapes
       #- ./maps:/root/maps
-    entrypoint: /entrypoint.pc.sh
+    entrypoint: /root/entrypoint.pc.sh
     # Mantenim el contenidor actiu per a poder llançar comandes
     command: sleep infinity

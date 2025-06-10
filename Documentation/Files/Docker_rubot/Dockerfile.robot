@@ -57,15 +57,16 @@ RUN pip install pyserial
 #RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
 
 # Add workspace and ROS environment setup to .bashrc
-#RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc && \
-#    echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc && \
+RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc
+#RUN echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc && \
 #    echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
 
 # Copy the rubot_entrypoint.sh into the image
 COPY entrypoint.robot.sh /root/entrypoint.robot.sh
-RUN cd /root &&\
-    chown root:root /root/entrypoint.robot.sh &&\
-    chmod 755 /root/entrypoint.robot.sh
+RUN chmod +x /root/entrypoint.robot.sh
+
+# Define the entrypoint
+ENTRYPOINT ["/root/entrypoint.robot.sh"]
 
 # Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
 #RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
