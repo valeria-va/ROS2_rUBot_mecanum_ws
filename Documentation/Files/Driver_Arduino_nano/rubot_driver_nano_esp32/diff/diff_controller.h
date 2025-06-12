@@ -107,7 +107,7 @@ void updatePID() {
   /* Read the encoders */
   leftPID.Encoder = readEncoder(LEFT);
   rightPID.Encoder = readEncoder(RIGHT);
-  Serial.println("updatePID ejecutado");
+  
   /* If we're not moving there is nothing more to do */
   if (!moving){
     /*

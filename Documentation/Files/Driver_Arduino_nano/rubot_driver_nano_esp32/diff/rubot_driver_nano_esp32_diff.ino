@@ -1,20 +1,26 @@
-bool commandReady = false;
-#define Serial_PRINTLN(x) \
-  Serial.print("Llamada desde línea "); Serial.print(__LINE__); Serial.print(": "); Serial.println(x);
-
+/*********************************************************************
+ *  ROSArduinoBridge
+ 
+ *********************************************************************/
+#include <SoftPWM.h>
 
 #define USE_BASE      // Enable the base controller code
 //#undef USE_BASE     // Disable the base controller code
 
 /* Define the motor controller and encoder library you are using */
 #ifdef USE_BASE
-   /* The Pololu VNH5019 dual motor driver shield */
-   //#define POLOLU_VNH5019
 
-   /* Encoders directly attached to Arduino Nano ESP32 */
-   #define ESP32_ENC_COUNTER
+   
+   /* Encoders directly attached to Arduino board */
+   #define ARDUINO_ENC_COUNTER
+
    /* L298 Motor driver*/
+   //#define L298_MOTOR_DRIVER
+   
+   /* TB66 Motor driver*/
    #define TB6612FNG
+
+
 #endif
 
 //#define USE_SERVOS  // Enable use of PWM servos as defined in servos.h
@@ -73,7 +79,7 @@ bool commandReady = false;
 
 // A pair of varibles to help parse serial commands (thanks Fergs)
 int arg = 0;
-int argIndex = 0;
+int index = 0;
 
 // Variable to hold an input character
 char chr;
@@ -81,9 +87,10 @@ char chr;
 // Variable to hold the current single-character command
 char cmd;
 
-// Character arrays to hold the first and second arguments
+// Character arrays to hold the 4 arguments
 char argv1[16];
 char argv2[16];
+
 
 // The arguments converted to integers
 long arg1;
@@ -91,39 +98,29 @@ long arg2;
 
 /* Clear the current command parameters */
 void resetCommand() {
-  cmd = '\0';  
+  cmd = NULL;
   memset(argv1, 0, sizeof(argv1));
   memset(argv2, 0, sizeof(argv2));
   arg1 = 0;
   arg2 = 0;
   arg = 0;
-  argIndex = 0;
+  index = 0;
 }
 
 /* Run a command.  Commands are defined in commands.h */
 int runCommand() {
-
   int i = 0;
   char *p = argv1;
   char *str;
   int pid_args[4];
   arg1 = atoi(argv1);
   arg2 = atoi(argv2);
-
-  if (!(cmd >= 'a' && cmd <= 'z')) {
-    Serial.println("Invalid command");
-    return 0;
-  }
-
+  
   switch(cmd) {
   case GET_BAUDRATE:
     Serial.println(BAUDRATE);
     break;
   case ANALOG_READ:
-    if (arg1 < 0 || arg1 >= 40) {
-      Serial.println("Not on the desired range.Cancelling.");
-      break;
-    }
     Serial.println(analogRead(arg1));
     break;
   case DIGITAL_READ:
@@ -154,7 +151,6 @@ int runCommand() {
   case SERVO_READ:
     Serial.println(servos[arg1].getServo().read());
     break;
-  
 #endif
     
 #ifdef USE_BASE
@@ -186,11 +182,13 @@ int runCommand() {
     lastMotorCommand = millis();
     resetPID();
     moving = 0; // Sneaky way to temporarily disable the PID
-    Serial.println("OK");
-    
+    setMotorSpeeds(arg1, arg2);
+    Serial.println("OK"); 
+    Serial.println(arg1);
+    Serial.println(arg2); 
     break;
   case UPDATE_PID:
-    while ((str = strtok_r(p, ":", &p)) != nullptr) {
+    while ((str = strtok_r(p, ":", &p)) != '\0') {
        pid_args[i] = atoi(str);
        i++;
     }
@@ -205,42 +203,40 @@ int runCommand() {
     Serial.println("Invalid Command");
     break;
   }
-  cmd = '\0';  // Reset del comando ejecutado
-  return 1;
 }
 
 /* Setup function--runs once at startup. */
 void setup() {
   Serial.begin(BAUDRATE);
-  while (!Serial); // espera a que el puerto esté listo
-  delay(2000);
-  Serial.flush();  // <- limpia buffer de salida
-  while (Serial.available()) Serial.read();  // <- limpia entrada
-  cmd = '\0';
-
+  SoftPWMBegin();
   initMotorController();
+  
+
 // Initialize the motor controller if used */
 #ifdef USE_BASE
-  #ifdef ARDUINO_ENC_COUNTER
-    //set as inputs
-    DDRD &= ~(1<<LEFT_ENC_PIN_A);
-    DDRD &= ~(1<<LEFT_ENC_PIN_B);
-    DDRC &= ~(1<<RIGHT_ENC_PIN_A);
-    DDRC &= ~(1<<RIGHT_ENC_PIN_B);
-    
-    //enable pull up resistors
-    PORTD |= (1<<LEFT_ENC_PIN_A);
-    PORTD |= (1<<LEFT_ENC_PIN_B);
-    PORTC |= (1<<RIGHT_ENC_PIN_A);
-    PORTC |= (1<<RIGHT_ENC_PIN_B);
-    
-    // tell pin change mask to listen to left encoder pins
-    PCMSK2 |= (1 << LEFT_ENC_PIN_A)|(1 << LEFT_ENC_PIN_B);
-    // tell pin change mask to listen to right encoder pins
-    PCMSK1 |= (1 << RIGHT_ENC_PIN_A)|(1 << RIGHT_ENC_PIN_B);
-    
-    // enable PCINT1 and PCINT2 interrupt in the general interrupt mask
-    PCICR |= (1 << PCIE1) | (1 << PCIE2);
+  #ifdef TB6612FNG
+  // D13 = PORTB5
+  // D12 = PORTB4
+  // D11 = PORTB3
+  // D10 = PORTB2
+  // D9  = PORTB1
+  DDRB &= ~(1 << DDB4); // D12
+  DDRB &= ~(1 << DDB3); // D11
+  DDRB &= ~(1 << DDB2); // D10
+  DDRB &= ~(1 << DDB1); // D9
+
+  // Pull-ups
+  PORTB |= (1 << PORTB4); // D12
+  PORTB |= (1 << PORTB3); // D11
+  PORTB |= (1 << PORTB2); // D10
+  PORTB |= (1 << PORTB1); // D9
+
+  // PCMSK0 (pin change mask register for PORTB)
+  PCMSK0 |= (1 << PCINT4) | (1 << PCINT3) | (1 << PCINT2) | (1 << PCINT1);
+
+  // Habilitar interrupciones pin change en PCICR
+  PCICR |= (1 << PCIE0); // Enable PCINT[7:0] —> PCMSK0
+
   #endif
   initMotorController();
   resetPID();
@@ -265,37 +261,25 @@ void setup() {
 void loop() {
 
   while (Serial.available() > 0) {
-
     
     // Read the next character
     chr = Serial.read();
 
-    // Evita procesar comandos si es un salto de línea suelto
-    if (chr == '\n' || chr == 0x0A) {
-      continue;
-    }
-
-
     // Terminate a command with a CR
     if (chr == 13) {
-      if (arg == 1) argv1[argIndex] = 0;
-      else if (arg == 2) argv2[argIndex] = 0;
-
-      if (cmd >= 'a' && cmd <= 'z') {
-        commandReady = true;
-      }
-      while (Serial.available()) Serial.read();  // Limpia completamente el buffer
-      continue;
+      if (arg == 1) argv1[index] = NULL;
+      else if (arg == 2) argv2[index] = NULL;
+      runCommand();
+      resetCommand();
     }
-     
     // Use spaces to delimit parts of the command
     else if (chr == ' ') {
       // Step through the arguments
       if (arg == 0) arg = 1;
       else if (arg == 1)  {
-        argv1[argIndex] = 0;
+        argv1[index] = NULL;
         arg = 2;
-        argIndex = 0;
+        index = 0;
       }
       continue;
     }
@@ -306,43 +290,23 @@ void loop() {
       }
       else if (arg == 1) {
         // Subsequent arguments can be more than one character
-        argv1[argIndex] = chr;
-        argIndex++;
+        argv1[index] = chr;
+        index++;
       }
       else if (arg == 2) {
-        argv2[argIndex] = chr;
-        argIndex++;
+        argv2[index] = chr;
+        index++;
       }
     }
   }
-
-if (commandReady) {
-  char cmdBackup = cmd;
-
-  if (cmd < 'a' || cmd > 'z') {
-    Serial.println("Comando corrupto o inválido. Ignorando.");
-    resetCommand();
-    commandReady = false;
-    return;
-  }
-
-  runCommand();  // It's only executed when cmd is valid
-  commandReady = false;
-  resetCommand();
-
-  cmd = cmdBackup;  // In case it was altered unexpectedly
-  commandReady = false;
-}
-
+  
 // If we are using base control, run a PID calculation at the appropriate intervals
 #ifdef USE_BASE
   if (millis() > nextPID) {
-    if (moving) {
-      Serial.print("moviendo");
-      updatePID();
-    }
+    updatePID();
     nextPID += PID_INTERVAL;
   }
+  
   // Check to see if we have exceeded the auto-stop interval
   if ((millis() - lastMotorCommand) > AUTO_STOP_INTERVAL) {;
     setMotorSpeeds(0, 0);

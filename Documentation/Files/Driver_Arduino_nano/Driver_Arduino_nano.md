@@ -99,28 +99,29 @@ And the functions for outputing the speeds depending on the direction are:
 
 ````c++
     if (i == LEFT) { 
-        if      (reverse == 0) { 
-            ledcWrite(0, spd); 
-            digitalWrite(LEFT_MOTOR_FORWARD, HIGH); 
-            digitalWrite(LEFT_MOTOR_BACKWARD, LOW); 
+      if      (reverse == 0) { 
+        ledcWrite(1, spd); 
+        digitalWrite(RIGHT_MOTOR_FORWARD, HIGH); 
+        digitalWrite(RIGHT_MOTOR_BACKWARD, LOW); 
         }
-        else if (reverse == 1) { 
-            ledcWrite(0, spd); 
-            digitalWrite(LEFT_MOTOR_FORWARD, LOW); 
-            digitalWrite(LEFT_MOTOR_BACKWARD, HIGH); 
+      else if (reverse == 1) { 
+        ledcWrite(1, spd); 
+        digitalWrite(RIGHT_MOTOR_FORWARD, LOW); 
+        digitalWrite(RIGHT_MOTOR_BACKWARD, HIGH); 
         }
     }
-    else /*if (i == RIGHT) //no need for condition*/ {
-        if      (reverse == 0) { 
-            ledcWrite(1, spd); 
-            digitalWrite(RIGHT_MOTOR_FORWARD, HIGH); 
-            digitalWrite(RIGHT_MOTOR_BACKWARD, LOW); 
-        }
-        else if (reverse == 1) { 
-            ledcWrite(1, spd); 
-            digitalWrite(RIGHT_MOTOR_FORWARD, LOW); 
-            digitalWrite(RIGHT_MOTOR_BACKWARD, HIGH); 
-        }
+    if (i == RIGHT) {
+      if      (reverse == 0) { 
+        ledcWrite(0, spd); 
+        digitalWrite(LEFT_MOTOR_FORWARD, HIGH); 
+        digitalWrite(LEFT_MOTOR_BACKWARD, LOW); 
+      }
+      else if (reverse == 1) { 
+        ledcWrite(0, spd); 
+        digitalWrite(LEFT_MOTOR_FORWARD, LOW); 
+        digitalWrite(LEFT_MOTOR_BACKWARD, HIGH); 
+      
+      }
     }
 ````
 
@@ -130,22 +131,29 @@ Since we are using an ESP32 chip the programming of the interrupts for detecting
 the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7 so the functions are different, in the encoder_driver.ino we set:
 
 ````c++
-    const int leftPinA  = 47; // Left Encoder of motorA/1
-    const int leftPinB  = 21; // Left Encoder of motorB/2
-    const int rightPinA = 38; // Right Encoder of motorA/1
-    const int rightPinB = 18; // Right Encoder of motorB/2
+  const int leftPinA = 38;
+  const int leftPinB = 47;
+  const int rightPinA = 18;
+  const int rightPinB = 21;
 
-    // Pragma for Interruption of the left Motor 1
-    void IRAM_ATTR handleLeftA() {
-        bool b = digitalRead(leftPinB);
-        left_enc_pos += b ? 1 : -1;
-    }
+  volatile uint8_t leftState = 0;
+  volatile uint8_t rightState = 0;
 
-    // Pragma for Interruption of the right Motor 2
-    void IRAM_ATTR handleRightA() {
-        bool b = digitalRead(rightPinB);
-        right_enc_pos += b ? 1 : -1;
-    }
+  // Table of States (Like the Nano version)
+  const int8_t ENC_STATES[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
+
+  void IRAM_ATTR handleLeft() {
+    leftState <<= 2;
+    leftState |= (digitalRead(leftPinA) << 1) | digitalRead(leftPinB);
+    left_enc_pos += ENC_STATES[leftState & 0x0F];
+  }
+
+  void IRAM_ATTR handleRight() {
+    rightState <<= 2;
+    rightState |= (digitalRead(rightPinA) << 1) | digitalRead(rightPinB);
+    right_enc_pos += ENC_STATES[rightState & 0x0F];
+  }
+
 ````
 ### **Main Program Key Variables and modifications**
 From the main program ROSArduinoBridgeESP32.ino we first changed and added the modules for the encoder and TB6612FNG configurations. Nextly some important parameters are defined:
