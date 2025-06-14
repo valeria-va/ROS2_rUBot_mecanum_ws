@@ -23,7 +23,7 @@ There are different methods:
 You need first to install the needed packages (already installed in TheConstruct environment):
 ```shell
 sudo apt update
-sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
+sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-turtlebot3*
 sudo apt install ros-humble-nav2-simple-commander
 sudo apt install ros-humble-tf-transformations
 ```
@@ -44,6 +44,7 @@ colcon build
 - Open .bashrc and verify if there are these lines:
 ````shell
 export ROS_DOMAIN_ID=0
+export TURTLEBOT3_MODEL=waffle
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:$GAZEBO_MODEL_PATH
 source /opt/ros/humble/setup.bash
@@ -58,6 +59,11 @@ cd /home/user/ROS2_rUBot_mecanum_ws
 
 - Fist of all you have to bringup the robot in the desired environment:
     - In the case of Virtual environment:
+        - Turtlebot3 robot
+        ````shell
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+        ````
+        - rUBot or LIMO robot
         ````shell
         ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
         ````
@@ -96,20 +102,41 @@ cd /home/user/ROS2_rUBot_mecanum_ws
     ````shell
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ````
+    - If you are using the ``Turtlebot3`` project you have to modify the line on file /opt/ros/humble/share/turtlebot3_navigation2/param/waffle.yaml (this has to be made every time you connect to the environment):
+    ````shell
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    or
+    robot_model_type: "nav2_amcl::OmniMotionModel"
+    ````
+    - If you use the ``my_robot_navigation2`` package, the waffle.yaml is already correct
+
 - Let`s now make the robot navigate using the Map:
     - In the case of Virtual environment:
+        - Turtlebot3 robot
         ````shell
-        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=robot_arm/my_simple_robot.urdf custom_world:=square4m_sign.world
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+        ````
+        - Launch Navigation node:
+        ````bash
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True map:=map_turtle.yaml param:=waffle.yaml
+        ````
+        - or rUBot or LIMO robot
+        ````shell
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
         ````
         >Change the URDF file for each robot
         - Launch Navigation node:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml 
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True map:=map_square4m_sign.yaml param:=limo_sw.yaml
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
+        - The bringup is done without the LIMO robot model. The only frames available are
+            - odom: as a fixed frame
+            - base_link: as the robot frame
+        - We have to create "LIMO_real.yaml" file in "param" folder correcting base_frame_id: "odom" (instead of base_footprint)
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_real.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False map:=map_square4m_sign.yaml param:=limo_real.yaml
         ````
         > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
@@ -139,18 +166,25 @@ We can create a python file to interact with topics and actions.
 To navigate programmatically using Simple Commander API, you have to proceed with:
 - Bringup the robot in the desired environment:
     - In the case of Virtual environment:
+        - For Turtlebot3 robot
         ````shell
-        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=robot_arm/my_simple_robot.urdf  custom_world:=square4m_sign.world
+        ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
         ````
+        - For rUBot or LIMO robot
+        ````shell
+        ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
+        ````
+        > For simulation add use_sim_time:=True (by default is False)
+
     - In the case of a real robot, the bringup is already made when turned on
 - Start the navigation2.launch.py with rviz to see the evolution of robot navigation
     - In the case of Virtual environment:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True map:=map_square4m_sign.yaml param:=limo_sw.yaml
         ````
-        - In the case of real robot:
+        - In the case of LIMO real robot:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_real.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False map:=map_square4m_sign.yaml param:=limo_real.yaml
         ````
 - Launch the created python file to define the Initial point and the targets waypoints
     ````shell

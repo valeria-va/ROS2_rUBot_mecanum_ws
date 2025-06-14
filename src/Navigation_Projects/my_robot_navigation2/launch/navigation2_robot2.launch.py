@@ -49,7 +49,7 @@ def generate_launch_description():
 
     # NOU: Argument per seleccionar el model URDF del robot
     declare_robot_model_arg = DeclareLaunchArgument(
-        'my_robot',
+        'robot',
         default_value='my_simple_robot.urdf', # Nom del teu fitxer URDF per defecte
         description='Name of the robot URDF file')
 
@@ -59,7 +59,7 @@ def generate_launch_description():
     map_file_name = LaunchConfiguration('map')
     params_file_name = LaunchConfiguration('params')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    robot_urdf_file = LaunchConfiguration('my_robot')
+    robot_urdf_file = LaunchConfiguration('robot')
 
     # Ruta al paquet de navegació
     nav_pkg_dir = get_package_share_directory('my_robot_navigation2')
@@ -79,7 +79,7 @@ def generate_launch_description():
     robot_description_config = xacro.process_file(os.path.join(
         robot_desc_pkg_dir, 
         'urdf', 
-        'my_simple_robot.urdf' # Assegura't que aquest és el nom correcte
+        'robot_arm/my_mecanum_robot.urdf' # Assegura't que aquest és el nom correcte
     ))
     robot_description = robot_description_config.toxml()
 
