@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="map" default_value="map_square4m_sig.yaml" description="Name of the map file (e.g., my_map.yaml)"/>
+    <arg name="params" default_value="limo_sw.yaml" description="Name of the parameter file (e.g., limo_sw.yaml)"/>
+    <arg name="use_sim_time" default_value="false" description="Use simulation (Gazebo) clock if true"/>
+    <arg name="robot" default_value="robot_arm/my_simple_robot.urdf" description="Name of the robot URDF file"/>
+    <let name="robot_path"
+         value="$(find-pkg-share my_robot_description)/urdf/$(var robot)" />
+
+    <include file="$(find-pkg-share nav2_bringup)/launch/bringup_launch.py">
+        <arg name="map" value="$(find-pkg-share my_robot_navigation2)/map/$(var map)"/>
+        <arg name="use_sim_time" value="$(var use_sim_time)"/>
+        <arg name="params_file" value="$(find-pkg-share my_robot_navigation2)/param/$(var params)"/>
+    </include>
+
+    <node pkg="robot_state_publisher" exec="robot_state_publisher" name="robot_state_publisher" output="screen">
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
+        <param name="robot_description" command="xacro $(var robot_path)"/>
+    </node>
+
+    <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen">
+        <arg name="-d" value="$(find-pkg-share my_robot_navigation2)/rviz/my_robot_navigation2.rviz"/>
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
+    </node>
+
+</launch>
