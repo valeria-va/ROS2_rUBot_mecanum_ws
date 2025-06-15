@@ -22,7 +22,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
 from launch_ros.actions import Node
 import xacro
 
@@ -75,16 +75,6 @@ def generate_launch_description():
     rviz_config_path = PathJoinSubstitution([nav_pkg_dir, 'rviz', 'my_robot_navigation2.rviz'])
     robot_urdf_path = PathJoinSubstitution([robot_desc_pkg_dir, 'urdf', robot_urdf_file])
 
-    # NOU: Carregar el contingut del fitxer URDF/XACRO al paràmetre 'robot_description'
-    robot_description_config = xacro.process_file(os.path.join(
-        robot_desc_pkg_dir, 
-        'urdf', 
-        'robot_arm/my_mecanum_robot.urdf' # Assegura't que aquest és el nom correcte
-    ))
-    robot_description = robot_description_config.toxml()
-
-    # --- Definició de Nodes ---
-
     # Node per publicar l'estat de les unions (joints) del robot
     joint_state_publisher_node = Node(
         package='joint_state_publisher',
@@ -101,7 +91,8 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
-            'robot_description': robot_description
+            # Processa el fitxer XACRO en temps d'execució
+            'robot_description': Command(['xacro ', robot_urdf_path]) 
         }]
     )
 

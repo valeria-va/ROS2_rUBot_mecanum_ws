@@ -86,7 +86,7 @@ def main(args=None):
         #  Consider a more robust error handling strategy.  For example:
         #  rclpy.shutdown()
         #  return
-        waypoints = [(2.0, -2.0, 1.57), (4.0, 0.8, 0.0), (8.0, 1.0, -1.57), (8.0, -0.5, 1.57), (5.0, 5.0, 3.14), (3.0, 4.0, 1.57), (4.0, 5.0, 0.0), (5.0, 3.0, -1.57), (4.0, 0.8, 3.14), (-4.0, 3.5, -1.57), (-4.0, 0.0, 1.57)] # Default.
+        waypoints = [(1.5, 1.5, 1.57), (1.5, -0.7, 0.0), (2.7, 0.0, 1.57)] # Default.
 
     # --- Follow waypoints ---
     navigation_node.follow_waypoints(waypoints)

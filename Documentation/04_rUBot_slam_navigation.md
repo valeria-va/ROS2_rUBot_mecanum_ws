@@ -102,9 +102,9 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=robot_arm/my_simple_robot.urdf custom_world:=square4m_sign.world
         ````
         >Change the URDF file for each robot
-        - Launch Navigation node:
+        - Launch Navigation node: python launcher is more powerfull than previous xml format
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.xml use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml 
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml 
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
@@ -154,6 +154,8 @@ To navigate programmatically using Simple Commander API, you have to proceed wit
         ````
 - Launch the created python file to define the Initial point and the targets waypoints
     ````shell
-    ros2 run my_robot_nav_control nav_target0_exec
+    ros2 launch my_robot_nav_control nav_target.launch.py
+    or
+    ros2 launch my_robot_nav_control nav_waypoints.launch.py
     ````
     >First time we pass the 2D-Pose-Estimate but not the successive times

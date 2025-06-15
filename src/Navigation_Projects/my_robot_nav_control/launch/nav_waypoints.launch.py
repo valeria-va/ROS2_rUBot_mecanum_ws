@@ -2,37 +2,30 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
-from launch.utilities import normalize_launch_arguments
-import ast
+from ament_index_python.packages import get_package_share_directory
+import os
 
 def generate_launch_description():
     """
     Generates a launch description for the navigation task node,
-    optionally accepting waypoints as a launch argument.
+    loading waypoints from a YAML file.
     """
-
-    # Declare the launch argument for waypoints.  We use a default value.
-    declare_waypoints_arg = DeclareLaunchArgument(
-        'waypoints',
-        default_value='[(2.0, -2.0, 1.57), (4.0, 0.8, 0.0), (8.0, 1.0, -1.57), (8.0, -0.5, 1.57), (5.0, 5.0, 3.14), (3.0, 4.0, 1.57), (4.0, 5.0, 0.0), (5.0, 3.0, -1.57), (4.0, 0.8, 3.14), (-4.0, 3.5, -1.57), (-4.0, 0.0, 1.57)]',
-        description='A list of waypoints, each as a tuple (x, y, yaw_in_radians).  Example: "[(1.0, 2.0, 0.0), (3.0, 4.0, 1.57)]"',
-    )
+    # Troba la ruta al nostre paquet
+    pkg_dir = get_package_share_directory('my_robot_nav_control')
+    
+    # Construeix la ruta al fitxer de paràmetres YAML
+    params_file = os.path.join(pkg_dir, 'config', 'waypoints_params.yaml')
 
     # Create the node action, passing the waypoints as a parameter.
     navigation_node = Node(
         package='my_robot_nav_control',
         executable='nav_waypoints_exec',  # Make sure this matches your executable name
         name='nav_waypoints_node',
-        parameters=[
-            {
-                'waypoints': LaunchConfiguration('waypoints'),
-            },
-        ],
+        parameters=[params_file], # Carrega tots els paràmetres del fitxer
         output='screen',  #  Good for seeing the output in the terminal
     )
 
     # Create the launch description and add the actions.
-    ld = LaunchDescription()
-    ld.add_action(declare_waypoints_arg)
-    ld.add_action(navigation_node)
-    return ld
+    return LaunchDescription([
+        navigation_node
+    ])

@@ -54,7 +54,7 @@ bt_navigator:
     robot_base_frame: base_footprint
     odom_topic: /odom
     default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
-    bt_loop_duration: 8 # abans 10
+    bt_loop_duration: 20 # abans 10
     default_server_timeout: 20
     enable_groot_monitoring: True
     groot_zmq_publisher_port: 1666
@@ -117,8 +117,8 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.5   # Augmenta la tolerància de posició XY (abans 0.25)
-      yaw_goal_tolerance: 0.785 # Augmenta la tolerància d'orientació (aproximadament 45 graus, abans 0.25 radians)
+      xy_goal_tolerance: 0.1   # Augmenta la tolerància de posició XY (abans 0.25)
+      yaw_goal_tolerance: 0.1 # Augmenta la tolerància d'orientació (aproximadament 45 graus, abans 0.25 radians)
 
     # DWB parameters
     FollowPath:
