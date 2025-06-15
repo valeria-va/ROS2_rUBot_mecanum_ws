@@ -104,7 +104,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >Change the URDF file for each robot
         - Launch Navigation node:
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml 
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.xml use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml 
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
