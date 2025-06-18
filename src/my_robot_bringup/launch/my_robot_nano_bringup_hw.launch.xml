@@ -5,7 +5,7 @@
     <arg name="camera_width" default="160"/>
     <arg name="camera_height" default="120"/>
 
-    <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver.launch.py">
+    <include file="$(find-pkg-share my_robot_driver)/launch/rubot_nano_driver_mecanum.launch.xml">
     </include>
     <include file="$(find-pkg-share rplidar_ros)/launch/rplidar_a1_launch.py">
         <arg name="serial_port" value="$(var rplidar_serial_port)"/>
