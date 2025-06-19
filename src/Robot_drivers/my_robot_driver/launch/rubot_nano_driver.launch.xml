@@ -8,11 +8,11 @@
     <arg name="encoder_cpr" default="2550"/>
 
     <node pkg="my_robot_driver" exec="rubot_nano_driver_exec" name="rubot_nano_driver" output="screen">
-        <arg name="robot_name" value="$(var robot_name)"/>
-        <arg name="serial_port" value="$(var serial_port)"/>
-        <arg name="baud_rate" value="$(var baud_rate)"/>
-        <arg name="loop_rate" value="$(var loop_rate)"/>
-        <arg name="encoder_cpr" value="$(var encoder_cpr)"/>
-        <arg name="use_sim_time" value="$(var use_sim_time)"/>
+        <param name="robot_name" value="$(var robot_name)"/>
+        <param name="serial_port" value="$(var serial_port)"/>
+        <param name="baud_rate" value="$(var baud_rate)"/>
+        <param name="loop_rate" value="$(var loop_rate)"/>
+        <param name="encoder_cpr" value="$(var encoder_cpr)"/>
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
     </node>
 </launch>

@@ -86,6 +86,11 @@ When the real robot is plugged on, the docker-compose.yaml service is executed a
   source "/opt/ros/$ROS_DISTRO/setup.bash"
   colcon build
   source install/setup.bash
+  ros2 run my_robot_driver rubot_nano_driver_mecanum_exec
+  or
+  ros2 launch my_robot_driver rubot_nano_driver_mecanum.launch.xml
+  or
+  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
   ````
 
 
