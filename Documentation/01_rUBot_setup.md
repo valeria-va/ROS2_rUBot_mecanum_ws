@@ -60,6 +60,7 @@ unset AMENT_PREFIX_PATH
 unset CMAKE_PREFIX_PATH
 cd ~/ROS2_rUBot_mecanum_ws
 rm -rf build/ install/ log/
+source "/opt/ros/$ROS_DISTRO/setup.bash"
 colcon build
 ````
 - Open a new terminal to ensure the .bashrc is read again
@@ -77,6 +78,16 @@ The UB custom rUBot mecanum custom made robot is based on:
 - Custom Dockerfile and docker-compose 
 
 When the real robot is plugged on, the docker-compose.yaml service is executed and the rUBot is ready to be controlled within the TheConstruct environment.
+
+- Connecting to the rUBot with VScode window attached to the container:
+  ````shell
+  git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+  cd OS2_rUBot_mecanum_ws
+  source "/opt/ros/$ROS_DISTRO/setup.bash"
+  colcon build
+  source install/setup.bash
+  ````
+
 
 - Using a PC connected to the same network 
   - connect with robot within ssh using VScode

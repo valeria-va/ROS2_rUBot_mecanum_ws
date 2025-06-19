@@ -94,11 +94,11 @@ class MecanumMotorDriver(Node):
         self.robot_name = self.get_parameter("robot_name").value
 
         # Utilitza el paràmetre de temps de simulació
-        self.declare_parameter("use_sim_time", value=False) # Coincideix amb el valor per defecte del fitxer de llançament
+        #self.declare_parameter("use_sim_time", value=False) # Coincideix amb el valor per defecte del fitxer de llançament
         self.use_sim_time = self.get_parameter("use_sim_time").value
         if self.use_sim_time:
             self.get_logger().info("Utilitzant temps de simulació.")
-            self.set_parameters([rclpy.Parameter("use_sim_time", rclpy.Parameter.Type.BOOL, True)])
+            #self.set_parameters([rclpy.Parameter("use_sim_time", rclpy.Parameter.Type.BOOL, True)])
 
 
         # Publicadors i subscriptors de ROS 2
