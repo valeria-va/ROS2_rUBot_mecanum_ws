@@ -10,12 +10,12 @@ def generate_launch_description():
         DeclareLaunchArgument('serial_port', default_value='/dev/ttyACM0'),
         DeclareLaunchArgument('baud_rate', default_value='57600'),
         DeclareLaunchArgument('loop_rate', default_value='30'),
-        DeclareLaunchArgument('encoder_cpr', default_value='2550'),
+        DeclareLaunchArgument('encoder_cpr', default_value='1320'),
 
         Node(
             package='my_robot_driver',
-            executable='rubot_nano_driver_exec',
-            name='rubot_nano_driver',
+            executable='rubot_nano_driver_mecanum_exec',
+            name='rubot_nano_driver_mecanum',
             output='screen',
             parameters=[{
                 'robot_name': LaunchConfiguration('robot_name'),

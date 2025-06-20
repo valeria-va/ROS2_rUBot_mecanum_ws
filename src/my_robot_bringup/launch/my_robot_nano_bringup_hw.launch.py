@@ -2,7 +2,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource, XmlLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 def generate_launch_description():
@@ -49,8 +49,8 @@ def generate_launch_description():
 
     # 1. Llançador per al driver dels motors Mecanum (és un fitxer .launch.xml)
     start_mecanum_driver_cmd = IncludeLaunchDescription(
-        XmlLaunchDescriptionSource(
-            os.path.join(my_robot_driver_pkg, 'launch', 'rubot_nano_driver_mecanum.launch.xml')
+        PythonLaunchDescriptionSource(
+            os.path.join(my_robot_driver_pkg, 'launch', 'rubot_nano_driver_mecanum.launch.py')
         ),
         launch_arguments={
             'serial_port': LaunchConfiguration('mecanum_serial_port')
