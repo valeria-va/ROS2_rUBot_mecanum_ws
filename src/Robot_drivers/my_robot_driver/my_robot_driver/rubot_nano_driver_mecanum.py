@@ -48,7 +48,7 @@ class MecanumMotorDriver(Node):
 
         # Declara i obté paràmetres, coincidint amb el fitxer de llançament quan sigui aplicable
         # Paràmetres crítics que han de ser no zero
-        self.declare_parameter("encoder_cpr", value=2550) # Coincideix amb el valor per defecte del fitxer de llançament
+        self.declare_parameter("encoder_cpr", value=1320) # Coincideix amb el valor per defecte del fitxer de llançament
         self.encoder_cpr = self.get_parameter("encoder_cpr").value
         if not self.encoder_cpr:
             self._logger.error("Encoder CPR ha de ser un valor no zero!")
@@ -72,14 +72,14 @@ class MecanumMotorDriver(Node):
             self._logger.info("Depuració serial habilitada")
 
         # Paràmetres cinemàtics per a la tracció Mecanum.
-        self.declare_parameter("wheel_diameter", value=0.065)
+        self.declare_parameter("wheel_diameter", value=0.075)
         self.wheel_diameter = self.get_parameter("wheel_diameter").value
         self.wheel_radius = self.wheel_diameter / 2
 
         # Nous paràmetres per a la cinemàtica Mecanum
-        self.declare_parameter("robot_length", value=0.25) # Longitud del robot (distància entre eixos davanter/darrere)
+        self.declare_parameter("robot_length", value=0.22) # Longitud del robot (distància entre eixos davanter/darrere)
         self.robot_length = self.get_parameter("robot_length").value
-        self.declare_parameter("robot_width", value=0.20)  # Amplada del robot (distància entre eixos esquerra/dreta)
+        self.declare_parameter("robot_width", value=0.165)  # Amplada del robot (distància entre eixos esquerra/dreta)
         self.robot_width = self.get_parameter("robot_width").value
 
         # Factor per a la cinemàtica Mecanum (suma de la meitat de l'amplada i la meitat de la longitud)

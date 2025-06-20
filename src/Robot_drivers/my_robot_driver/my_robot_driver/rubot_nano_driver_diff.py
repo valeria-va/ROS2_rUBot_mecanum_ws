@@ -27,7 +27,7 @@ class MotorDriver(Node):
         self._logger = self.get_logger()
 
         # Setup encoder and loop rate parameters; log error if unset or zero.
-        self.declare_parameter("encoder_cpr", value=2550)
+        self.declare_parameter("encoder_cpr", value=1320)
         self.encoder_cpr = self.get_parameter("encoder_cpr").value
         if not self.encoder_cpr:
             self._logger.error("Encoder CPR must be set to a non-zero value!")
@@ -51,9 +51,9 @@ class MotorDriver(Node):
             self._logger.info("Serial debug enabled")
 
         # Kinematic parameters for differential drive.
-        self.declare_parameter("wheel_diameter", value=0.065)
+        self.declare_parameter("wheel_diameter", value=0.075)
         self.wheel_diameter = self.get_parameter("wheel_diameter").value
-        self.declare_parameter("wheel_separation", value=0.17)
+        self.declare_parameter("wheel_separation", value=0.165)
         self.wheel_separation = self.get_parameter("wheel_separation").value
         self.wheel_radius = self.wheel_diameter / 2
 
