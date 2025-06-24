@@ -1,6 +1,9 @@
 # Utilitzem una imatge base més adient, que ja porta eines bàsiques de ROS2
 FROM ros:humble-ros-base
 
+# Canviem a l'intèrpret de comandes a bash per a més consistència
+SHELL ["/bin/bash", "-c"]
+
 # Instal·la dependències essencials per construir i executar
 # Combinem les dues comandes apt-get en una per optimitzar les capes de la imatge
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -41,37 +44,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxkbcommon-x11-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up the working directory for ROS workspace
-WORKDIR /root
+# Install Yolo
+RUN pip3 install ultralytics "numpy<2.0"
 
-#Installing Serial comunication module for arduino nan
+# Install Serial comunication module for arduino nano
 RUN pip install pyserial
-# Copy and unzip the ROS2_rUBot_mecanum_ws.zip file
-#COPY ROS2_rUBot_mecanum_ws.zip /root/ROS2_rUBot_mecanum_ws.zip
-#RUN unzip /root/ROS2_rUBot_mecanum_ws.zip -d /root/ && \
-#    rm /root/ROS2_rUBot_mecanum_ws.zip
-# Clone the rplidar_ros package
-#RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git /root/ROS2_rUBot_mecanum_ws/src/rplidar_ros
+# Create the Workspace (ROS2_rUBot_mecanum_ws)
+WORKDIR /root
+RUN git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+WORKDIR /root/ROS2_rUBot_mecanum_ws
+RUN source /opt/ros/humble/setup.bash && \
+    colcon build --symlink-install
 
-# Build the ROS workspace
-#RUN bash -c "source /opt/ros/humble/setup.bash && cd /root/ROS2_rUBot_mecanum_ws && colcon build"
-
-# Add workspace and ROS environment setup to .bashrc
-RUN echo 'source /opt/ros/humble/setup.bash' >> /root/.bashrc
-#RUN echo 'source /root/ROS2_rUBot_mecanum_ws/install/setup.bash' >> /root/.bashrc && \
-#    echo 'cd /root/ROS2_rUBot_mecanum_ws' >> /root/.bashrc
-
-# Copy the rubot_entrypoint.sh into the image
-COPY entrypoint.robot.sh /root/entrypoint.robot.sh
-RUN chmod +x /root/entrypoint.robot.sh
-
-# Define the entrypoint
-ENTRYPOINT ["/root/entrypoint.robot.sh"]
-
-# Set permissions for rubot_nano_driver.py (assuming it's in your workspace)
-#RUN cd /root/ROS2_rUBot_mecanum_ws/src/Robot_drivers/my_robot_driver/my_robot_driver && \
-#    chown root:root rubot_nano_driver.py && \
-#    chmod 4777 rubot_nano_driver.py
+# Source and .bashrc
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc && \
+    echo "source /root/ROS2_rUBot_mecanum_ws/install/setup.bash" >> /root/.bashrc
 
 # Set the default command to run when the container starts
-CMD ["bash"]
+CMD ["/bin/bash"]

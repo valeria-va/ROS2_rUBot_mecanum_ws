@@ -19,5 +19,7 @@ services:
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
     volumes:
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
-    entrypoint: /root/entrypoint.robot.sh
-    command: sleep infinity
+      - ./entrypoint.robot.sh:/entrypoint.robot.sh
+    entrypoint: /entrypoint.robot.sh
+    #command: sleep infinity
+    command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
