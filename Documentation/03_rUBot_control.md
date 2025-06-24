@@ -100,44 +100,43 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x
 ```
 ![](./Images/03_Control/06_bringup_sw.png)
 
-A first simple navigation program is created to move the robot according to a speciffic Twist message.
-
 - We will create now a first robot control python file "my_robot_control.py" to define a rubot movement with linear and angular speed during a time td
 - Because we will use parameters, review in the file:
     - Declare Parametes
     - Get Parameters
-- We have to add in "setup.py" the entry point corresponding to the created node 
+- We have to add in "setup.py" the entry point corresponding to the created node and the executable name after compilation process
 
-```python
-    entry_points={
-        'console_scripts': [
-            'my_robot_control_exec = my_robot_control.my_robot_control:main',
-        ],
-    },
-```
+    ```python
+        entry_points={
+            'console_scripts': [
+                'my_robot_control_exec = my_robot_control.my_robot_control:main',
+            ],
+        },
+    ```
 - Create "launch" folder
 - Install the launch and config folders modifying the "setup.py" file
 - Add dependency on the ros2launch package in "package.xml":
-```shell
-<exec_depend>ros2launch</exec_depend>
-```
+    ```shell
+    <exec_depend>ros2launch</exec_depend>
+    ```
 - Create specific launch file "my_robot_control.launch.xml" or "my_robot_control.launch.py" to launch the node and python file created above
 - The parameter values can be updated:
     - In the node with the "declare parameter"
     - In the launch file with the parameter values
-- Compile again and execute:
-```
-ros2 launch my_robot_control my_robot_control.launch.xml td:=10.0
-```
+    - as arguments in command-line
+- Compile again and execute (I have changed the time duration as argument in command-line):
+    ```
+    ros2 launch my_robot_control my_robot_control.launch.xml td:=10.0
+    ```
 **Real robot**
 
 The same simple control program created in virtual environment to move the robot is used for the real robot.
 
-- We first bringup our real LIMO robot:
+- We first bringup our real LIMO robot (this is already done when you switch-on the robot):
     ```shell
     ros2 launch limo_bringup limo_start.launch.py
     ```
-- Or bringup the rUBot mecanum robot:
+- Or bringup the rUBot mecanum robot (this is already done when you switch-on the robot):
     ``` shell
     ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
     ```
@@ -147,7 +146,7 @@ The same simple control program created in virtual environment to move the robot
     >**Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
 - We control the robot with the same node created for virtual environment:
     ``` shell
-    ros2 launch my_robot_control my_robot_control.launch.xml
+    ros2 launch my_robot_control my_robot_control.launch.xml td:=10.0
     ```
 
 ## **2. Driving self-control**

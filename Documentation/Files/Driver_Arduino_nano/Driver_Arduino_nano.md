@@ -1,16 +1,21 @@
-# **Driver robot mecanum**
+# **Robot Driver**
 
-Here is described the Driver designed for rUBot mecanum in ROS2 using:
-- Arduino Nano
-- Arduino Nano ESP32
+Here is described the Drivers designed for real robots in ROS2:
+- Differential drive robot: Using Arduino Nano and Arduino Nano ESP32 boards
+- Mecanum drive robot: Using Arduino Nano ESP32 board
 
-The first created packages are designed for a differential drive 2 wheeled robots considering the course designed by TheConstruct:
+The created packages are designed for a differential drive 2 wheeled robots considering the course designed by TheConstruct:
 - TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
 
 The general architecture is based on:
-- ROS2 Humble environment with a custom Docker contained in a Raspberrypi4
+- ROS2 Humble environment with a custom Docker contained in a Raspberrypi4 (or 5)
 - A local ROS2_rubot_mecanum_ws responsible of the custom UB robot bringup
-- Arduino nano with a "robot_driver.ino" program to drive the wheels in CL with a serial messaging protocol
+- Arduino based microprocessor: to drive the wheels in CL with a serial messaging protocol
+  - Differential drive robot:
+    - Arduino nano board: with `rubot_driver-nano_diff.ino` program
+    - Arduino nano ESP32 board: with `rubot_driver-nano_ESP32_diff.ino` program
+  - Mecanum drive robot:
+    - Arduino nano ESP32 board: with `rubot_driver-nano_ESP32_mec.ino` program
 - A labtop/PC server with a global ROS2_rubot_mecanum_ws responsible to high level control of the robot
 
 We will analyse:
