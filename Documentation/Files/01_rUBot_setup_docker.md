@@ -111,8 +111,6 @@ sudo reboot
 #### **e) Create a custom Docker container with docker-compose**
 
 We first create a home/ubuntu/Desktop/Docker folder where we place:
-- ROS2_rUBot_mecanum_ws.zip
-- my_robot_nano_bringup_hw.launch.xml
 - Dockerfile.robot
 - entrypoint.robot.yaml
 - docker-compose.robot.yaml

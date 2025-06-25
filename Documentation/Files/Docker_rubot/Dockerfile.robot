@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     git \
     iputils-ping \
+    # Eina per gestionar dependències de ROS des del codi font
+    python3-rosdep \
     # Dependències del teu robot (llista mínima)
     libusb-1.0-0-dev \
     libeigen3-dev \
@@ -32,11 +34,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-usb-cam \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-demo-nodes-cpp \
-    # >>> AFEGIT: Eines gràfiques de ROS2 <<<
+    # Eines gràfiques de ROS2
     ros-humble-rviz2 \
     ros-humble-rqt-graph \
     ros-humble-rqt-plot \
-    # >>> AFEGIT: Dependències per a visualització remota (X11 Forwarding) <<<
+    # Paquets per a Navegació (Nav2) i SLAM (Cartographer)
+    ros-humble-nav2-bringup \
+    ros-humble-cartographer-ros \
+    # Dependències per a visualització remota (X11 Forwarding)
     x11-apps \
     libgl1-mesa-glx \
     mesa-utils \
@@ -49,12 +54,32 @@ RUN pip3 install ultralytics "numpy<2.0"
 
 # Install Serial comunication module for arduino nano
 RUN pip install pyserial
-# Create the Workspace (ROS2_rUBot_mecanum_ws)
+
+# Creació i construcció del Workspace
+
+# 1. Clona el teu repositori principal
 WORKDIR /root
 RUN git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
+
+# 2. Entra al directori 'src' del workspace per afegir el paquet del LIDAR
+WORKDIR /root/ROS2_rUBot_mecanum_ws/src
+RUN git clone https://github.com/Slamtec/rplidar_ros.git -b ros2
+
+# 3. Torna a l'arrel del workspace i construeix tot el projecte
 WORKDIR /root/ROS2_rUBot_mecanum_ws
+
+# S'afegeix 'apt-get update' i s'elimina 'rosdep init'
 RUN source /opt/ros/humble/setup.bash && \
-    colcon build --symlink-install
+    # Actualitza les llistes de paquets d'APT abans d'utilitzar rosdep
+    apt-get update && \
+    # Actualitza les fonts de paquets de rosdep
+    rosdep update && \
+    # Instal·la les dependències dels paquets que tens a 'src'
+    rosdep install --from-paths src --ignore-src -r -y --skip-keys="gazebo_ros" && \
+    # Finalment, compila tot el workspace
+    colcon build --symlink-install && \
+    # Neteja la memòria cau d'APT per mantenir la imatge petita
+    rm -rf /var/lib/apt/lists/*
 
 # Source and .bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc && \

@@ -9,17 +9,20 @@ services:
     image: robot_humble_image
     container_name: robot-humble-container
     privileged: true
+    pull_policy: always
     network_mode: host # Si fas servir 'host', el port ja està obert
     # Essencial per a la visualització gràfica (RViz2, etc.)
     environment:
-      # CANVIA 192.168.1.100 per la IP del TEU PC.
-      - DISPLAY=192.168.1.2:0.0
+      # CANVIA 192.168.1.3 per la IP del TEU PC.
+      - DISPLAY=192.168.1.3:0.0
       # Assegura que l'entorn gràfic funcioni correctament
       - QT_X11_NO_MITSHM=1
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
     volumes:
+      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
       - ./entrypoint.robot.sh:/entrypoint.robot.sh
     entrypoint: /entrypoint.robot.sh
     #command: sleep infinity
     command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
+    restart: always
