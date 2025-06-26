@@ -7,5 +7,9 @@ source "/opt/ros/$ROS_DISTRO/setup.bash"
 # source additional workspace setup
 source "/root/ROS2_rUBot_mecanum_ws/install/setup.bash"
 
+# To use the RRL service from TheConstruct
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
+
 echo "Executing the main command..."
 exec "$@"

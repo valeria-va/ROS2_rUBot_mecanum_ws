@@ -19,14 +19,13 @@ The general architecture is based on:
 - A labtop/PC server with a global ROS2_rubot_mecanum_ws responsible to high level control of the robot
 
 We will analyse:
-- PCB interconnection board design
-- Robot Driver program for Arduino nano
-- Robot Driver program for Arduino nanoESP32
+- PCB board design
+- Differential drive robot programs
+- Mecanum drive robot programs
 - Robot control program in ROS2 environment
 - Robot bringup program in ROS2 environment
 
-
-## **PCB interconnection board design**
+## **1. PCB board design**
 
 A speciffic PCB board is designed to interface the Arduino nano (or Arduino nanoESP32) with the 4 DC-motors with encoder and an IMU sensor.
 
@@ -34,9 +33,11 @@ A speciffic PCB board is designed to interface the Arduino nano (or Arduino nano
 
 ``fotos de la PCB i la connexió amb Raspberrypi``
 
-## **Robot Driver program for Arduino nano**
+## **2. Differential drive robot programs**
 
-The robot driver created for Arduino nano is located in the folder "rubot_driver_nano".
+The Differential robot driver is created for Arduino nano (rubot_driver_nano_diff) and Arduino nano ESP32 (rubot_driver_nano_esp32_diff).
+
+The program defined is based on the ROSArduinoBridge project included in a speciffic folder.
 
 Its main characteristics are:
 - Differential Drive Control: Provides commands for controlling the speed of a two-wheeled robot.
@@ -49,19 +50,17 @@ Its main characteristics are:
 - Automatic Stop: Features an auto-stop mechanism if no motor commands are received for a defined interval.
 - Command Parsing: Includes functionality to parse serial commands with arguments.
 
-## **Robot Driver program for Arduino nanoESP32**
+## **3. Mecanum drive robot programs**
 
-The robot driver created for Arduino nano is located in the folder "rubot_driver_nano_esp32".
+The Mecanum robot driver is created only for Arduino nano ESP32 (rubot_driver_nano_esp32_mec) because only this board offers enough Digital IO pins for the 4-wheeled platform.
 
-Its main characteristics related to the previous program are:
+### **Pin Configuration**
 
-### **Pin Configuration for Arduino nanoESP32**
+Since the Arduino NanoESP32 has both Arduino and ESP32 chips, the pins can be programmed using the Arduino configuration or by number of GPIO by ESP32 configuration.
 
-Since the Arduino NanoESP32 has both Arduino and ESP32 chips the pins can be programmed using the Arduino configuration or by number of GPIO by ESP32 configuration.
-So, before compiling the code we need to set in **Tools -> Ping Numbering -> By GPIO Number(legacy)** to set the correct pin configuration.
-For every motor we will configure one PWM pin that will set the speed of the motor and two Digital Outputs that will set the direction at wich the motor is rotating,
-these signals will go from the Arduino NanoESP32 direcly to the TB6612fng (This is equal to the enable and the IN inputs of the LN298). Two inputs will come from the
-encoders directly to the arduino pins and will be used to determine the rotation speed of the motor.
+Before compiling the code we need to set in **Tools -> Ping Numbering -> By GPIO Number(legacy)** to set the correct pin configuration.
+
+For every motor we will configure one PWM pin that will set the speed of the motor and two Digital Outputs that will set the direction at wich the motor is rotating, these signals will go from the Arduino NanoESP32 direcly to the TB6612fng 2-wheel driver (This is equal to the enable and the IN inputs of the LN298 driver). Two inputs will come from the encoders directly to the arduino pins and will be used to determine the rotation speed of the motor.
 
 |          | **MOTOR 1** | **MOTOR 2** | **MOTOR 3** | **MOTOR 4** |
 |:--------:|:-----------:|:-----------:|:-----------:|:-----------:|
@@ -74,9 +73,8 @@ encoders directly to the arduino pins and will be used to determine the rotation
 
 ### **PWM Writting**
 
-For the Arduino NanoESP32 the configurations of the pins that output a PWM it's a little bit different from the Arduino Nano (No ESP32) ones since it provides the 
-possibility of choosing a channel, the frequency and the number of bits you wanna use to give the value of the PWM signal that the ESP32 generates. The functions
-for configutating the pins are the following:
+For the Arduino NanoESP32 the configurations of the pins that output a PWM it's a little bit different from the Arduino Nano (No ESP32).
+It has the possibility of choosing a channel, the frequency and the number of bits you wan to use for the value of the PWM signal that the ESP32 generates. The functions for configutating the pins are the following:
 
 ````c++
   // Pin config as in Arduino
@@ -91,16 +89,15 @@ for configutating the pins are the following:
   digitalWrite(RIGHT_MOTOR_BACKWARD, LOW);
 
   // Channel 0 for Motor 1 left
-  ledcSetup(0, 5000, 8); // canal 0, 1kHz, 8 bits
+  ledcSetup(0, 5000, 8); // canal 0, 5kHz, 8 bits
   ledcAttachPin(LEFT_MOTOR_ENABLE, 0); 
 
   // Channel 1 for Motor 2 right
   ledcSetup(1, 5000, 8); 
   ledcAttachPin(RIGHT_MOTOR_ENABLE, 1);  
-  }
 ````
 
-And the functions for outputing the speeds depending on the direction are:
+And the functions to define the speeds depending on the direction are:
 
 ````c++
     if (i == LEFT) { 
@@ -132,8 +129,7 @@ And the functions for outputing the speeds depending on the direction are:
 
 ### **Encoder Reading**
 
-Since we are using an ESP32 chip the programming of the interrupts for detecting the signals at the encoder pins is different from the Arduino Nano (without ESP32), due
-the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7 so the functions are different, in the encoder_driver.ino we set:
+Since we are using an ESP32 chip the programming of the interrupts for detecting the signals at the encoder pins is different from the Arduino Nano (without ESP32), due the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7, then the functions are different, in the encoder_driver.ino we set:
 
 ````c++
   const int leftPinA = 38;
@@ -161,7 +157,7 @@ the fact that the arduino boards are made with 8-bit AVR microcontrollers and th
 
 ````
 ### **Main Program Key Variables and modifications**
-From the main program ROSArduinoBridgeESP32.ino we first changed and added the modules for the encoder and TB6612FNG configurations. Nextly some important parameters are defined:
+From the main program ROSArduinoBridgeESP32.ino we first changed and added the modules for the encoder and TB6612FNG configurations. Next some important parameters are defined:
 ````c++
     /* Run the PID loop at 30 times per second */
     #define PID_RATE           30     // Hz
@@ -172,7 +168,7 @@ From the main program ROSArduinoBridgeESP32.ino we first changed and added the m
     #define AUTO_STOP_INTERVAL 2000
     long lastMotorCommand = AUTO_STOP_INTERVAL;
 ````
-The AUTO_STOP_INTERVAL will tell how much time the program will be executing the last command sent, if it was an o 255 255 the motors will be rotating at max speed in open loop for 2000 ms.
+The AUTO_STOP_INTERVAL will tell how much time the program will be executing the last command sent, if the command is `o 255 255`, the motors will be rotating at max speed in open loop for 2000 ms.
 
 - Another change that had to be made is the change of the variable index in the original code by argIndex since it seems that in ESP32 index enters in conflict with a function integrated of the system.
 
@@ -185,7 +181,7 @@ So it had to be changed for this other equally equivalent one
     while ((str = strtok_r(p, ":", &p)) != nullptr) {
 ````
 
-Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise signals at the serial that produced an error that changed the value of the variable cmd wich is the one where the values that come from the serial are stored and tell wich command has to be executed. This error caused the program to enter in a strange bucle executing the command ANALOG_READ continously so in the main loop a condition has been forced in order to skip when an invalid command has been recieved.
+Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise signals at the serial that produced an error that changed the value of the variable cmd wich is the one where the values that come from the serial are stored and tell wich command has to be executed. This error caused the program to enter in a strange loop executing the command ANALOG_READ continously so in the main loop a condition has been forced in order to skip when an invalid command has been recieved.
 
 ````c++
     if (commandReady) {
@@ -205,21 +201,20 @@ Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise
     cmd = cmdBackup;  // In case it was altered unexpectedly
     commandReady = false;
     }
-
 ````
 
-## **Robot control program in ROS2 environment**
+## **4. Robot control program in ROS2 environment**
 
 The ROS2 package "my_robot_driver" is designed to:
-- communicate with Arduino Nano 
+- communicate with Arduino Nano or Arduino NanoESP32
 - subscribe to /cmd_vel topic and generate the proper velocities to each of 4 robot wheels to perform the differential-drive or mecanum-drive driving model
 - perform the bringup concerning the driving model
 
-Here are the main characteristics of the `MotorDriver` Python program, with short explanations for each point:
+Here are the main characteristics of the `rubot_nano_driver_diff.py` or `rubot_nano_driver_mecanum.py` Python program, with short explanations for each point:
 
 * **ROS 2 Node:** It's a ROS 2 node named "motor\_driver," the fundamental building block for running processes in ROS 2.
 * **Serial Communication:** Establishes and manages serial communication with a motor controller (typically an Arduino or similar) to send commands and receive data.
-* **Differential Drive Control:** Interprets `cmd_vel` (Twist messages) to calculate and send appropriate motor commands for a two-wheeled robot.
+* **Differential/Mecanum Drive Control:** Interprets `cmd_vel` (Twist messages) to calculate and send appropriate motor commands for a two-wheeled robot.
 * **Encoder Reading:** Sends commands to the motor controller to read encoder values from the motors.
 * **Velocity Calculation:** Calculates the angular velocities of the robot's wheels based on the changes in encoder values over time.
 * **Odometry Publishing:** Estimates and publishes the robot's position and orientation (odometry) as an `nav_msgs/Odometry` message based on wheel velocities.
@@ -235,7 +230,7 @@ Here are the main characteristics of the `MotorDriver` Python program, with shor
 * **Loop Rate Control:** Uses a timer to periodically check encoders and potentially publish odometry at a configurable rate.
 * **Euler to Quaternion Conversion:** Contains a utility function to convert Euler angles (roll, pitch, yaw) to quaternion representation for the orientation in the odometry message.
 
-## **Robot bringup program in ROS2 environment**
+## **5. Robot bringup program in ROS2 environment**
 
 The ROS2 workspace is ros2_ws in our simple code exemple.
 
@@ -244,14 +239,15 @@ To test the performances follow the instructions:
 - Open VScode and connect to the robot with ssh on the robot's IP
 - Open the container with
     ````shell
-    docker compose up -d
+    cd ~/Desktop/Docker
+    docker compose -f docker-compose.robot.yaml up -d --build
     ````
 - Attach a VScode window to the container
 - Bringup the robot driver with:
     ````shell
-    ros2 launch fastbot_bringup bringup.launch.xml
+    ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
     ````
-    > Be sure the serial_port parameter is on /dev/ttyUSB0
+    > Be sure the serial_port parameter is on /dev/ttyACM0
 - open a new terminal in container and publish a Twist message to move the robot
     ````shell
     ros2 topic list
