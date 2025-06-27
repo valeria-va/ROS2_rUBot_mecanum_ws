@@ -1,11 +1,24 @@
-# **Robot Driver**
+# **ROS2 rUBot driver**
+
+The main objective is to create a "my_robot_driver" package to control the rUBot.
+
+The general architecture is a ROS2 package containing a driver node that connects to an arduino board using serial communication to send closed loop velocity commands and receive encoder values in real time.
+
+Webgraphy:
+- TheConstruct course:Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
+- https://github.com/joshnewans/ros_arduino_bridge
+
+## **1. Arduino based Robot Driver**
+
+The objective of this section is to create a proper driver for rUBot. We have made 2 different arduino boards:
+- using Arduino Nano: https://store.arduino.cc/products/arduino-nano
+- using Arduino Nano-ESP: https://store.arduino.cc/products/nano-esp32
 
 Here is described the Drivers designed for real robots in ROS2:
 - Differential drive robot: Using Arduino Nano and Arduino Nano ESP32 boards
 - Mecanum drive robot: Using Arduino Nano ESP32 board
 
-The created packages are designed for a differential drive 2 wheeled robots considering the course designed by TheConstruct:
-- TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
+The created packages are designed for a differential drive 2 wheeled robots considering the course designed by TheConstruct.
 
 The general architecture is based on:
 - ROS2 Humble environment with a custom Docker contained in a Raspberrypi4 (or 5)
@@ -25,7 +38,7 @@ We will analyse:
 - Robot control program in ROS2 environment
 - Robot bringup program in ROS2 environment
 
-## **1. PCB board design**
+### **1.1. PCB board design**
 
 A speciffic PCB board is designed to interface the Arduino nano (or Arduino nanoESP32) with the 4 DC-motors with encoder and an IMU sensor.
 
@@ -41,7 +54,7 @@ The final render of the driver shield:
 The final real driver shield:
 ![](../Images/01_Setup/Shield_nano_real.jpg)
 
-## **2. Differential drive robot programs**
+### **1.2. Differential drive robot programs**
 
 The Differential robot driver is created for Arduino nano (rubot_driver_nano_diff) and Arduino nano ESP32 (rubot_driver_nano_esp32_diff).
 
@@ -58,11 +71,11 @@ Its main characteristics are:
 - Automatic Stop: Features an auto-stop mechanism if no motor commands are received for a defined interval.
 - Command Parsing: Includes functionality to parse serial commands with arguments.
 
-## **3. Mecanum drive robot programs**
+### **1.3. Mecanum drive robot programs**
 
 The Mecanum robot driver is created only for Arduino nano ESP32 (rubot_driver_nano_esp32_mec) because only this board offers enough Digital IO pins for the 4-wheeled platform.
 
-### **Pin Configuration**
+#### **Pin Configuration**
 
 Since the Arduino NanoESP32 has both Arduino and ESP32 chips, the pins can be programmed using the Arduino configuration or by number of GPIO by ESP32 configuration.
 
@@ -79,7 +92,7 @@ For every motor we will configure one PWM pin that will set the speed of the mot
 | **Enc2** |     A0/1    |     A2/3    |    D11/38   |    D9/18    |
 
 
-### **PWM Writting**
+#### **PWM Writting**
 
 For the Arduino NanoESP32 the configurations of the pins that output a PWM it's a little bit different from the Arduino Nano (No ESP32).
 It has the possibility of choosing a channel, the frequency and the number of bits you wan to use for the value of the PWM signal that the ESP32 generates. The functions for configutating the pins are the following:
@@ -135,7 +148,7 @@ And the functions to define the speeds depending on the direction are:
     }
 ````
 
-### **Encoder Reading**
+#### **Encoder Reading**
 
 Since we are using an ESP32 chip the programming of the interrupts for detecting the signals at the encoder pins is different from the Arduino Nano (without ESP32), due the fact that the arduino boards are made with 8-bit AVR microcontrollers and the ESP32 uses an LX6 or LX7, then the functions are different, in the encoder_driver.ino we set:
 
@@ -164,7 +177,7 @@ Since we are using an ESP32 chip the programming of the interrupts for detecting
   }
 
 ````
-### **Main Program Key Variables and modifications**
+#### **Main Program Key Variables and modifications**
 From the main program ROSArduinoBridgeESP32.ino we first changed and added the modules for the encoder and TB6612FNG configurations. Next some important parameters are defined:
 ````c++
     /* Run the PID loop at 30 times per second */
@@ -210,14 +223,52 @@ Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise
     commandReady = false;
     }
 ````
+The Arduino microcontroller is connected over serial (UART) communication with a USB-USB-mini cable.
 
-## **4. Robot control program in ROS2 environment**
+Once connected, we must upload firmware to the Arduino nano. For this we will use "rubot_driver_nano_ESP32_mec.ino".
+
+This code in Arduino board:
+- Receives closed loop speed commands to move the rUBot in the desired Twist vector 
+- Sends the encoder values in real-time to obtain the Odometry
+
+## **2. Robot control program in ROS2 environment**
+
+We can now create the ROS 2 needed packages containing a ROS 2 node that uses the serial communication:
+- my_robot_driver
+- my_robot_bringup
 
 The ROS2 package "my_robot_driver" is designed to:
 - communicate with Arduino Nano or Arduino NanoESP32
 - subscribe to /cmd_vel topic and generate the proper velocities to each of 4 robot wheels to perform the differential-drive or mecanum-drive driving model
-- perform the bringup concerning the driving model
 
+The ROS2 package "my_robot_bringup" performs the bringup concerning:
+- the robot driver node
+- the Lidar node
+- the Camera node
+
+### **2.1. my_robot_driver package**
+
+We have created a "Robot_drivers" folder where we place:
+- Arduino folder with all the Arduino programs
+- "my_robot_driver" package with the driver node
+- "serial_motor_msgs" package with the custom designed messages
+
+
+- Create "my_robot_driver" package for custom UB rUBot:
+    ````shell
+    cd src/Robot_drivers
+    ros2 pkg create --build-type ament_python my_robot_driver --dependencies rclpy serial_motor_msgs
+    ````
+  - Inside the "my_robot_driver" folder, create "rubot_nano_driver_mecanum.py" file 
+
+- Create "serial_motor_msgs" package:
+    ````shell
+    ros2 pkg create --build-type ament_cmake serial_motor_msgs --dependencies rclcpp
+    ````
+  - Create /msg directory inside /serial_motor_msgs:
+  - Create the different messages inside the msgs folder
+  - modify the CMakeLists.txt to setup the messages names
+    
 Here are the main characteristics of the `rubot_nano_driver_diff.py` or `rubot_nano_driver_mecanum.py` Python program, with short explanations for each point:
 
 * **ROS 2 Node:** It's a ROS 2 node named "motor\_driver," the fundamental building block for running processes in ROS 2.
@@ -238,12 +289,12 @@ Here are the main characteristics of the `rubot_nano_driver_diff.py` or `rubot_n
 * **Loop Rate Control:** Uses a timer to periodically check encoders and potentially publish odometry at a configurable rate.
 * **Euler to Quaternion Conversion:** Contains a utility function to convert Euler angles (roll, pitch, yaw) to quaternion representation for the orientation in the odometry message.
 
-## **5. Robot bringup program in ROS2 environment**
+### **2.2. my_robot bringup package**
 
 The ROS2 workspace is ros2_ws in our simple code exemple.
 
 To test the performances follow the instructions:
-- Power the raspberrypi. This will connect to the Biorobotics lab with IP (192.168.1.50) and start the container if the Docker service is enabled
+- Power the raspberrypi. This will connect to the Biorobotics lab with IP (192.168.1.12) and start the container if the Docker service is enabled
 - Open VScode and connect to the robot with ssh on the robot's IP
 - Open the container with
     ````shell
