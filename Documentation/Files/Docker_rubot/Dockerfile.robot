@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Yolo
-RUN pip3 install ultralytics "numpy<2.0"
+RUN pip3 install ultralytics "numpy<1.24"
 
 # Install Serial comunication module for arduino nano
 RUN pip install pyserial

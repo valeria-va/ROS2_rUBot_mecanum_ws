@@ -127,6 +127,7 @@ Follow the instructions:
 
 - Start the Container
 ````shell
+docker system prune -f
 docker compose -f docker-compose.robot.yaml up -d --build
 ````
 - If you want to Stop the Container

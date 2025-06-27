@@ -146,7 +146,7 @@ The same simple control program created in virtual environment to move the robot
     >**Important!**: If you are using the RRL service from TheConstruct, the bringup is already done on boot! You have only to connect to the Real Robot.
 - We control the robot with the same node created for virtual environment:
     ``` shell
-    ros2 launch my_robot_control my_robot_control.launch.xml td:=10.0
+    ros2 launch my_robot_control my_robot_control.launch.xml vx:=0.0 vy:=0.2 w:=0.0 td:=10.0
     ```
 
 ## **2. Driving self-control**
