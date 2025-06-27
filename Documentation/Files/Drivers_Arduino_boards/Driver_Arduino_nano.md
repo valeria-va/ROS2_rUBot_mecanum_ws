@@ -29,9 +29,15 @@ We will analyse:
 
 A speciffic PCB board is designed to interface the Arduino nano (or Arduino nanoESP32) with the 4 DC-motors with encoder and an IMU sensor.
 
-``gràfics de la PCB i relació dels pins amb Arduino nano``
+The Arduino nano and Nano ESP32 pinout:
+![](../../Images/01_Setup/Nano_pinout.jpg)
 
-``fotos de la PCB i la connexió amb Raspberrypi``
+The schematic of the driver shield:
+![](../../Images/01_Setup/Shield_nano_eschematic.jpg)
+
+The final render of the driver shield:
+![](../../Images/01_Setup/Shield_nano_render.jpg)
+
 
 ## **2. Differential drive robot programs**
 
