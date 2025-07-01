@@ -172,6 +172,7 @@ The bringup of the robot is done automatically, but if you want to **work with t
 If we have a PC in the same network, we only need to:
 - Install Docker Desktop and run it
 - Have an X Server like VcXsrv running (https://sourceforge.net/projects/vcxsrv/). Remember to start it with the "Disable access control" option checked.
+- A better option is MobaXterm: Free version "Home Edition" (https://mobaxterm.mobatek.net/download-home-edition.html).
 - Create folder with a custom Docker container (files in Documentation/Files/Docker_PC) with
   - Dockerfile.pc
   - entrypoint.pc.sh
