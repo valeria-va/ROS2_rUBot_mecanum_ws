@@ -341,8 +341,10 @@ class MecanumMotorDriver(Node):
         # Crea i publica el missatge d'odomètria
         odom_msg = Odometry()
         odom_msg.header.stamp = self.get_clock().now().to_msg()
-        odom_msg.header.frame_id = self.robot_name + "_odom"
-        odom_msg.child_frame_id = self.robot_name + "_base_link"
+        #odom_msg.header.frame_id = self.robot_name + "_odom"
+        #odom_msg.child_frame_id = self.robot_name + "_base_link"
+        odom_msg.header.frame_id = "odom"
+        odom_msg.child_frame_id = "base_link"
 
         # Estableix la posició
         odom_msg.pose.pose.position.x = self.x
