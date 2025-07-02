@@ -3,9 +3,9 @@
 <package format="3">
   <name>my_robot_nav_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="user@todo.todo">user</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Custom navigation</description>
+  <maintainer email="manel.puig@ub.edu">user</maintainer>
+  <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
