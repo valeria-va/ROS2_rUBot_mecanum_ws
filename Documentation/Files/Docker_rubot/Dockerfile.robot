@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-usb-cam \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-demo-nodes-cpp \
+    ros-humble-teleop-twist-keyboard \
     # Eines gràfiques de ROS2
     ros-humble-rviz2 \
     ros-humble-rqt-graph \
@@ -83,7 +84,8 @@ RUN source /opt/ros/humble/setup.bash && \
 
 # Source and .bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc && \
-    echo "source /root/ROS2_rUBot_mecanum_ws/install/setup.bash" >> /root/.bashrc
+    echo "source /root/ROS2_rUBot_mecanum_ws/install/setup.bash" >> /root/.bashrc && \
+    echo "cd ROS2_rUBot_mecanum_ws" >> /root/.bashrc
 
 # Set the default command to run when the container starts
 CMD ["/bin/bash"]

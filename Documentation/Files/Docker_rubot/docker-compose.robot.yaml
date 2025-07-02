@@ -25,6 +25,6 @@ services:
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
       - ./entrypoint.robot.sh:/entrypoint.robot.sh
     entrypoint: /entrypoint.robot.sh
-    command: sleep infinity
-    #command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
+    #command: sleep infinity
+    command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
     restart: always
