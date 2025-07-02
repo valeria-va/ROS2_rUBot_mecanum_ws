@@ -19,17 +19,17 @@ def generate_launch_description():
 
     declare_map_arg = DeclareLaunchArgument(
         'map',
-        default_value=os.path.join(nav_pkg_dir, 'map', 'map_square4m_sig.yaml'),
+        default_value=os.path.join(nav_pkg_dir, 'map', 'map_square3m_wall.yaml'),
         description='Full path to map file')
 
     declare_params_arg = DeclareLaunchArgument(
         'params_file', # Canviat a 'params_file' per coincidir amb l'estàndard de Nav2
-        default_value=os.path.join(nav_pkg_dir, 'param', 'limo_sw.yaml'),
+        default_value=os.path.join(nav_pkg_dir, 'param', 'rubot_sw.yaml'),
         description='Full path to param file for nav2')
 
     declare_use_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='false',
+        default_value='true',
         description='Use simulation (Gazebo) clock if true')
 
     # --- Obtenim els valors dels arguments ---

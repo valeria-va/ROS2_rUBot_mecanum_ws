@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="use_sim_time" default="false" description="Use simulation (Gazebo) clock if true" />
+    <arg name="use_sim_time" default="true" description="Use simulation (Gazebo) clock if true" />
     <arg name="x0" default="0.0" description="Initial X position of the robot" />
     <arg name="y0" default="0.0" description="Initial Y position of the robot" />
     <arg name="yaw0" default="0.0" description="Initial Yaw orientation of the robot (radians)" />

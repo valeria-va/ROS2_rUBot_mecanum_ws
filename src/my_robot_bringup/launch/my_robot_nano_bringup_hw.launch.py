@@ -70,6 +70,7 @@ def generate_launch_description():
     ])
 
     # Definició del node robot_state_publisher
+    # El node joint_state_publisher esta definit en el driver
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
