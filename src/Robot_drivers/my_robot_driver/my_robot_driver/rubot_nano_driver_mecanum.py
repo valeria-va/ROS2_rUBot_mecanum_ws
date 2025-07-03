@@ -13,6 +13,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, TransformStamped
 from sensor_msgs.msg import JointState
 from serial_motor_msgs.msg import MecanumMotorVels, MecanumEncoderVals
+from std_msgs.msg import Bool
 
 # Imports per a la gestió de nodes i TFs
 from rclpy.executors import MultiThreadedExecutor
@@ -39,7 +40,7 @@ class MecanumMotorDriver(Node):
             self.get_logger().info("Utilitzant temps de simulació.")
 
         # Declaració de la resta de paràmetres amb valors per defecte.
-        self.declare_parameter("encoder_cpr", 1320)
+        self.declare_parameter("encoder_cpr", 1320) #1320
         self.encoder_cpr = self.get_parameter("encoder_cpr").value
         
         self.declare_parameter("loop_rate", 30)
@@ -54,7 +55,7 @@ class MecanumMotorDriver(Node):
         self.declare_parameter("serial_debug", False)
         self.debug_serial_cmds: bool = self.get_parameter("serial_debug").value
 
-        self.declare_parameter("wheel_diameter", 0.075)
+        self.declare_parameter("wheel_diameter", 0.080)
         self.wheel_diameter = self.get_parameter("wheel_diameter").value
         self.wheel_radius = self.wheel_diameter / 2
 
@@ -80,6 +81,9 @@ class MecanumMotorDriver(Node):
         self.motor_vels_pub_ = self.create_publisher(MecanumMotorVels, "motor_vels", 10)
         self.encoder_pub_ = self.create_publisher(MecanumEncoderVals, "encoder_vals", 10)
 
+        #Subscriber
+        self._sub_reset_odom = self.create_subscription(Bool, "reset_odom", self.reset_odom_callback, 10, callback_group=self.callback_group)
+        
         # Bucle principal del node
         self.create_timer(1.0 / self.loop_rate, self._timer_callback, callback_group=self.callback_group)
         
@@ -208,6 +212,15 @@ class MecanumMotorDriver(Node):
         odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y = vx, vy
         odom_msg.twist.twist.angular.z = vth
         self.odom_pub_.publish(odom_msg)
+
+    def reset_odom_callback(self, msg: Bool) -> None:
+        """Reinicia els encoders i l'odometria si rep True pel topic /reset_odom."""
+
+        if msg.data:
+            self._logger.info("Reiniciant odometria i encoders.")
+            self.send_command("r")
+            self.x, self.y, self.theta = 0.0, 0.0, 0.0
+            self.last_fl_enc = self.last_fr_enc = self.last_bl_enc = self.last_br_enc = 0
 
     def euler_to_quaternion(self, roll: float, pitch: float, yaw: float) -> tuple:
         cy, sy = math.cos(yaw * 0.5), math.sin(yaw * 0.5)
