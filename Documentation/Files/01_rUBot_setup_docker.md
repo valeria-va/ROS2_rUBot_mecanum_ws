@@ -143,9 +143,7 @@ sudo systemctl enable docker
 docker ps
 docker logs robot-humble-container
 ````
-- To modify the rubot_bringup.sh file: Simply edit rubot_bringup.launch.xml on your host machine. Changes will reflect in the container on the next restart.
-
-To verify if the container is working type on terminal:
+- To verify if the container is working type on terminal:
 ````shell
 docker exec -it robot-humble-container /bin/bash
 ````
