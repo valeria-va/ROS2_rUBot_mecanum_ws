@@ -148,12 +148,13 @@ docker logs robot-humble-container
 docker exec -it robot-humble-container /bin/bash
 ````
 
+**Connect locally to the robot**
+
 The bringup of the robot is done automatically, but if you want to **work with the container using VScode**, proceed with:
 - Select "Remote Explorer" and "Dev Containers"
 - Right-click and attatch a new window to this container
 - In a new terminal, type:
   ````shell
-  ./entrypoint.robot.sh
   ros2 node list
   git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
   cd ROS2_rUBot_mecanum_ws
@@ -164,6 +165,17 @@ The bringup of the robot is done automatically, but if you want to **work with t
   ````shell
   rqt -s rqt_plot /cmd_vel/linear/x
   ````
+
+**Connect with TheConstruct environment**
+
+- Install the robot: copy the link
+- Modify the docker-compose and entrypoint adding the lines corresponding to RRL service
+- Stop and remove the container
+````shell
+docker compose -f docker-compose.robot.yaml down 
+docker system prune -f
+docker compose -f docker-compose.robot.yaml up -d --build
+````
 
 #### **f) Connect a PC to the same rUBot network**
 

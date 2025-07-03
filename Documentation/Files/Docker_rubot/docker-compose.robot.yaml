@@ -9,12 +9,12 @@ services:
     image: robot_humble_image
     container_name: robot-humble-container
     privileged: true
-    pull_policy: always
+    #pull_policy: always # Quan s'ha de connectar remotament per a baixar una imatge de Dockerhub
     network_mode: host # Si fas servir 'host', el port ja està obert
     # Essencial per a la visualització gràfica (RViz2, etc.)
     environment:
-      # CANVIA 192.168.1.3 per la IP del TEU PC.
-      - DISPLAY=192.168.1.3:0.0
+      # CANVIA 192.168.1.6 per la IP del TEU PC.
+      - DISPLAY=192.168.1.6:0.0
       # Assegura que l'entorn gràfic funcioni correctament
       - QT_X11_NO_MITSHM=1
       - LIBGL_ALWAYS_SOFTWARE=1
