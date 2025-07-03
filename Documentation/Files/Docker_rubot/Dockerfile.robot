@@ -85,7 +85,7 @@ RUN source /opt/ros/humble/setup.bash && \
 # Source and .bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc && \
     echo "source /root/ROS2_rUBot_mecanum_ws/install/setup.bash" >> /root/.bashrc && \
-    echo "cd ROS2_rUBot_mecanum_ws" >> /root/.bashrc
+    echo "cd /root/ROS2_rUBot_mecanum_ws" >> /root/.bashrc
 
 # Set the default command to run when the container starts
 CMD ["/bin/bash"]

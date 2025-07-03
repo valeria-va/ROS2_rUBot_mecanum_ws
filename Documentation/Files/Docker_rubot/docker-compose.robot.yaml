@@ -21,7 +21,7 @@ services:
       - MESA_GL_VERSION_OVERRIDE=2.1 
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
     volumes:
-      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
+      #- /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml #Nomes quan ens connectem amb TheConstruct
       - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
       - ./entrypoint.robot.sh:/entrypoint.robot.sh
     entrypoint: /entrypoint.robot.sh
