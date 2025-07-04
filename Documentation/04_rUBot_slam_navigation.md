@@ -75,6 +75,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
     >use_sim_time have to be True when using Gazebo for Virtual simulation
     - In the case of real robot:
     ````shell
+    ros2 topic pub --once /reset_odom std_msgs/msg/Bool "{data: true}"
     ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=False
     ````
 - Navigate on the world to store the map
@@ -109,7 +110,13 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_real.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=my_map.yaml param:=rubot_real.yaml
+        or
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=src/Navigation_Projects/my_robot_navigation2/map/my_map.yaml param:=src/my_robot_navigation2/param/rubot_real.yaml
+        or
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False \
+        map:=$(ros2 pkg share my_robot_navigation2)/map/my_map.yaml \
+        params_file:=$(ros2 pkg share my_robot_navigation2)/param/rubot_real.yaml
         ````
         > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear

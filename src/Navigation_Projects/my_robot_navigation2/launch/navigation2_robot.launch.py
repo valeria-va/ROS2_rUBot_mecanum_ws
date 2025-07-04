@@ -19,7 +19,7 @@ def generate_launch_description():
 
     declare_map_arg = DeclareLaunchArgument(
         'map',
-        default_value=os.path.join(nav_pkg_dir, 'map', 'map_square3m_wall.yaml'),
+        default_value=os.path.join(nav_pkg_dir, 'map', 'my_map.yaml'),
         description='Full path to map file')
 
     declare_params_arg = DeclareLaunchArgument(
