@@ -22,9 +22,9 @@ class Rubot(Node):
         self.q_goal = quaternion_from_euler(0, 0, self.f_goal)
 
         # Define initial values for actual odometry (read in callback function)
-        self.x_pose = 0
-        self.y_pose = 0
-        self.yaw = 0
+        self.x_pose = 0.0
+        self.y_pose = 0.0
+        self.yaw = 0.0
 
         # Publisher which will publish to the topic '/cmd_vel'.
         self.velocity_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -77,10 +77,10 @@ class Rubot(Node):
 
         while rclpy.ok() and self.euclidean_distance(goal_odom) >= distance_tolerance:
             vel_msg.linear.x = self.linear_vel(goal_odom)
-            vel_msg.linear.y = 0
-            vel_msg.linear.z = 0
-            vel_msg.angular.x = 0
-            vel_msg.angular.y = 0
+            vel_msg.linear.y = 0.0
+            vel_msg.linear.z = 0.0
+            vel_msg.angular.x = 0.0
+            vel_msg.angular.y = 0.0
             vel_msg.angular.z = self.angular_vel(goal_odom)
 
             self.velocity_publisher.publish(vel_msg)
@@ -89,11 +89,11 @@ class Rubot(Node):
             self.rate.sleep()
 
         while rclpy.ok() and abs(self.f_goal - self.yaw) >= angle_tolerance:
-            vel_msg.linear.x = 0
-            vel_msg.linear.y = 0
-            vel_msg.linear.z = 0
-            vel_msg.angular.x = 0
-            vel_msg.angular.y = 0
+            vel_msg.linear.x = 0.0
+            vel_msg.linear.y = 0.0
+            vel_msg.linear.z = 0.0
+            vel_msg.angular.x = 0.0
+            vel_msg.angular.y = 0.0
             vel_msg.angular.z = (self.f_goal - self.yaw) * 0.5
 
             self.velocity_publisher.publish(vel_msg)
@@ -101,8 +101,8 @@ class Rubot(Node):
 
             self.rate.sleep()
 
-        vel_msg.linear.x = 0
-        vel_msg.angular.z = 0
+        vel_msg.linear.x = 0.0
+        vel_msg.angular.z = 0.0
         self.velocity_publisher.publish(vel_msg)
         self.get_logger().info("Goal POSE reached!")
 
