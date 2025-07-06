@@ -3,6 +3,7 @@ set -e
 
 # Activa l'entorn de ROS 2
 source "/opt/ros/humble/setup.bash"
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 # Opcional: Si has construït un workspace al PC, activa'l també
 # source "/root/pc_ws/install/setup.bash"

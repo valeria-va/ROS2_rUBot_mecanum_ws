@@ -87,7 +87,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
 
 ## **4.3. Navigate inside Map**
 
-- Fist of all we have to make a correction because sometimes the Map is not read correctly or ontime:
+- Fist of all we have to make a correction because sometimes the Map is not read correctly or ontime (this is already installed in our Dockerfile.robot):
     - Install ros-humble-rmw-cyclonedds-cpp
     ````shell
     sudo apt update
@@ -111,14 +111,10 @@ cd /home/user/ROS2_rUBot_mecanum_ws
     - In the case of real robot:
         ````shell
         ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=my_map.yaml param:=rubot_real.yaml
-        or
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=src/Navigation_Projects/my_robot_navigation2/map/my_map.yaml param:=src/my_robot_navigation2/param/rubot_real.yaml
-        or
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False \
-        map:=$(ros2 pkg share my_robot_navigation2)/map/my_map.yaml \
-        params_file:=$(ros2 pkg share my_robot_navigation2)/param/rubot_real.yaml
         ````
-        > You have to see the MAP in the rviz and an error in "Global status" due to the unlocalization of your robot in the map. If you do not see the MAP, close the terminal execution (crtl+C) and start again until you see the Map in rviz
+        > If you do not see the MAP in rviz2, close the terminal execution (crtl+C) and start again until you see the Map.
+
+        > An error appears in "Global status" due to the unlocalization of your robot in the map. When you localize your robot in the map this error desappears.
 - Localize the robot on the map using "2D-Pose estimate". The "Global Planner" and "Controller" will be updated and NO errors will appear
 - Navigate on the MAP with Nav2
     - Selecty 1 target point
@@ -136,7 +132,7 @@ The interesting actions used:
 - /navigate_to_pose
 - /follow_waypoints
 
-we need to install (usually is already installed):
+we need to install (already installed in our Dockerfile.robot):
 ````shell
 sudo apt install ros-humble-nav2-simple-commander
 sudo apt install ros-humble-tf-transformations
@@ -159,10 +155,12 @@ To navigate programmatically using Simple Commander API, you have to proceed wit
         ````shell
         ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_real.yaml
         ````
-- Launch the created python file to define the Initial point and the targets waypoints
+- Launch the created python file to define the Initial point and one target point:the targets waypoints
     ````shell
     ros2 launch my_robot_nav_control nav_target.launch.py
-    or
+    ````
+- Launch the created python file to define the Initial point and some targets waypoints defined in config folder:
+    ````
     ros2 launch my_robot_nav_control nav_waypoints.launch.py
     ````
     >First time we pass the 2D-Pose-Estimate but not the successive times

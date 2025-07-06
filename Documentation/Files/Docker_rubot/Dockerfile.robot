@@ -30,7 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-tf2-ros \
-    ros-humble-tf-transformations \
     ros-humble-usb-cam \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-demo-nodes-cpp \
@@ -41,6 +40,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rqt-plot \
     # Paquets per a Navegació (Nav2) i SLAM (Cartographer)
     ros-humble-nav2-bringup \
+    ros-humble-nav2-simple-commander \
+    ros-humble-tf-transformations \
     ros-humble-cartographer-ros \
     # Dependències per a visualització remota (X11 Forwarding)
     x11-apps \

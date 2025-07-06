@@ -15,25 +15,29 @@ RUN apt-get update \
     mesa-utils \
     libqt5x11extras5 \
     libxkbcommon-x11-0 \
+    build-essential \
+    cmake \
+    python3-colcon-common-extensions \
+    python3-pip \
+    wget \
+    unzip \
+    git \
+    iputils-ping \
     ros-humble-nav2-bringup \
+    ros-humble-nav2-simple-commander \
+    ros-humble-tf-transformations \
     ros-humble-cartographer-ros \
     ros-humble-teleop-twist-keyboard \
     ros-humble-rmw-cyclonedds-cpp \
-    build-essential \
-    python3-colcon-common-extensions \
-    git \
-    iputils-ping \
+    
     && rm -rf /var/lib/apt/lists/*
 
+# Install Yolo
+RUN pip3 install ultralytics "numpy<1.24"
+
+WORKDIR /root
 # Add the ROS environment to .bashrc for convenience
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
-
-# Copy and set permissions for our entrypoint script
-COPY entrypoint.pc.sh /root/entrypoint.pc.sh
-RUN chmod +x /root/entrypoint.pc.sh
-
-# Define the entrypoint
-ENTRYPOINT ["/root/entrypoint.pc.sh"]
 
 # By default, keep the container running with a terminal
 CMD ["bash"]
