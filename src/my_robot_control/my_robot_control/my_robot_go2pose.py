@@ -16,9 +16,9 @@ class Rubot(Node):
         self.declare_parameter('y', 0.0)
         self.declare_parameter('f', 0.0)
 
-        self.x_goal = self.get_parameter('x', 0.0).value
-        self.y_goal = self.get_parameter('y', 0.0).value
-        self.f_goal = radians(self.get_parameter('f', 0.0).value)
+        self.x_goal = self.get_parameter('x').value
+        self.y_goal = self.get_parameter('y').value
+        self.f_goal = radians(self.get_parameter('f').value)
         self.q_goal = quaternion_from_euler(0, 0, self.f_goal)
 
         # Define initial values for actual odometry (read in callback function)
