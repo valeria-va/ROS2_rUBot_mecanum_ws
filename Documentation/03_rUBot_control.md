@@ -259,3 +259,12 @@ The objective of this lab session is:
 Upload the:
 - "my_robot_wallfollower_holonomic.launch.xml" and "my_robot_wallfollower_holonomic.py" files
 - Video of the execution in REAL environment
+
+## **4. Go to POSE**
+
+We have created a Go2POSE strategy 
+
+```shell
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=1.0 y0:=1.0 yaw0:=1.8 robot:=rubot/rubot_mecanum.urdf custom_world:=square3m_walls.world
+ros2 launch my_robot_control my_robot_go2pose.launch.xml 
+```
