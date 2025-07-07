@@ -29,7 +29,6 @@ RUN apt-get update \
     ros-humble-cartographer-ros \
     ros-humble-teleop-twist-keyboard \
     ros-humble-rmw-cyclonedds-cpp \
-    
     && rm -rf /var/lib/apt/lists/*
 
 # Install Yolo

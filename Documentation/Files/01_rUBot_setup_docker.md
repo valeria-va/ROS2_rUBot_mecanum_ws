@@ -147,6 +147,12 @@ docker logs robot-humble-container
 ````shell
 docker exec -it robot-humble-container /bin/bash
 ````
+- After some time, if the Container do not work properly, delete the image and create it again with docker-compose:
+````shell
+docker rmi robot_humble_image
+docker system prune -f
+docker compose -f docker-compose.robot.yaml up -d --build
+````
 
 **Connect locally to the robot**
 
