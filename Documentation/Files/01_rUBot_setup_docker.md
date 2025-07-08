@@ -124,6 +124,12 @@ In raspberrypi, when **Ubuntu22.04 server OS** (64Bits)
     $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   sudo apt update
   sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+  # Start Docker service
+  sudo systemctl start docker
+  # Enable Docker to start on boot
+  sudo systemctl enable docker
+  sudo systemctl enable containerd.service
+  # Add your user to the Docker group (to avoid using sudo for Docker commands)
   sudo usermod -aG docker $USER
   sudo reboot
   ````
@@ -153,10 +159,6 @@ docker compose -f docker-compose.robot.yaml up -d --build
 - If you want to Stop the Container
 ````shell
 docker compose -f docker-compose.robot.yaml down 
-````
-- Enable Docker to Start on Boot (only the first time)
-````shell
-sudo systemctl enable docker
 ````
 - To check the running container and to check logs for troubleshooting:
 ````shell
@@ -189,16 +191,12 @@ The bringup of the robot is done automatically, but if you want to **work with t
 - In a new terminal, type:
   ````shell
   ros2 node list
-  git clone https://github.com/manelpuig/ROS2_rUBot_mecanum_ws.git
-  cd ROS2_rUBot_mecanum_ws
-  colcon build
   ````
 - You will be ready to work within the container
 - In order to see a Plot:
   ````shell
   rqt -s rqt_plot /cmd_vel/linear/x
   ````
-
 
 **b) Connect a PC to the same rUBot network**
 
