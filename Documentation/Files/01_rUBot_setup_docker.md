@@ -31,7 +31,13 @@ Each one has speciffic Docker configuration characteristics.
 
 For this robot we will use a computero onboard based on Raspberrypi4 where we will install a RaspberryPi OS (64Bits)-
 
-#### **a) Install Raspberrypi Desktop**
+#### **2.1.1. Install SO**
+We can install in the raspberrypi4:
+- RaspberryPi OS 64Bits
+- Ubuntu22.04 server SO 64bits (Recommended)
+
+
+**a) RaspberryPi OS 64Bits**
 
 - Run Raspberry Pi Imager (https://www.raspberrypi.org/software/)
   - select Device: Raspberrypi4 (or 5)
@@ -67,7 +73,7 @@ For this robot we will use a computero onboard based on Raspberrypi4 where we wi
     - Add DNS server (8.8.8.8) for google DNS
     - Apply and reboot
 
-#### **b) Install VNC connections**
+**VNC connections**
 
 - Connect to the raspberrypi with ssh and activate **VNC connections**:
   - type: sudo raspi-config
@@ -78,50 +84,63 @@ For this robot we will use a computero onboard based on Raspberrypi4 where we wi
 - If you want to connect to another network, you have to be connected first manually to the different networks to enable raspberrypi to connect to on reboot
 - reboot and it will be connected to the first network available
 
-#### **c) Using VScode remote explorer**
 
-You can install the Extension "Remote Development" on VScode:
+#### **2.1.2. Install Docker**
 
+You can use VScode and install the Extensions:
+- "Remote Development"
+- Docker (from Docker and Microsoft)
 - Open VScode and connect remotelly to the Raspberrypi with ssh -X ubuntu@192.168.xxx.xxx
 - If you can not connect to the raspberrypi, perhaps you have to regenerate permissions (replace IP-raspberrypi by 192.168.xx.xx):
   ````shell
-  ssh-keygen -R IP-raspberrypi
+  ssh-keygen -R 192.168.1.xx
   ````
 
-#### **d) Install Docker**
+In raspberrypi, when **RaspberryPi OS** (64Bits), add Docker’s official repository for Ubuntu
+  ````shell
+  sudo apt update
+  sudo apt upgrade
+  # install Docker automatically in function of the Raspbian version installed
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh
+  # Start Docker service
+  sudo systemctl start docker
+  # Enable Docker to start on boot
+  sudo systemctl enable docker
+  sudo systemctl enable containerd.service
+  # Add your user to the Docker group (to avoid using sudo for Docker commands)
+  sudo usermod -aG docker $USER
+  # Reboot to apply changes (especially for the user group change)
+  sudo reboot
+  ````
+In raspberrypi, when **Ubuntu22.04 server OS** (64Bits)
+  ````shell
+  sudo apt update
+  sudo apt install ca-certificates curl gnupg lsb-release -y
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt update
+  sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+  sudo usermod -aG docker $USER
+  sudo reboot
+  ````
 
-In raspberrypi, add Docker’s official repository for Ubuntu
-````shell
-sudo apt update
-sudo apt upgrade
-# install Docker automatically in function of the Raspbian version installed
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-# Start Docker service
-sudo systemctl start docker
-# Enable Docker to start on boot
-sudo systemctl enable docker
-sudo systemctl enable containerd.service
-# Add your user to the Docker group (to avoid using sudo for Docker commands)
-sudo usermod -aG docker $USER
-# Reboot to apply changes (especially for the user group change)
-sudo reboot
-````
+#### **2.1.3. Create a rUBot ROS2 environment**
 
-#### **e) Create a custom Docker container with docker-compose**
-
-We first create a home/ubuntu/Desktop/Docker folder where we place:
+We first create a Docker folder where we place:
 - Dockerfile.robot
 - entrypoint.robot.yaml
 - docker-compose.robot.yaml
+- bringup.sh
 
 >**Important**: make all files executable!
   ````shell
-  cd Desktop/Docker
+  cd Docker
   sudo chmod +x *
   ````
-
-For LIMO robot, documentation is in: https://hub.docker.com/r/theconstructai/limo
 
 Follow the instructions:
 
@@ -130,6 +149,7 @@ Follow the instructions:
 docker system prune -f
 docker compose -f docker-compose.robot.yaml up -d --build
 ````
+>First time this will take 25min aprox.
 - If you want to Stop the Container
 ````shell
 docker compose -f docker-compose.robot.yaml down 
@@ -154,7 +174,14 @@ docker system prune -f
 docker compose -f docker-compose.robot.yaml up -d --build
 ````
 
-**Connect locally to the robot**
+#### **2.1.4. Connect to control rUBot**
+
+We have different possibilities to connect to the rUBot:
+- SSH remote Desktop connection to Docker container
+- Connect a PC to the same rUBot network
+- Using service RRL fro TheConstruct
+
+**a) Connect locally to the robot**
 
 The bringup of the robot is done automatically, but if you want to **work with the container using VScode**, proceed with:
 - Select "Remote Explorer" and "Dev Containers"
@@ -172,18 +199,8 @@ The bringup of the robot is done automatically, but if you want to **work with t
   rqt -s rqt_plot /cmd_vel/linear/x
   ````
 
-**Connect with TheConstruct environment**
 
-- Install the robot: copy the link
-- Modify the docker-compose and entrypoint adding the lines corresponding to RRL service
-- Stop and remove the container
-````shell
-docker compose -f docker-compose.robot.yaml down 
-docker system prune -f
-docker compose -f docker-compose.robot.yaml up -d --build
-````
-
-#### **f) Connect a PC to the same rUBot network**
+**b) Connect a PC to the same rUBot network**
 
 If we have a PC in the same network, we only need to:
 - Install Docker Desktop and run it
@@ -220,6 +237,16 @@ If we have a PC in the same network, we only need to:
     ````shell
     ros2 run demo_nodes_cpp listener
     ````
+**c) Connect with TheConstruct environment**
+
+- Install the robot: copy the link
+- Modify the docker-compose and entrypoint adding the lines corresponding to RRL service
+- Stop and remove the container
+  ````shell
+  docker compose -f docker-compose.robot.yaml down 
+  docker system prune -f
+  docker compose -f docker-compose.robot.yaml up -d --build
+  ````
 
 ### **2.2. Setup the commercial LIMO robot**
 
@@ -243,25 +270,7 @@ cd limo_docker
 docker system prune
 docker compose -f docker-compose-v3.yaml up -d
 ````
-In limo_start.launch.py we can modify the image resolution and published frames per second with the corresponding parameters, but the parameter value set has to be accepted by the camera driver:
-````shell
-IncludeLaunchDescription(
-    PythonLaunchDescriptionSource(
-        [orbbec_camera_dir, "/launch", "/dabai.launch.py"]
-    ),
-    launch_arguments={
-    'color_width': '640',
-    'color_height': '480',
-    'color_fps': '30',
-    'depth_width': '640',
-    'depth_height': '400',
-    'depth_fps': '30',
-    'ir_width': '640',
-    'ir_height': '400',
-    'ir_fps': '30'
-    }.items(),
-),
-````
+
 Add to the .bashrc file:
 ````bash
 export ROS_DOMAIN_ID=0
