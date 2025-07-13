@@ -105,12 +105,12 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >Change the URDF file for each robot
         - Launch Navigation node: python launcher is more powerfull than previous xml format
         ````bash
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map_file:=map_square4m_sign.yaml param:=rubot_sw.yaml 
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map_file:=map_square4m_sign.yaml params_file:=rubot_sw.yaml 
         ````
         >For LIMO: We use "limo_sw.yaml" file. In case we want to priorize the lidar data from odometry data we will use Limo_sw_lidar.yaml
     - In the case of real robot:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map_file:=my_map.yaml param:=rubot_real.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map_file:=my_map.yaml params_file:=rubot_real.yaml
         ````
         > If you do not see the MAP in rviz2, close the terminal execution (crtl+C) and start again until you see the Map.
 
@@ -149,11 +149,11 @@ To navigate programmatically using Simple Commander API, you have to proceed wit
 - Start the navigation2.launch.py with rviz to see the evolution of robot navigation
     - In the case of Virtual environment:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_sw.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=True robot:=robot_arm/my_simple_robot.urdf map_file:=map_square4m_sign.yaml params_file:=rubot_sw.yaml
         ````
         - In the case of real robot:
         ````shell
-        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map:=map_square4m_sign.yaml param:=rubot_real.yaml
+        ros2 launch my_robot_navigation2 navigation2_robot.launch.py use_sim_time:=False robot:=robot_arm/my_simple_robot.urdf map_file:=map_square4m_sign.yaml params_file:=rubot_real.yaml
         ````
 - Launch the created python file to define the Initial point and one target point:the targets waypoints
     ````shell
