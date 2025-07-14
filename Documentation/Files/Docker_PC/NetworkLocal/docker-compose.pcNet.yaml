@@ -1,0 +1,28 @@
+name: pc_humble_container
+
+services:
+  pc-humble_container:
+    image: pc_humble_image
+    container_name: pc_humble_container
+    privileged: true
+    network_mode: host
+    
+    # Essencial per a la visualització gràfica (RViz2, etc.)
+    environment:
+      # CANVIA 192.168.1.100 per la IP del TEU PC.
+      - DISPLAY=192.168.1.6:0.0
+      # Assegura que l'entorn gràfic funcioni correctament
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - MESA_GL_VERSION_OVERRIDE=2.1 
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
+
+    # Muntem volums per a persistència de dades
+    volumes:
+      - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
+      - ./entrypoint.pc.sh:/entrypoint.pc.sh
+      - ./cyclonedds_pc.xml:/root/cyclonedds_pc.xml
+    entrypoint: /entrypoint.pc.sh
+    # Mantenim el contenidor actiu per a poder llançar comandes
+    command: sleep infinity
+    #restart: always

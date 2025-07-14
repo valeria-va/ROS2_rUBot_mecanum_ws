@@ -1,0 +1,12 @@
+<CycloneDDS>
+  <Domain>
+    <General>
+      <AllowMulticast>true</AllowMulticast>
+    </General>
+    <Discovery>
+      <Peers>
+        <Peer address="172.23.124.83"/>
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

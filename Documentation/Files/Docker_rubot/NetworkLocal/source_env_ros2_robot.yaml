@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Activa l'entorn base de ROS 2 Humble
+source /opt/ros/humble/setup.bash
+
+# Activa el teu workspace
+source ~/ROS2_rUBot_mecanum_ws/install/setup.bash
+
+# Entorn DDS
+export ROS_DOMAIN_ID=0
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+# Activa fitxer CycloneDDS només si existeix
+if [ -f "/home/ubuntu/cyclonedds_robot.xml" ]; then
+  export CYCLONEDDS_URI=/home/ubuntu/cyclonedds_robot.xml
+  echo "[INFO] CYCLONEDDS_URI activat: $CYCLONEDDS_URI"
+else
+  echo "[WARN] Fitxer cyclonedds_robot.xml no trobat. DDS usarà configuració per defecte."
+fi
+
+# Per sessions remotes amb gràfics (opcional)
+export DISPLAY=192.168.1.6:0.0
+export XDG_RUNTIME_DIR=/run/user/1000
+
+echo "[OK] Entorn ROS 2 carregat"
