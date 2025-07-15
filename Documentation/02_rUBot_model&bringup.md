@@ -588,7 +588,11 @@ ros2 topic echo /odom
 
 #### **Real robot**
 
-When you are using the real robot, the bringup is already made when the docker container is started, the you have only to:
+When you are using the real robot, the bringup is done with:
+```shell
+ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
+````
 
 - Launch the teleop-twist-keyboard control node:
 ```shell

@@ -62,11 +62,10 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
         ````
         >Change the custom_world with the world name you have created
-    - In the case of a real robot, the bringup is already made when turned on
-- move your robot with:
-    ````shell
-    ros2 run teleop_twist_keyboard teleop_twist_keyboard
-    ````
+    - In the case of a real robot:
+        ````shell
+        ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+        ````    
 - to generate the map:
     - In the case of Virtual environment:
     ````shell
@@ -79,6 +78,9 @@ cd /home/user/ROS2_rUBot_mecanum_ws
     ros2 launch my_robot_cartographer cartographer.launch.py use_sim_time:=False
     ````
 - Navigate on the world to store the map
+    ````shell
+    ros2 run teleop_twist_keyboard teleop_twist_keyboard
+    ````
 - Save the map in my_robot_navigation2/map folder with:
     ````shell
     cd src/Navigation_Projects/my_robot_navigation2/map/

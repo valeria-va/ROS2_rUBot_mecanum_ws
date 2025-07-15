@@ -132,13 +132,13 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x
 
 The same simple control program created in virtual environment to move the robot is used for the real robot.
 
-- We first bringup our real LIMO robot (this is already done when you switch-on the robot):
+- We first bringup our real robot:
     ```shell
-    ros2 launch limo_bringup limo_start.launch.py
+    ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
     ```
-- Or bringup the rUBot mecanum robot (this is already done when you switch-on the robot):
+- Or bringup the LIMO robot:
     ``` shell
-    ros2 launch my_robot_bringup my_robot_bringup_hw_pi.launch.xml
+    ros2 launch limo_bringup limo_start.launch.py
     ```
 
     ![](./Images/03_Control/08_bringup.png)
