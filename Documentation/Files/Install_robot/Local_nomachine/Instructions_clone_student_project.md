@@ -1,13 +1,11 @@
 # ✅ Clone Student Project
 
 Students have to:
-
+- Execute the clone process of `Director`student project (4minutes aprox)
 ```bash
 cd /home/ubuntu
-chmod +x clone_student_project.sh
 ./clone_student_project.sh your_github_username_director
 ````
-
 - Add environment setup to .bashrc:
 ````shell
   export ROS_DOMAIN_ID=0
@@ -20,19 +18,15 @@ chmod +x clone_student_project.sh
   #cd /home/user/ROS2_rUBot_tutorial_ws
   cd /home/user/ROS2_rUBot_mecanum_ws
   ````
-
 # ✅ Verify the installation
-After it finishes (approx. 5 minutes):
-
-## Graphical display
-
-Open: MobaXterm
-
-Then run:
-
-```bash
-export DISPLAY=192.168.1.3:0.0
-ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
-ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
-```
+You can work with:
+- Nomachine
+- VScode:
+  - Open: MobaXterm in your computer
+  - In a new terminal, type:
+  ```bash
+  export DISPLAY=192.168.1.3:0.0 #IP address of your computer 
+  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+  ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
+  ```
 Your robot will be displayed in rviz2
