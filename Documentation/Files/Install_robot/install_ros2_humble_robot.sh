@@ -51,7 +51,7 @@ echo "=== 9. Upgrade packages ==="
 sudo apt upgrade -y
 
 echo "=== 10. Install NoMachine for remote access ==="
-wget https://www.nomachine.com/free/armv8/deb -O /tmp/nomachine_arm64.deb
+wget https://download.nomachine.com/download/8.14/Raspberry/nomachine_8.14.2_1_arm64.deb -O /tmp/nomachine_arm64.deb
 sudo dpkg -i /tmp/nomachine_arm64.deb || sudo apt-get install -f -y
 
 echo "=== ✅ ROS 2 Humble and NoMachine installed. System ready. ==="
