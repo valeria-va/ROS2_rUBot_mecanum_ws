@@ -50,4 +50,8 @@ source /opt/ros/humble/setup.bash
 echo "=== 9. Upgrade packages ==="
 sudo apt upgrade -y
 
-echo "=== ✅ ROS 2 Humble installed and system prepared. ==="
+echo "=== 10. Install NoMachine for remote access ==="
+wget https://www.nomachine.com/free/armv8/deb -O /tmp/nomachine_arm64.deb
+sudo dpkg -i /tmp/nomachine_arm64.deb || sudo apt-get install -f -y
+
+echo "=== ✅ ROS 2 Humble and NoMachine installed. System ready. ==="
