@@ -19,7 +19,7 @@ git clone https://github.com/$GHUSER/ROS2_rUBot_mecanum_ws.git || {
 cd ROS2_rUBot_mecanum_ws
 
 # ✅ Instal·la les dependències del workspace (rosdep ja està inicialitzat)
-rosdep install --from-paths src --ignore-src -r -y
+rosdep install --from-paths src --ignore-src -r -y --skip-keys="gazebo_ros"
 
 # ✅ Compila el projecte
 colcon build
