@@ -26,10 +26,9 @@ Webgraphy:
 
 ## **1. Setup the robot project in virtual environment for simulation**
 
-For **simulation** using TheConstruct interface, we will have to:
+For **simulation** we will use TheConstruct interface. We will have to:
 - Fork my github project:  https://github.com/manelpuig/ROS2_rUBot_mecanum_ws
 - Clone your github repository to the TheConstruct environment:
-
   ```shell
   git clone https://github.com/your_user/ROS2_rUBot_mecanum_ws.git
   cd ROS2_rUBot_mecanum_ws
