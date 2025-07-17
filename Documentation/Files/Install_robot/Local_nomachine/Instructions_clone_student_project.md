@@ -33,7 +33,7 @@ Plug a cheap HDMI dummy adapter to simulate a monitor. This guarantees that the 
 
 With all three applied, NoMachine will show the full desktop environment even without a physical display connected.
 
-### ✅ Solució: instal·lar el servidor SSH
+# ✅ Solució: instal·lar el servidor SSH
 Segueix aquests passos:
 
 - Instal·la el paquet openssh-server:
