@@ -95,7 +95,8 @@ When the real robot is plugged on, you will access to the robot using VScode:
   ````shell
   ros2 node list
   ````
-- In your PC, to see graphical windows, execute `MobaXterm`program
+- In your PC, to see graphical windows, execute `MobaXterm`program with this global settings
+  ![](./Images/01_Setup/mobaxterm.png)
 
 You will see the main nodes running and you are ready to control the robot
 
