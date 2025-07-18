@@ -33,7 +33,7 @@ For **simulation** we will use TheConstruct interface. When working in Laborator
 - Then the `Collaborators` will make a "fork" of the `Director`'s github project.
 - The `Collaborators` will be able to update the github `Director`'s project and participate on the project generation
 
-To work on the project (during lab sessions or for homework at home), each student has to clone the `Director`'s github project in the `TheConstruct working environment`.
+To work on the project (during lab sessions or for homework), each student has to clone the `Director`'s github project in the `TheConstruct working environment`.
 - Open your ROS2 Humble environment:  https://app.theconstructsim.com/
 - Open your created ROS2_Humble Rosject project
 - Clone your forked `Director`'s github project
@@ -84,20 +84,19 @@ The UB custom rUBot mecanum custom made robot is based on:
 - Custom ROS2 configuration in Ubuntu22.04 server 64bits.
 
 When the real robot is plugged on, you will access to the robot using VScode:
-- Connect with extension "Remote connections".
+- Connect to the robot with the extension "Remote Explorer".
 - Open your robot connection session in a new terminal.
 - To clone your `Director`'s github project, execute:
   ````shell
-  ./clone_student_project.sh director's github username
+  ./clone_student_project.sh director's github_username display_IP
   ````
-- Make the robot bringup:
-  ````shell
-  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
-  ````
+  >This script will make the project clone, compilation and .bashrc configuration
 - Verify in a new terminal the working nodes:
   ````shell
   ros2 node list
   ````
+- In your PC, to see graphical windows, execute `MobaXterm`program
+
 You will see the main nodes running and you are ready to control the robot
 
 ### **2.2. Setup the LIMO robot**
