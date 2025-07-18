@@ -38,20 +38,27 @@ unset PYTHONPATH
 . /opt/ros/humble/setup.bash
 colcon build --event-handlers console_direct+
 
-# ✅ Afegeix el sourcing permanentment
-SETUP_LINE="source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash"
-if ! grep -Fxq "$SETUP_LINE" /home/ubuntu/.bashrc; then
-  echo "$SETUP_LINE" >> /home/ubuntu/.bashrc
-fi
+# ✅ Funció per afegir línia si no existeix
+BASHRC=/home/ubuntu/.bashrc
+add_if_missing() {
+  LINE="$1"
+  if ! grep -Fxq "$LINE" "$BASHRC"; then
+    echo "$LINE" >> "$BASHRC"
+  fi
+}
 
-# ✅ Fes el sourcing del .bashrc per carregar l'entorn
-source ~/.bashrc
+# ✅ Afegeix configuracions al .bashrc (només si no hi són)
+add_if_missing "source /opt/ros/humble/setup.bash"
+add_if_missing "export ROS_DOMAIN_ID=0"
+add_if_missing "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
+add_if_missing "export GAZEBO_MODEL_PATH=/home/ubuntu/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:\$GAZEBO_MODEL_PATH"
+add_if_missing "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash"
+add_if_missing "source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash"
+add_if_missing "cd /home/ubuntu/ROS2_rUBot_mecanum_ws"
+add_if_missing "export DISPLAY=192.168.1.$LAST_OCTET:0.0"
 
-# ✅ Construïm la IP del PC i el DISPLAY
-DISPLAY_IP="192.168.1.$LAST_OCTET"
-export DISPLAY="$DISPLAY_IP:0.0"
-
-echo "✅ DISPLAY configurat a $DISPLAY"
+# ✅ Fes el sourcing del .bashrc per carregar l'entorn actualitzat
+source "$BASHRC"
 
 # ✅ Llança el llançador de ROS 2
 ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
