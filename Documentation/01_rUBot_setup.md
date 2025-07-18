@@ -88,7 +88,7 @@ When the real robot is plugged on, you will access to the robot using VScode:
 - Open your robot connection session in a new terminal.
 - To clone your `Director`'s github project, execute:
   ````shell
-  ./clone_student_project.sh director's github_username display_IP
+  source ./clone_student_project.sh director's github_username display_IP
   ````
   >This script will make the project clone, compilation and .bashrc configuration
 - Verify in a new terminal the working nodes:
