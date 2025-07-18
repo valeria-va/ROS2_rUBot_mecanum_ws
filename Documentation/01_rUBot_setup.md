@@ -26,14 +26,22 @@ Webgraphy:
 
 ## **1. Setup the robot project in virtual environment for simulation**
 
-For **simulation** we will use TheConstruct interface. We will have to:
-- Fork my github project:  https://github.com/manelpuig/ROS2_rUBot_mecanum_ws
-- Clone your github repository to the TheConstruct environment:
+For **simulation** we will use TheConstruct interface. When working in Laboratory groups, we suggest you:
+- One student plays the role of `Director`. This student makes a "Fork" of the Professor's github project.
+- The `Director` accept the other students as `Collaborators`
+![](./Images/01_Setup/github_collaborators.png)
+- Then the `Collaborators` will make a "fork" of the `Director`'s github project.
+- The `Collaborators` will be able to update the github `Director`'s project and participate on the project generation
+
+To work on the project (during lab sessions or for homework at home), each student has to clone the `Director`'s github project in the `TheConstruct working environment`.
+- Open your ROS2 Humble environment:  https://app.theconstructsim.com/
+- Open your created ROS2_Humble Rosject project
+- Clone your forked `Director`'s github project
   ```shell
-  git clone https://github.com/your_user/ROS2_rUBot_mecanum_ws.git
+  cd /home/user
+  git clone https://github.com/director_username/ROS2_rUBot_mecanum_ws
   cd ROS2_rUBot_mecanum_ws
   colcon build
-  source install/local_setup.bash
   ```
 - Add in .bashrc the lines:
   ````shell
@@ -72,23 +80,25 @@ The setup process is based on a custom Docker to properly interface with the ROS
 ### **2.1. Setup the rUBot mecanum**
 
 The UB custom rUBot mecanum custom made robot is based on:
-- Raspberrypi4 (or 5) computer onboard
-- Custom Dockerfile and docker-compose to create a custom ROS2 Docker container.
+- Raspberrypi4 computer onboard
+- Custom ROS2 configuration in Ubuntu22.04 server 64bits.
 
-When the real robot is plugged on, the docker-compose.yaml service is executed and the rUBot is ready to be controlled within the TheConstruct environment.
-
-- `Local control`: Connecting to the rUBot with VScode window attached to the container:
+When the real robot is plugged on, you will access to the robot using VScode:
+- Connect with extension "Remote connections".
+- Open your robot connection session in a new terminal.
+- To clone your `Director`'s github project, execute:
+  ````shell
+  ./clone_student_project.sh director's github username
+  ````
+- Make the robot bringup:
   ````shell
   ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
   ````
-
-- `Remote control`: Using the TheConstruct Real Robot Lab. service
-  - Install the robot on your account (this is already done for you)
-  - Connect to the robot and type in a new terminal
-    ````shell
-    ros2 node list
-    ````
-  - You will see the main nodes running
+- Verify in a new terminal the working nodes:
+  ````shell
+  ros2 node list
+  ````
+You will see the main nodes running and you are ready to control the robot
 
 ### **2.2. Setup the LIMO robot**
 
@@ -114,21 +124,8 @@ When the commercial LIMO robot is plugged on, the docker-compose-v3.yaml service
 ## **3. Update and syncronize the repository project**
 
 When working in Laboratory groups, we suggest you:
-- One student plays the role of `Project-Director`
-- The `Project-Director` accept the other students as `Collaborators`
-![](./Images/01_Setup/github_collaborators.png)
-- Then the `Collaborators` will be able to update the github project of the `Project-Director` student and participate on the project generation
 
-When working on a Laboratory project, the objective at the end of a Lab session is to update the changes you have made. This can be made either by the `Project-Director` of the Lab group or by any other `Collaborator` following the procedure:
-- First time on the TheConstruct environment, you have to clone the `Project-Director` github project:
-  ````shell
-  git clone https://github.com/Director_user_name/ROS2_rUBot_mecanum_ws.git
-  ````
-- Next times, the project ws will be already in the TheConstruct environment. Now you have to access to the TheConstruct environment local repository:
-  ````shell
-  cd /home/user/ROS2_rUBot_mecanum_ws
-  ````
-- Update the local repository with possible changes in github origin repository
+- Before working on the project, update the local repository with possible changes in github origin repository
   ````shell
   git pull
   ````
@@ -139,10 +136,10 @@ When working on a Laboratory project, the objective at the end of a Lab session 
   git commit -m "Message"
   ````
 - When you will Push them, the first time you will be asked to link the repository to your github account:
-- Open a terminal in and type the first time:
+- Open a terminal in and type your credentials:
   ```shell
-  git config --global user.email "manel.puig@ub.edu"
-  git config --global user.name "manelpuig"
+  git config --global user.email "xxx@alumnes.ub.edu"
+  git config --global user.name "your_github_username"
   git commit -m "Message"
   git push
   ```
@@ -163,4 +160,4 @@ To obtain the **PAT** in github follow the instructions:
     - Click Generate token
   - Once the token is generated, copy it immediately. You won't be able to see it again after leaving the page.
 
-The `Project-Director` github repository has been updated!
+The `Director`'s github repository has been updated!
