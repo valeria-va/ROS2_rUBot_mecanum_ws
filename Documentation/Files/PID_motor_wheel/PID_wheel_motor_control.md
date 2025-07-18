@@ -1,4 +1,17 @@
-**1. Python Controller for Real Arduino Hardware**
+# **PID Wheel Motor Control**
+
+The objectives are:
+- Obtain the experimental motor model of a DC motor with wheel.
+- Implement a closed-loop PID controller to control the speed of the motor.
+- Provide the `real` transient response of Output wheel linear speed in a PID closed-loop system.
+- Provide a `simulated` transient response of Output wheel linear speed in a PID closed-loop system.
+
+## **1. Experimental motor model of a DC motor with wheel**
+
+
+## **2. Setup for closed-loop PID controller**
+
+## **3. `Real` transient response of Output wheel linear speed**
 
 
 This script acts as a high-level controller on a host computer (like a PC or Raspberry Pi) that communicates with an Arduino running the ROSArduinoBridge firmware. Its primary goal is to send velocity commands and plot the robot's actual performance in real-time.
@@ -69,7 +82,7 @@ The main part of the script orchestrates the control loop and data visualization
 
 - Observe: A plot window will appear, showing the target speed (red dashed line) and the real measured speed (blue solid line). Closing the plot window will stop the robot and end the script.
 
-**2. Closed-Loop PID System Simulation**
+## **2. `Simulated` transient response of Output wheel linear speed**
 
 This script replaces the real hardware with a mathematical model of the motor and controller. Its purpose is to provide a safe, fast, and cost-free environment to test and tune PID gains (Kp, Ki, Kd) before deploying them on the actual robot.
 

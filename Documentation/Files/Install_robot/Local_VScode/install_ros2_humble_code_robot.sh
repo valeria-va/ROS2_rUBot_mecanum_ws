@@ -54,4 +54,4 @@ source /opt/ros/humble/setup.bash
 echo "=== 9. Upgrade packages ==="
 sudo apt upgrade -y
 
-echo "=== ✅ ROS 2 Humble and NoMachine installed. System ready. ==="
+echo "=== ✅ ROS 2 Humble and Yolo installed. System ready. ==="
