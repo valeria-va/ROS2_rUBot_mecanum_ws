@@ -3,7 +3,7 @@
 The objectives of this section are:
 - Setup the robot project in virtual environment for simulation
 - Setup the robot project for real control
-- Install needed interfaces
+- Syncronization of the project with github
 
 We have two kind of rbots:
 - UB custom made **rUBot_mecanum**
@@ -12,15 +12,17 @@ We have two kind of rbots:
 ![](./Images/01_Setup/rUBot_Limo.png)
 
 Webgraphy:
-- TheConstruct: Build Your First ROS2 Based Robot https://www.robotigniteacademy.com/courses/309
-- LIMO repository: https://github.com/agilexrobotics/limo_ros2/tree/humble
-- LIMO Doc: https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md
-- LIMO bitbucket: https://bitbucket.org/theconstructcore/limo_robot/src/main/
-- https://bitbucket.org/theconstructcore/workspace/projects/ROB
-- TheConstruct image Humble-v3: https://hub.docker.com/r/theconstructai/limo/tags
-- https://github.com/AntoBrandi/Self-Driving-and-ROS-2-Learn-by-Doing-Odometry-Control/tree/main
-- https://github.com/AntoBrandi/Self-Driving-and-ROS-Learn-by-Doing-Odometry-Control
-- https://github.com/AntoBrandi/Arduino-Bot/tree/humble
+- Webgraphy:
+- [TheConstruct: Build Your First ROS2 Based Robot](https://www.robotigniteacademy.com/courses/309)
+
+- [LIMO official repository](https://github.com/agilexrobotics/limo_ros2/tree/humble)
+- [LIMO official Doc](https://github.com/agilexrobotics/limo_pro_doc/blob/master/Limo%20Pro%20Ros2%20Foxy%20user%20manual(EN).md)
+- [LIMO in bitbucket](https://bitbucket.org/theconstructcore/limo_robot/src/main/)
+- [TheConstruct in Bitbucket](https://bitbucket.org/theconstructcore/workspace/projects/ROB)
+- [TheConstruct image Humble-v3](https://hub.docker.com/r/theconstructai/limo/tags)
+- [ROS2 course A. Brandi](https://github.com/AntoBrandi/Self-Driving-and-ROS-2-Learn-by-Doing-Odometry-Control/tree/main)
+- [ROS1 course A. Brandi](https://github.com/AntoBrandi/Self-Driving-and-ROS-Learn-by-Doing-Odometry-Control)
+- [Arduino-bot course A. Brandi](https://github.com/AntoBrandi/Arduino-Bot/tree/humble)
 - [Projecte TFG Matthew Ayete](https://github.com/Mattyete/ROS2_LIMO_ws/blob/main/Documentation/LIMO_Manual.md)
 
 
@@ -75,7 +77,9 @@ To work on the project (during lab sessions or for homework), each student has t
 
 ## **2. Setup the robot project for real control**
 
-The setup process is based on a custom Docker to properly interface with the ROS2 environment.
+The setup process is based on a custom Ubuntu22.04 with the ROS2 Humble environment and the needed packages used on the rUBot project.
+
+A speciffic installation is made for the UB custom rUBot mecanum robot and for the commercial LIMO robot.
 
 ### **2.1. Setup the rUBot mecanum**
 
@@ -88,14 +92,16 @@ When the real robot is plugged on, you will access to the robot using VScode:
 - Open your robot connection session in a new terminal.
 - To clone your `Director`'s github project, execute:
   ````shell
-  source ./clone_student_project.sh director's github_username display_IP
+  source ./clone_student_project.sh <director_github_username> <display_IP>
   ````
-  >This script will make the project clone, compilation and .bashrc configuration
+  ><display_IP> is only the last number (i.e. 14 for Group1)
+  
+  >This script will make the project clone, compilation, .bashrc configuration and robot bringup
 - Verify in a new terminal the working nodes:
   ````shell
   ros2 node list
   ````
-- In your PC, to see graphical windows, execute `MobaXterm`program with this global settings
+- In your PC, to see graphical windows, execute `MobaXterm`program with this global settings (already done in Lab PCs)
   ![](./Images/01_Setup/mobaxterm.png)
 
 You will see the main nodes running and you are ready to control the robot
@@ -125,12 +131,12 @@ When the commercial LIMO robot is plugged on, the docker-compose-v3.yaml service
 
 When working in Laboratory groups, we suggest you:
 
-- Before working on the project, update the local repository with possible changes in github origin repository
+- `Before working on the project`, update the local repository with possible changes in github origin repository
   ````shell
   git pull
   ````
 - You can work with your local repository for the speciffic project session
-- Once you have finished and you want to syncronize the changes you have made and update the github origin repository, type:
+- `Once you have finished and you want to syncronize the changes` you have made and update the github origin repository, type:
   ````shell
   git add .
   git commit -m "Message"

@@ -1,5 +1,5 @@
 ## **2. ROS2 my robot model and Bringup**
-The main objective of this section is to simulate the robot behaviour in virtual environment.
+The main objective of this section is to review the robot bringup process in virtual environment and within the real robots.
 
 The particular objectives of this section are:
 - Create a complete robot model of our robots
@@ -12,12 +12,13 @@ The particular objectives of this section are:
 
 The robots we will work are:
 - Differential-Drive robot: movement like turtlesim
-- Mecanum-Drive robot: more performand movement in x and y directions
+- Mecanum-Drive robot: more performand movements in x and y directions
 
 These are represented in the picture below:
 ![](./Images/01_Setup/rUBot_Limo.png)
 
-A very good guide is described in: https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview
+A very good guide is described in: 
+- [Udemy course ROS2 Robot Models by Edouard Renard](https://www.udemy.com/course/ros2-tf-urdf-rviz-gazebo/learn/lecture/38688920#overview)
 
 ### **2.1. Create a robot model of our rUBot mecanum**
 
@@ -73,7 +74,7 @@ Some of these links have a speciffic **functionalities**:
 - camera: view front images
 - base_scan: detect obstacle distances in 360º around the robot
 
-To create our robot model, we use **URDF files** (Unified Robot Description Format). URDF file is an XML format file for representing a robot model.(http://wiki.ros.org/urdf/Tutorials)
+To create our robot model, we use **URDF files** (Unified Robot Description Format). URDF file is an XML format file for representing a robot model. [URDF official Tutorials](http://wiki.ros.org/urdf/Tutorials)
 
 The general structure of a robot urdf model is based on:
 - Links and joints: for the geometrical structure
@@ -224,7 +225,7 @@ The used Gazebo plugin is:
 
 A Lidar sensors is  device that is able to measure the obstacle distances at 360º around the robot. 
 
-He is sending 720 laser beams (2 beams/degree) and measures the distance each laser beam finds an obstacle. He is able to measure from 12cm to 10m. The used Lidar sensor is a 360º RPLidar A1M8 (https://www.robotshop.com/es/es/rplidar-a1m8-kit-desarrollo-escaner-laser-360-grados.html)
+He is sending 720 laser beams (2 beams/degree) and measures the distance each laser beam finds an obstacle. He is able to measure from 12cm to 10m. The used Lidar sensor is a 360º RPLidar A1M8. [RPLidar in RoboShop](https://www.robotshop.com/es/es/rplidar-a1m8-kit-desarrollo-escaner-laser-360-grados.html)
 
 This lidar is simulated in URDF model as:
 - link with the visual, collision and inertial properties
@@ -319,8 +320,8 @@ The rUBot_mecanum contains a "Mecanum drive actuator" based on:
 Gazebo plugin is a sort of "driver" to simulate the Kinematics of our rUBot_mecanum.
 
 The **rUBot_mecanum kinematics** describes the relationship between the robot wheel speeds and the robot velocity. We have to distinguish:
-- **Forward kinematics**: obtains the robot velocity (linear and angular in /cmd_vel) and POSE (odometry) for speciffic robot wheel speeds
-- **Inverse kinematics**: obtains the robot wheels speeds for a desired robot velocity (linear and angular in /cmd_vel)
+- **Forward kinematics**: obtains the robot velocity (linear and angular in /cmd_vel topic) and POSE (odometry) for speciffic robot wheel speeds
+- **Inverse kinematics**: obtains the robot wheels speeds for a desired robot velocity (linear and angular in /cmd_vel topic)
 
 This kinematics and odometry calculations are described in the "libgazebo_ros_planar_move.so" file and the URDF model will contain the specific gazebo plugin.
 
@@ -382,10 +383,7 @@ ros2 launch my_robot_description display.launch.xml
 ```
 
 ![](./Images/02_rubot_model/04_urdf_rubot_mpuig.png)
->**Important**: In urdf file, the path to stl files has to be specified with:
-````xml
-<mesh filename="file://$(find my_robot_description)/meshes/rubot/base_link.stl" scale="0.001 0.001 0.001"/>
-````
+
 > Colors in rviz: 
 >- are defined at the beginning
 >- Ensure the "visual" link properties have color "name"
@@ -425,35 +423,7 @@ New folders inside: launch, rviz, worlds. For that we have to add these lines on
   )
   ````
 
-Inside launch folder we have created a new "my_robot_bringup_sw.launch.xml" file to spawn the robot in a virtual designed world (square2.world):
-```xml
-<launch>
-     <let name="x0" value="0.5"/>
-     <let name="y0" value="0.5"/>
-     <let name="yaw0" value="1.57"/>
-
-     <let name="urdf_path" 
-         value="$(find-pkg-share my_robot_description)/urdf/robot_arm/my_mecanum_robot.urdf.xacro" />
-     <let name="rviz_config_path"
-         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_lidar.rviz" />
-
-     <node pkg="joint_state_publisher" exec="joint_state_publisher" />
-     <node pkg="robot_state_publisher" exec="robot_state_publisher">
-        <param name="robot_description"
-               value="$(command 'xacro $(var urdf_path)')" />
-     </node>
-
-     <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
-          <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/square2.world" />
-     </include>
-
-     <node pkg="gazebo_ros" exec="spawn_entity.py"
-          args="-topic robot_description -entity my_robot -x $(var x0) -y $(var y0) -Y $(var yaw0)" />
-
-     <node pkg="rviz2" exec="rviz2" output="screen" 
-          args="-d $(var rviz_config_path)" />
-</launch>
-```
+Inside launch folder we have created a new `my_robot_bringup_sw.launch.xml` file to spawn the robot in a virtual designed world (square2.world):
 
 - If you have made any changes, you need to compile again
 ```shell
