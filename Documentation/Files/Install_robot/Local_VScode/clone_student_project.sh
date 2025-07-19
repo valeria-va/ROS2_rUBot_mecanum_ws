@@ -17,6 +17,12 @@ fi
 # ✅ Directori del workspace (usuari fix 'ubuntu' a la Raspberry Pi)
 cd /home/ubuntu
 
+# ✅ Elimina el workspace anterior si ja existeix
+if [ -d "/home/ubuntu/ROS2_rUBot_mecanum_ws" ]; then
+  echo "⚠️  El directori ROS2_rUBot_mecanum_ws ja existeix. S'està eliminant..."
+  rm -rf /home/ubuntu/ROS2_rUBot_mecanum_ws
+fi
+
 # ✅ Clona el projecte de l’estudiant
 git clone https://github.com/$GHUSER/ROS2_rUBot_mecanum_ws.git || {
   echo "❌ Error clonant el repositori. Comprova que el GitHub user '$GHUSER' existeix i que el repositori és públic."
@@ -57,7 +63,7 @@ add_if_missing "source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash"
 add_if_missing "cd /home/ubuntu/ROS2_rUBot_mecanum_ws"
 add_if_missing "export DISPLAY=192.168.1.$LAST_OCTET:0.0"
 
-# ✅ Fes el sourcing del .bashrc per carregar l'entorn actualitzat
+# ✅ Fes el sourcing del .bashrc per carregar l'entorn actualitzat (només afecta aquest subshell)
 source "$BASHRC"
 
 # ✅ Llança el llançador de ROS 2
