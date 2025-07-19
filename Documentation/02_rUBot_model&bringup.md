@@ -358,28 +358,17 @@ We will first use RVIZ to check that the model is properly built.
 
 RViz only represents the robot visual features. You have available all the options to check every aspect of the appearance of the model.
 
-We use a specific "display.launch.xml" launch file where we specify the robot model we want to open in rviz with a configuration specified in "rviz" folder:
-```xml
-<launch>
-    <let name="urdf_path" 
-         value="$(find-pkg-share my_robot_description)/urdf/rubot/rubot_mecanum.urdf" />
-    <let name="rviz_config_path"
-         value="$(find-pkg-share my_robot_description)/rviz/urdf_config.rviz" />
+We have created a `display.launch.xml` launch file with arguments:
+- `robot_model`: the robot model to be displayed in RViz. The default value is "rubot/rubot_mecanum.urdf"
+- `use_sim_time`: if True, the simulation time is used. if False, real raspberrypi time is used when we want to work with the real robot. The default value is True
 
-    <node pkg="robot_state_publisher" exec="robot_state_publisher">
-        <param name="robot_description"
-               value="$(command 'xacro $(var urdf_path)')" />
-    </node>
-
-    <node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui" />
-
-    <node pkg="rviz2" exec="rviz2" output="screen" 
-          args="-d $(var rviz_config_path)" />
-</launch>
-```
-You can type in a new terminal:
+If you want to use the default argument values, type in a new terminal:
 ```shell
 ros2 launch my_robot_description display.launch.xml
+```
+If you want to use speciffic argument values, type in a new terminal:
+```shell
+ros2 launch my_robot_description display.launch.xml robot_model:=limo/rubot_limo.urdf use_sim_time:=True
 ```
 
 ![](./Images/02_rubot_model/04_urdf_rubot_mpuig.png)
@@ -423,30 +412,33 @@ New folders inside: launch, rviz, worlds. For that we have to add these lines on
   )
   ````
 
-Inside launch folder we have created a new `my_robot_bringup_sw.launch.xml` file to spawn the robot in a virtual designed world (square2.world):
+Inside launch folder we have created a new `my_robot_bringup_sw.launch.xml` file to spawn the robot in a virtual designed world with the following arguments:
+- `use_sim_time`: if True, the simulation time is used (Default True)) 
+- `robot`: the robot model to be displayed in Gazebo. The default value is "rubot/rubot_mecanum.urdf"
+- `custom_world`: the world where the robot will be spawned. The default value is "square2.world"
+- `x0`: initial x position of the robot in the world (Default 0.5)
+- `y0`: initial y position of the robot in the world (Default -1.5)
+- `yaw0`: initial yaw angle of the robot in the world (Default 1.57)
 
-- If you have made any changes, you need to compile again
-```shell
-colcon build
-source install/setup.bash
-```
-You can now bringup your robot in the designed world
+If you want to use the default argument values, type in a new terminal:
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
-
+If you want to use speciffic argument values, type in a new terminal:
+```shell
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=limo/rubot_limo.urdf custom_world:=square4m_sign.world x0:=0.5 y0:=0.0 yaw0:=1.57
+```
 ![](./Images/02_rubot_model/06_rubot_bringup.png)
 
-> Be careful to write the entity name in launch file corresponding to the one defined in urdf model ("rubot" in this case)
+> Be careful to write the entity name in launch file corresponding to the one defined in urdf model
 
 **Camera and lidar messages visualization**
 
 Now go to RVIZ screen and add the topics where Gazebo Driver publish the Camera Images and Lidar information:
-- /limo/limo_camera/image_raw topic where Image message is published
+- For LIMO robot: /limo/limo_camera/image_raw topic where Image message is published
 - /scan topic where LaserScan message is published
 
 You have to add these messages on RVIZ
-
 
 ![](./Images/02_rubot_model/06_topics_limo1.png)
 
@@ -504,14 +496,14 @@ This is an exemple:
 Bringup your rUBot model within the real custom designed World
 
 You will have to:
-- Design a custom rUBot model corresponding to the real rUBot_mecanum (rubot_mecanum_custom.urdf), with:
+- Design a `rubot_custom.urdf`, with:
   - Customized model colors (rviz and gazebo)
-  - Add a 3D-part on top with a fixed joint
-- Design a custom virtual world using the wooden model parts
+  - Added a 3D-part on top with a fixed joint
+- Design a `group1_custom.world` virtual world using the wooden model parts
 
-To verify the final bringup, create a new "my_robot_bringup_sw.launch.xml" file with your rubot_custom.urdf and the world you have created:
+To verify the final bringup, execute `my_robot_bringup_sw.launch.xml` launch file with your speciffic argument values: 
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=rubot/rubot_custom.urdf custom_world:=group1_custom.world x0:=0.5 y0:=0.0 yaw0:=1.57
 ```
 ![](./Images/02_rubot_model/07_mecanum_bringup.png)
 
@@ -524,7 +516,7 @@ Upload a zip file with:
 
 The objective here is only to verify that the robot is correcly bringup and we can control it using the "teleop-twist-keyboard" package.
 
-- Install the "teleop-twist-keyboard" package.
+- Install the "teleop-twist-keyboard" package. (usually is already installed)
 ```shell
 sudo apt update
 sudo apt install ros-humble-teleop-twist-keyboard
@@ -534,27 +526,20 @@ sudo apt install ros-humble-teleop-twist-keyboard
 
 When you are using the virtual environment to simulate the robot behavior you have to:
 - Bringup our robot in Gazebo virtual environment
-```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
-```
->Here you use a default argument values. Review thes values and decide if you need to change them
-- If you want to change the arguments defined by default:
-````shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
-````
->Here I show you some different argument values. Write the ones you wish for your project. If you not speciffy an argument the default value will be taken.
-
+  ````shell
+  ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
+  ````
 - In a new terminal, launch the teleop-twist-keyboard:
-```shell
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
+  ```shell
+  ros2 run teleop_twist_keyboard teleop_twist_keyboard
+  ```
 - open a new terminal and listen the /odom topic
-```shell
-ros2 topic echo /odom
-```
+  ```shell
+  ros2 topic echo /odom
+  ```
 - Print the Nodes and topics using rqt_graph
 
-![](./Images/02_rubot_model/07_rosgraph.png)
+  ![](./Images/02_rubot_model/07_rosgraph.png)
 
 #### **Real robot**
 
@@ -564,7 +549,7 @@ ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
 ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
 ````
 
-- Launch the teleop-twist-keyboard control node:
+Launch the teleop-twist-keyboard control node:
 ```shell
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
