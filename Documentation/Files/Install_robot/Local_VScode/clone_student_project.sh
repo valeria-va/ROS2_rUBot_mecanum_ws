@@ -66,7 +66,19 @@ add_if_missing "export DISPLAY=192.168.1.$LAST_OCTET:0.0"
 # ✅ Fes el sourcing del .bashrc per carregar l'entorn actualitzat (només afecta aquest subshell)
 source "$BASHRC"
 
-# ✅ Llança el llançador de ROS 2
+# ✅ Llança el Bringup amb gestió d'errors
+echo "🚀 Llançant Bringup..."
 ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+LAUNCH_STATUS=$?
+
+if [ $LAUNCH_STATUS -ne 0 ]; then
+  echo "❌ Error durant l'execució de 'Bringup'."
+  echo "📄 Codi de sortida: $LAUNCH_STATUS"
+  echo "ℹ️  Comprova el fitxer launch, la configuració del DISPLAY o connexions del Lidar i càmara."
+
+  # ✅ Simula Ctrl+C: només cal sortir de l’script i deixar el terminal lliure
+  echo "⏹️  Aturant execució i deixant el terminal lliure..."
+  exit 1
+fi
 
 echo "✅ Projecte clonat i compilat amb èxit per $GHUSER."
