@@ -12,19 +12,14 @@ We will proceed with:
 - Install in the control PC Docker Desktop
 - Create a "Docker_PC" folder in your control PC with the contents of "Docker_PC"
 - A custon ``Dockerfile.pc`` is created for ROS2-Humble environment
-- To create this custom "rubot_humble_image", type in a new terminal:
+- In case you want to create a custom "rubot_humble_image", type in a new terminal:
   ````shell
   docker build -t rubot_humble_image .
   ````
-- A custom ``docker-compose.pc.yaml`` file is created to setup the Custom container already connected to the robot over the local network
-- Remember that on your host machine (outside of Docker), you need to allow container connections to your X11 server. Run this in your host terminal once before starting the container with docker-compose up:
-  ````shell
-  xhost +local:docker
-  ````
-- execute in a terminal:
+- If you want to create the image and the container at the same time, a custom ``docker-compose.pc.yaml`` file is created to setup `pc_humble_container` over the local network
   ````shell
   docker system prune
-  docker compose -f docker-compose.pc.yaml up -d
+  docker compose -f docker-compose.pc.yaml up -d --build
   ````
 - Open VScode in your PC, identify the running containers and Attach a ``VScode Workspace to this Container``
 - Open a new ``terminal`` and type:
