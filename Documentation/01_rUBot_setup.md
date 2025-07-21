@@ -94,7 +94,7 @@ When the real robot is plugged on, you will access to the robot using VScode:
   ````shell
   source ./clone_student_project.sh <director_github_username> <display_IP>
   ````
-  ><display_IP> is only the last number (i.e. 14 for Group1)
+  ><display_IP> is only the last number (i.e. 15 for Group1, 25 for Group2, etc.)
   
   >This script will make the project clone, compilation, .bashrc configuration and robot bringup
 - Verify in a new terminal the working nodes:
