@@ -32,6 +32,9 @@ You proceed with:
   - Execute MobaXterm in your computer
   - Open a new terminal on VScode and type:
     ```bash
+    ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+    ros2 topic list
+    ros2 run teleop_twist_keyboard teleop_twist_keyboard
     ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
     ```
   - To verify only the running nodes, you can type:
