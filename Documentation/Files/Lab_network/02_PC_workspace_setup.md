@@ -22,6 +22,18 @@ We will proceed with:
   docker compose -f docker-compose.pc.yaml up -d --build
   ````
 - Open VScode in your PC, identify the running containers and Attach a ``VScode Workspace to this Container``
+- Verify the `.bashrc`file:
+  ````shell
+  source /opt/ros/humble/setup.bash
+  source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+  export ROS_DOMAIN_ID=0
+  export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:$GAZEBO_MODEL_PATH
+  #source /home/user/ROS2_rUBot_tutorial_ws/install/setup.bash
+  #source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
+  #cd /home/user/ROS2_rUBot_tutorial_ws
+  #cd /home/user/ROS2_rUBot_mecanum_ws
+````
 - Open a new ``terminal`` and type:
   ````shell
   ros2 node list
