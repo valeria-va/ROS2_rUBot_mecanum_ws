@@ -42,6 +42,33 @@ We will proceed with:
 
 You are now ready to control your robot!
 
+## **WSL2 based setup local network**
+
+📌 Instructions:
+1. robot:
+  ````shell
+  chmod +x setup_robot.sh
+  ./setup_robot.sh
+  source ~/.bashrc
+  ````
+2. PC:
+  ````shell
+  chmod +x setup_pc.sh
+  ./setup_pc.sh
+  source ~/.bashrc
+  ````
+3. Verify the connection:
+On robot:
+  ```shell
+  ros2 run demo_nodes_cpp talker
+  ````
+On PC (WSL2):
+  ```shell
+  ros2 run demo_nodes_cpp listener
+  ````
+If everything is correctly configured, the PC will receive messages from the robot.
+
+
 ## **2. PC connection to a PC-server connected to my_robot in a VPN Internet network**
 
 With this guide we will show you how to configure your ROS system to work not only in LAN but also over the internet. We will have to create a Virtual Network (VPN)
