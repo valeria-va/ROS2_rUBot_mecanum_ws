@@ -19,6 +19,10 @@ Execute the script (40min approx):
 
 Students have to:
 - Open rUBot_0x session and specify the `Director`student project (4minutes aprox)
+- Execute the bringup:
+  ```bash
+  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+  ```
 
 # ✅ Verify the installation
 You proceed with:

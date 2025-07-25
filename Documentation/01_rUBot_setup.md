@@ -93,9 +93,12 @@ The UB custom rUBot mecanum custom made robot is based on:
 
 When the real robot is plugged on, you will access to the robot using MOBAXterm:
 - Open rUBot_0x session and specify the `Director`student project (4minutes aprox)
-
   ![](./Images/01_Setup/MobaXterm.png)
-  >This script will make the project clone, compilation, .bashrc configuration and robot bringup
+  >This script will make the project clone, compilation and .bashrc configuration
+- Execute the bringup:
+  ```bash
+  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+  ```
 - Verify in a new terminal the working nodes:
   ````shell
   ros2 node list
