@@ -38,12 +38,16 @@ For **simulation** we will use TheConstruct interface. When working in Laborator
 To work on the project (during lab sessions or for homework), each student has to clone the `Director`'s github project in the `TheConstruct working environment`.
 - Open your ROS2 Humble environment:  https://app.theconstructsim.com/
 - Open your created ROS2_Humble Rosject project
-- Clone your forked `Director`'s github project
+- First time, clone your forked `Director`'s github project
   ```shell
   cd /home/user
   git clone https://github.com/director_username/ROS2_rUBot_mecanum_ws
   cd ROS2_rUBot_mecanum_ws
   colcon build
+  ```
+  >Successives times, in TheConstruct simulation environment, you can update the project with:
+  ```shell
+  git pull
   ```
 - Add in .bashrc the lines:
   ````shell
@@ -87,22 +91,16 @@ The UB custom rUBot mecanum custom made robot is based on:
 - Raspberrypi4 computer onboard
 - Custom ROS2 configuration in Ubuntu22.04 server 64bits.
 
-When the real robot is plugged on, you will access to the robot using VScode:
-- Connect to the robot with the extension "Remote Explorer".
-- Open your robot connection session in a new terminal.
-- To clone your `Director`'s github project, execute:
-  ````shell
-  source ./clone_student_project.sh <director_github_username> <display_IP>
-  ````
-  ><display_IP> is only the last number (i.e. 15 for Group1, 25 for Group2, etc.)
-  
+When the real robot is plugged on, you will access to the robot using MOBAXterm:
+- Open rUBot_0x session and specify the `Director`student project (4minutes aprox)
+
+  ![](./Images/01_Setup/MobaXterm.png)
   >This script will make the project clone, compilation, .bashrc configuration and robot bringup
 - Verify in a new terminal the working nodes:
   ````shell
   ros2 node list
   ````
-- In your PC, to see graphical windows, execute `MobaXterm`program with this global settings (already done in Lab PCs)
-  ![](./Images/01_Setup/mobaxterm.png)
+
 
 You will see the main nodes running and you are ready to control the robot
 

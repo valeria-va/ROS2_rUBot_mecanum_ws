@@ -7,13 +7,6 @@ else
   GHUSER="$1"
 fi
 
-# ✅ Comprova si s'ha passat el segon argument (últim número IP)
-if [ -z "$2" ]; then
-  read -p "Introdueix l'últim número de la IP del PC (ex: 3 per 192.168.1.3): " LAST_OCTET
-else
-  LAST_OCTET="$2"
-fi
-
 # ✅ Directori del workspace (usuari fix 'ubuntu' a la Raspberry Pi)
 cd /home/ubuntu
 
@@ -38,7 +31,7 @@ rosdep install --from-paths src --ignore-src -r -y --skip-keys="gazebo_ros"
 unset COLCON_PREFIX_PATH
 unset AMENT_PREFIX_PATH
 unset CMAKE_PREFIX_PATH
-unset PYTHONPATH
+#unset PYTHONPATH
 
 # ✅ Compila el projecte (forçant l'entorn ROS a colcon)
 . /opt/ros/humble/setup.bash
@@ -53,18 +46,20 @@ add_if_missing() {
   fi
 }
 
-# ✅ Afegeix configuracions al .bashrc (només si no hi són)
+# ✅ Afegeix configuracions al .bashrc (només si no hi són). Change 'x' to your rUBot number!
 add_if_missing "source /opt/ros/humble/setup.bash"
-add_if_missing "export ROS_DOMAIN_ID=0"
+add_if_missing "export ROS_DOMAIN_ID=x"
 add_if_missing "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
 add_if_missing "export GAZEBO_MODEL_PATH=/home/ubuntu/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:\$GAZEBO_MODEL_PATH"
 add_if_missing "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash"
 add_if_missing "source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash"
 add_if_missing "cd /home/ubuntu/ROS2_rUBot_mecanum_ws"
-add_if_missing "export DISPLAY=192.168.1.$LAST_OCTET:0.0"
+#add_if_missing "export DISPLAY=192.168.1.$LAST_OCTET:0.0"
 
-# ✅ Fes el sourcing del .bashrc per carregar l'entorn actualitzat (només afecta aquest subshell)
-source "$BASHRC"
+# ✅ Carrega l'entorn directament (no confiem només en el .bashrc)
+source /opt/ros/humble/setup.bash
+source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash
+cd /home/ubuntu/ROS2_rUBot_mecanum_ws
 
 # ✅ Llança el Bringup amb gestió d'errors
 echo "🚀 Llançant Bringup..."
