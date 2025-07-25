@@ -75,3 +75,6 @@ cd /home/ubuntu/ROS2_rUBot_mecanum_ws
 echo "✅ Projecte clonat i compilat amb èxit per $GHUSER."
 echo "👉 Ja pots executar:"
 echo "ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py"
+
+# ✅ Manté el terminal obert amb un shell interactiu
+exec bash
