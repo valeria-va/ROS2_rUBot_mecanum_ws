@@ -86,6 +86,7 @@ bool commandReady = false;
 int arg = 0;
 int argIndex = 0;
 
+bool initialized = false;
 // Variable to hold an input character
 char chr;
 
@@ -239,59 +240,26 @@ int runCommand() {
 
 /* Setup function--runs once at startup. */
 void setup() {
-  Serial.begin(BAUDRATE);  
-  while (!Serial); // espera a que el puerto esté listo
-  delay(2000);
-  Serial.flush();  // <- limpia buffer de salida
-  while (Serial.available()) Serial.read();  // <- limpia entrada
-  cmd = '\0';
   initMotorController();
   setupEncoders();
-// Initialize the motor controller if used */
-#ifdef USE_BASE
-  #ifdef ARDUINO_ENC_COUNTER
-    //set as inputs
-    DDRD &= ~(1<<LEFT_ENC_PIN_A);
-    DDRD &= ~(1<<LEFT_ENC_PIN_B);
-    DDRC &= ~(1<<RIGHT_ENC_PIN_A);
-    DDRC &= ~(1<<RIGHT_ENC_PIN_B);
-    
-    //enable pull up resistors
-    PORTD |= (1<<LEFT_ENC_PIN_A);
-    PORTD |= (1<<LEFT_ENC_PIN_B);
-    PORTC |= (1<<RIGHT_ENC_PIN_A);
-    PORTC |= (1<<RIGHT_ENC_PIN_B);
-    
-    // tell pin change mask to listen to left encoder pins
-    PCMSK2 |= (1 << LEFT_ENC_PIN_A)|(1 << LEFT_ENC_PIN_B);
-    // tell pin change mask to listen to right encoder pins
-    PCMSK1 |= (1 << RIGHT_ENC_PIN_A)|(1 << RIGHT_ENC_PIN_B);
-    
-    // enable PCINT1 and PCINT2 interrupt in the general interrupt mask
-    PCICR |= (1 << PCIE1) | (1 << PCIE2);
-  #endif
-  initMotorController();
-  resetPID();
-#endif
+  resetEncoders();
+  resetPID(); 
+  Serial.begin(BAUDRATE);
+  /*
+  while (!Serial); // espera a que el puerto esté listo
+  Serial.flush();  // <- limpia buffer de salida
+  while (Serial.available()) Serial.read();  // <- limpia entrada
+  */
+  cmd = '\0';
+  }
 
-/* Attach servos if used */
-  #ifdef USE_SERVOS
-    int i;
-    for (i = 0; i < N_SERVOS; i++) {
-      servos[i].initServo(
-          servoPins[i],
-          stepDelay[i],
-          servoInitPosition[i]);
-    }
-  #endif
-}
 
 /* Enter the main loop.  Read and parse input from the serial port
    and run any valid commands. Run a PID calculation at the target
    interval and check for auto-stop conditions.
 */
 void loop() {
-
+  
   while (Serial.available() > 0) {
 
     
@@ -361,6 +329,16 @@ void loop() {
         argIndex++;
       }
     }
+
+    //Init para que los motores no arranquen solos hasta que no llega la primera command
+    if (!initialized) {
+    // Estado de espera antes de la primera orden
+    setMotorSpeeds(0, 0, 0, 0);
+    resetEncoders();
+    resetPID();
+    moving = 0;
+    return;  // No hacer nada más hasta que llegue un comando válido
+    }
   }
 
 if (commandReady) {
@@ -371,6 +349,14 @@ if (commandReady) {
     resetCommand();
     commandReady = false;
     return;
+  }
+  if (!initialized) {
+    // Justo antes de ejecutar el primer comando, hacemos el reset
+    resetEncoders();
+    resetPID();
+    setMotorSpeeds(0, 0, 0, 0);
+    moving = 0;
+    initialized = true;
   }
 
   runCommand();  // It's only executed when cmd is valid

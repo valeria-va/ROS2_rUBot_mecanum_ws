@@ -61,8 +61,8 @@
       spd = -spd;
       reverse = 1;
     }
-    if (spd > 255){
-      spd = 255;
+    if (spd > 150){
+      spd = 150;
     }
 
     if (i == BACK_LEFT) { 
