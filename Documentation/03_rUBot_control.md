@@ -134,7 +134,7 @@ The same simple control program created in virtual environment to move the robot
 
 - We first bringup our real robot:
     ```shell
-    ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+    ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py
     ```
 - Or bringup the LIMO robot:
     ``` shell

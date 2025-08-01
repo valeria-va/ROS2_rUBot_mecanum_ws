@@ -64,7 +64,7 @@ cd /home/user/ROS2_rUBot_mecanum_ws
         >Change the custom_world with the world name you have created
     - In the case of a real robot:
         ````shell
-        ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+        ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py
         ````    
 - to generate the map:
     - In the case of Virtual environment:
