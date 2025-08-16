@@ -29,6 +29,8 @@ ros2_ws/
 # 🚀 Run ROS 2 Web Control for rUBot in virtual environment
 
 This guide explains how to control your rUBot in simulation using TheConstruct environment.
+
+In the client side we use `roslibjs` that plays a key role as the JavaScript library that allows the web dashboard to communicate with the ROS system via the rosbridge_server. Specifically, it provides an easy way to interact with ROS topics, services, and parameters through a WebSocket connection, which allows real-time communication between the webpage and ROS.
 - In TheConstruct environment, open a terminal and type:
     ```bash
     sudo apt install ros-humble-rosbridge-server
@@ -44,6 +46,25 @@ This guide explains how to control your rUBot in simulation using TheConstruct e
     webpage_address
     ````
 - Copy that link and open it in your browser.
+
+## Web control
+
+- Let's first bringup the robot in virtual environment
+    ````shell
+    ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+    ````
+- In a terminal 2 type:
+    ````shell
+    ros2 launch rosbridge_server main_rosbridge_launch.py
+    ````
+- In a terminal 3 type:
+    ````shell
+    cd ~/ROS2_rUBot_mecanum_ws/web
+    python3 -m http.server 7000
+    ````
+- In a terminal 4 type: `webpage_address`
+- Copy that link and open it in your browser.
+
 
 # 🚀 Run ROS 2 Web Control for rUBot setup
 
