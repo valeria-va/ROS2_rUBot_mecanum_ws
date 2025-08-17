@@ -95,14 +95,14 @@
             cmdVelTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: '/cmd_vel',
-                messageType: 'geometry_msgs/Twist'
+                messageType: 'geometry_msgs/msg/Twist'
             });
 
             // Set up camera topic
             const imageTopic = new ROSLIB.Topic({
                 ros: ros,
-                name: '/camera/image_raw/compressed',
-                messageType: 'sensor_msgs/CompressedImage'
+                name: '/camera1/image_raw',
+                messageType: 'sensor_msgs/msg/Image'
             });
 
             imageTopic.subscribe(function (message) {
@@ -113,7 +113,7 @@
             const odomTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: '/odom',
-                messageType: 'nav_msgs/Odometry'
+                messageType: 'nav_msgs/msg/Odometry'
             });
 
             odomTopic.subscribe(function (message) {
