@@ -31,39 +31,29 @@ ros2_ws/
 This guide explains how to control your rUBot in simulation using TheConstruct environment.
 
 In the client side we use `roslibjs` that plays a key role as the JavaScript library that allows the web dashboard to communicate with the ROS system via the rosbridge_server. Specifically, it provides an easy way to interact with ROS topics, services, and parameters through a WebSocket connection, which allows real-time communication between the webpage and ROS.
-- In TheConstruct environment, open a terminal and type:
+You need to install `rosbridge-server`
     ```bash
     sudo apt install ros-humble-rosbridge-server
-    ros2 launch rosbridge_server main_rosbridge_launch.py
     ````
-- open another terminal and type:
-    ```bash
-    cd ~/rUBot_mecanum_ws/web
-    python3 -m http.server 7000
-    ````
-- Now to get our web page address we need to type in another terminal:
-    ```bash
-    webpage_address
-    ````
-- Copy that link and open it in your browser.
-
-## Web control
-
+Then you proceed with:
 - Let's first bringup the robot in virtual environment
     ````shell
     ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
     ````
-- In a terminal 2 type:
+- Launch the rosbridge. In a terminal 2 type:
     ````shell
     ros2 launch rosbridge_server main_rosbridge_launch.py
     ````
-- In a terminal 3 type:
+- Launch the web server. In a terminal 3 type:
     ````shell
     cd ~/ROS2_rUBot_mecanum_ws/web
     python3 -m http.server 7000
     ````
-- In a terminal 4 type: `webpage_address`
-- Copy that link and open it in your browser.
+- In a local network you have to click on the webpage generated: `http://0.0.0.0:7000`
+- In a VPN as the one we are using, we have generated a speciffic webpage in a different address. You will know the address if you open a terminal 4 and type: `webpage_address`
+- Click on this address or copy that link and open it in your browser.
+- In the connection field we have to write the address where our RosBridge is run. In order to get the rosbridge address you can run the following command:`rosbridge_address`
+- Once you connect there is no message. If you want to see a log message you have to open the Development tools
 
 
 # 🚀 Run ROS 2 Web Control for rUBot setup
