@@ -101,8 +101,8 @@
             // Set up camera topic
             const imageTopic = new ROSLIB.Topic({
                 ros: ros,
-                name: '/camera1/image_raw',
-                messageType: 'sensor_msgs/msg/Image'
+                name: '/camera1/image_raw/compressed',
+                messageType: 'sensor_msgs/msg/CompressedImage'
             });
 
             imageTopic.subscribe(function (message) {
