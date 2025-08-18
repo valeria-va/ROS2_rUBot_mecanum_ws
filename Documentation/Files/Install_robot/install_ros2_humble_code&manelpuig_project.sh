@@ -51,7 +51,8 @@ sudo apt install -y \
   libgl1-mesa-glx \
   mesa-utils \
   libqt5x11extras5 \
-  libxkbcommon-x11-0
+  libxkbcommon-x11-0 \
+  ros-humble-rosbridge-server
 
 echo "=== 5. Python packages ==="
 pip3 install -U ultralytics "numpy<1.24" pyserial

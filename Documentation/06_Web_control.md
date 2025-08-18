@@ -47,9 +47,14 @@ sudo apt update
 sudo apt install ros-humble-rosbridge-server -y
 ````
 Then you proceed with:
-- Let's first bringup the robot in virtual environment
+- Let's first bringup the robot:
+    - in virtual environment
     ````shell
     ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
+    ````
+    - in Real environment
+    ````shell
+    ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py
     ````
 - Start rosbridge websocket (port 9090)
     ````shell
