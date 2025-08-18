@@ -67,14 +67,14 @@ add_if_missing "cd /home/ubuntu/ROS2_rUBot_mecanum_ws"
 source /opt/ros/humble/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 source /home/ubuntu/ROS2_rUBot_mecanum_ws/install/setup.bash
-export ROS_DOMAIN_ID=x
+export ROS_DOMAIN_ID=0
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export GAZEBO_MODEL_PATH=/home/ubuntu/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:\$GAZEBO_MODEL_PATH
 cd /home/ubuntu/ROS2_rUBot_mecanum_ws
 
 echo "✅ Projecte clonat i compilat amb èxit per $GHUSER."
 echo "👉 Ja pots executar:"
-echo "ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py"
+echo "ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py"
 
 # ✅ Manté el terminal obert amb un shell interactiu
 exec bash

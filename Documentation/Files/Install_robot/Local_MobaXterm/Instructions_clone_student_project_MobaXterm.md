@@ -6,19 +6,25 @@ You have to:
 - Copy the following files to the `home/ubuntu` folder of your robot:
   - `install_ros2_humble_code_robot.sh`
   - `clone_student_project.sh`
+> Be sure the files are executables
 
 # ✅ Install the ROS2 environment
 
 Execute the script (40min approx):
   ```bash
   cd /home/ubuntu
-  ./install_ros2_humble_code_robot.sh
+  source install_ros2_humble_code_robot.sh
   ````
+> During installation you will have to write the user password and if pop ups appear, you have to select "OK"
 
 # ✅ Clone Student Project
 
 Students have to:
 - Open rUBot_0x session and specify the `Director`student project (4minutes aprox)
+- If the session is not programmed you have to write in a new terminal:
+  ````shell
+  source clone_student_project.sh
+  ````
 - Execute the bringup:
   ```bash
   ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
