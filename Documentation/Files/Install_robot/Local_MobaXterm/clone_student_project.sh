@@ -56,7 +56,7 @@ add_if_missing() {
 
 # ✅ Afegeix configuracions al .bashrc (només si no hi són). Change 'x' to your rUBot number!
 add_if_missing "source /opt/ros/humble/setup.bash"
-add_if_missing "export ROS_DOMAIN_ID=x"
+add_if_missing "export ROS_DOMAIN_ID=0"
 add_if_missing "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
 add_if_missing "export GAZEBO_MODEL_PATH=/home/ubuntu/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:\$GAZEBO_MODEL_PATH"
 add_if_missing "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash"
