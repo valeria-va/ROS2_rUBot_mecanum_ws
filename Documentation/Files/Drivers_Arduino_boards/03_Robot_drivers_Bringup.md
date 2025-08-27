@@ -86,8 +86,8 @@ For every motor we will configure one PWM pin that will set the speed of the mot
 |          | **MOTOR 1** | **MOTOR 2** | **MOTOR 3** | **MOTOR 4** |
 |:--------:|:-----------:|:-----------:|:-----------:|:-----------:|
 | **PWM**  |     A3/4    |    A7/14    |     D2/5    |    D7/10    |
-| **DIR1** |    A6/13    |    TX1/43   |     D4/7    |     D5/8    |
-| **DIR2** |    D8/17    |    RXO/44   |     D3/6    |     D6/9    |
+| **DIR1** |    A6/13    |    A4/12    |     D4/7    |     D5/8    |
+| **DIR2** |    D8/17    |    A5/11    |     D3/6    |     D6/9    |
 | **Enc1** |    D13/48   |     A1/2    |    D12/47   |    D10/21   |
 | **Enc2** |     A0/1    |     A2/3    |    D11/38   |    D9/18    |
 
@@ -223,9 +223,12 @@ Finally, it seemed that with the Arduino Nano ESP32 we were detecting some noise
     commandReady = false;
     }
 ````
+
+There is a phenomena that occurs when the Arduino nano ESP32 turns on. The program compiled in the memory takes less than a second to load but while so, some pins of the Arduino Nano ESP32 start in HIGH so it will trigger the phase signals of the Front Left Wheel making it fadely move. To prevent this is reccommended to connect the 12V alimentation just after powering on the whole Robot.
+
 The Arduino microcontroller is connected over serial (UART) communication with a USB-USB-mini cable.
 
-Once connected, we must upload firmware to the Arduino nano. For this we will use "rubot_driver_nano_ESP32_mec.ino".
+Once connected, we must upload firmware to the Arduino nano ESP32. For this we will use "rubot_driver_nano_ESP32_mec.ino".
 
 This code in Arduino board:
 - Receives closed loop speed commands to move the rUBot in the desired Twist vector 
