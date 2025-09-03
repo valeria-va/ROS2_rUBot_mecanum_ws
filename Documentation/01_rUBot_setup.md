@@ -144,7 +144,7 @@ When working in Laboratory groups, we suggest you:
   git add .
   git commit -m "Message"
   git push
-  ```
+  ````
 - You will have to insert your PAT (Personal Access Token) you have generated
 - The `Director`'s github repository has been updated!
 
@@ -160,5 +160,5 @@ To obtain the **PAT** in github follow the instructions:
     - Under Scopes, select the permissions required:
       - For repository sync, you usually need: repo (full control of private repositories)
     - Click Generate token
-  - Once the token is generated, copy it immediately. You won't be able to see it again after leaving the page.
+  - Once the token is generated, copy it immediately to a local file in your computer. You won't be able to see it again after leaving the page.
 
