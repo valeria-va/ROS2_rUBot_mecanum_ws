@@ -60,6 +60,8 @@ To work on the project (during lab sessions or for homework), each student has t
   source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
   #cd /home/user/ROS2_rUBot_tutorial_ws
   cd /home/user/ROS2_rUBot_mecanum_ws
+  git config --global user.email "xxx@alumnes.ub.edu"
+  git config --global user.name "your_github_username"
   ````
 - If the compilation process returns warnings on "Deprecated setup tools", proceed with:
   ````shell
@@ -141,17 +143,10 @@ When working in Laboratory groups, we suggest you:
   ````shell
   git add .
   git commit -m "Message"
-  ````
-- When you will Push them, the first time you will be asked to link the repository to your github account:
-- Open a terminal in and type your credentials:
-  ```shell
-  git config --global user.email "xxx@alumnes.ub.edu"
-  git config --global user.name "your_github_username"
-  git commit -m "Message"
   git push
   ```
-  > change the email and username and message
-- You will have to specify your Username and Password (Personal Access Token you have generated)
+- You will have to insert your PAT (Personal Access Token) you have generated
+- The `Director`'s github repository has been updated!
 
 To obtain the **PAT** in github follow the instructions:
 
@@ -167,4 +162,3 @@ To obtain the **PAT** in github follow the instructions:
     - Click Generate token
   - Once the token is generated, copy it immediately. You won't be able to see it again after leaving the page.
 
-The `Director`'s github repository has been updated!
