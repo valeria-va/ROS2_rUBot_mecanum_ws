@@ -360,7 +360,7 @@ RViz only represents the robot visual features. You have available all the optio
 
 We have created a `display.launch.xml` launch file with arguments:
 - `robot_model`: the robot model to be displayed in RViz. The default value is "rubot/rubot_mecanum.urdf"
-- `use_sim_time`: if True, the simulation time is used. if False, real raspberrypi time is used when we want to work with the real robot. The default value is True
+- `use_sim_time`: if True, the Gazebo simulation time is used, but if you have not opened Gazebo you will find an error. if False, real raspberrypi time is used when we want to work with the real robot. The default value is False
 
 If you want to use the default argument values, type in a new terminal:
 ```shell
@@ -370,6 +370,7 @@ If you want to use speciffic argument values, type in a new terminal:
 ```shell
 ros2 launch my_robot_description display.launch.xml robot_model:=limo/rubot_limo.urdf use_sim_time:=True
 ```
+> If you have not open Gazebo, you need use_sim_time:=false
 
 ![](./Images/02_rubot_model/04_urdf_rubot_mpuig.png)
 
@@ -503,7 +504,7 @@ You will have to:
 
 To verify the final bringup, execute `my_robot_bringup_sw.launch.xml` launch file with your speciffic argument values: 
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=rubot/rubot_custom.urdf custom_world:=group1_custom.world x0:=0.5 y0:=0.0 yaw0:=1.57
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=rubot/rubot_custom.urdf custom_world:=square3m_walls.world x0:=0.0 y0:=0.0 yaw0:=1.57
 ```
 ![](./Images/02_rubot_model/07_mecanum_bringup.png)
 
