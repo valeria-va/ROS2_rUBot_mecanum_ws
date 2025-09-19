@@ -1,0 +1,110 @@
+# TP-Link AC600 (RTL8811AU/RTL8821CU) Driver Installation on Ubuntu 22.04
+
+This guide explains how to install the **TP-Link Archer T2U Nano AC600** Wi-Fi adapter driver on Ubuntu 22.04.  
+The chipset is **Realtek RTL8811AU / RTL8821CU**, which is not supported by default.
+
+---
+
+## 1. Prepare the system
+
+Make sure you have the required tools to compile DKMS drivers:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential dkms git linux-headers-$(uname -r)
+```
+
+---
+
+## 2. Clone the correct repository
+
+The following repository supports **RTL8811AU/RTL8821CU** chipsets:
+
+```bash
+cd ~
+git clone https://github.com/morrownr/8821cu-20210916.git
+cd 8821cu-20210916
+```
+
+---
+
+## 3. Install the driver
+
+Run the installation script:
+
+```bash
+sudo ./install-driver.sh
+```
+
+- If asked about editing driver options → answer **`N` (No)**.  
+- Options can be edited later manually if needed.
+
+---
+
+## 4. Configure driver options (recommended)
+
+To disable USB power saving and avoid disconnections, add:
+
+```bash
+echo "options 8821cu rtw_power_mgnt=0 rtw_enusbss=0 rtw_ips_mode=0" | \
+  sudo tee /etc/modprobe.d/8821cu.conf
+```
+
+---
+
+## 5. Load the module and restart services
+
+```bash
+sudo modprobe -r 8821cu || true
+sudo modprobe 8821cu
+sudo systemctl restart NetworkManager
+```
+
+If the interface does not appear, unplug and replug the Wi-Fi dongle.
+
+---
+
+## 6. Verify the interface
+
+```bash
+ip link             # should show 'wlan0' or 'wlx...' interface
+nmcli dev status    # should show 'wifi' as available
+nmcli dev wifi list # should list available Wi-Fi networks
+```
+
+---
+
+## 7. Connect to a Wi-Fi network
+
+You can connect via Network Manager GUI (top-right menu)  
+or via terminal:
+
+```bash
+nmcli dev wifi connect "SSID_NAME" password "SSID_PASSWORD"
+```
+
+---
+
+## 8. Check your IP address
+
+```bash
+hostname -I
+ip a
+```
+
+Your Wi-Fi interface should have an IP like `192.168.1.xxx`.
+
+---
+
+## 9. Uninstall the driver (if needed)
+
+If you want to remove the driver:
+
+```bash
+cd ~/8821cu-20210916
+sudo ./remove-driver.sh
+```
+
+---
+
+✅ With this, the TP-Link AC600 dongle should work correctly on Ubuntu 22.04 with full Wi-Fi connectivity.
