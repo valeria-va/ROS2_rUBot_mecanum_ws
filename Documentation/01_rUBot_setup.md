@@ -93,19 +93,23 @@ The UB custom rUBot mecanum custom made robot is based on:
 - Raspberrypi4 computer onboard
 - Custom ROS2 configuration in Ubuntu22.04 server 64bits.
 
-When the real robot is plugged on, you will access to the robot using MOBAXterm:
-- Open rUBot_0x session and specify the `Director`student project (4minutes aprox)
-  ![](./Images/01_Setup/MobaXterm.png)
-  >This script will make the project clone, compilation and .bashrc configuration
+`Local control`: Connecting to the rUBot with VScode window:
+- Verify you have the file: `clone_student_project.sh` in your `\user\home` folder. This file is located at: `ROS2_rUBot_mecanum_ws/Documentation/Files/Install_robot/Local_VScode/clone_student_project.sh`
+- Open rUBot_0x session on `\user\home` and type:
+  ````shell
+  source clone_student_project.sh
+  ````
+  >specify the `Director` github username 
+
+  >This script will make the project clone, compilation and .bashrc configuration (4minutes aprox)
 - Execute the bringup:
   ```bash
-  ros2 launch my_robot_bringup my_robot_nano_bringup_hw.launch.py
+  ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py
   ```
 - Verify in a new terminal the working nodes:
   ````shell
   ros2 node list
   ````
-
 
 You will see the main nodes running and you are ready to control the robot
 

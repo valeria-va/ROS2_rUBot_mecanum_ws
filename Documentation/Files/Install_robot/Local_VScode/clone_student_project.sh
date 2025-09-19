@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# ✅ Pregunta si vols executar el procés complet
-read -p "❓ Vols executar el procés de clonació i compilació? [y/N]: " RESP
-if [[ "$RESP" != "y" && "$RESP" != "Y" ]]; then
-  echo "🔁 Terminal obert. No s'executarà cap acció."
-  exec bash  # Manté el terminal obert
-  exit 0
-fi
-
 # ✅ Comprova que hi ha com a mínim 1 argument (GitHub user)
 if [ -z "$1" ]; then
   read -p "Introdueix el nom d'usuari de GitHub: " GHUSER
