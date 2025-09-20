@@ -15,8 +15,10 @@ Follow the instructions:
 - Create `cyclonedds_robot.xml` file
 - Adjust the `docker-compose.yml` with the IP of your PC
 - Prepare the `entrypoint.pc.sh` file and make it executable
-- Install Xlaunch (open to display :0 and without restrictions to local clients)
-- Obtain the PC-IP and define DISPLAY=192.168.1.6:0.0 to docker-compose
+- Install MobaXterm for ROS graphical display on Windows (https://mobaxterm.mobatek.net/download.html)
+  - Configure in Settings to allow full X11 remote access
+  ![](./Images/MobaXterm_access.png)
+- Obtain the PC-IP and define DISPLAY=192.168.1.6:0.0 to docker-compose or change it later on .bashrc file
 - build the container:
   ````shell
   docker compose -f docker-compose.windows.yml up --build -d
@@ -29,6 +31,7 @@ Follow the instructions:
   source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
   export ROS_DOMAIN_ID=0
   export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  export DISPLAY=192.168.1.6:0.0
   #export GAZEBO_MODEL_PATH=/home/user/ROS2_rUBot_mecanum_ws/src/my_robot_bringup/models:$GAZEBO_MODEL_PATH
   #source /home/user/ROS2_rUBot_tutorial_ws/install/setup.bash
   #source /home/user/ROS2_rUBot_mecanum_ws/install/setup.bash
@@ -42,7 +45,7 @@ Follow the instructions:
   # If the modification is on Dockerfile
   docker compose -f docker-compose.windows.yml up --build -d
   ````
-  
+
 
 ## Solution for Linux PC: Multicast
 
