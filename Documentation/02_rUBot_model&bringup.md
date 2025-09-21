@@ -368,7 +368,7 @@ ros2 launch my_robot_description display.launch.xml
 ```
 If you want to use speciffic argument values, type in a new terminal:
 ```shell
-ros2 launch my_robot_description display.launch.xml robot_model:=limo/rubot_limo.urdf use_sim_time:=True
+ros2 launch my_robot_description display.launch.xml robot_model:=limo/rubot_limo.urdf use_sim_time:=true
 ```
 > If you have not open Gazebo, you need use_sim_time:=false
 
@@ -427,7 +427,7 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ```
 If you want to use speciffic argument values, type in a new terminal:
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=limo/rubot_limo.urdf custom_world:=square4m_sign.world x0:=0.5 y0:=0.0 yaw0:=1.57
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=true robot:=limo/rubot_limo.urdf custom_world:=square4m_sign.world x0:=0.5 y0:=-1.0 yaw0:=1.57
 ```
 ![](./Images/02_rubot_model/06_rubot_bringup.png)
 
@@ -504,7 +504,7 @@ You will have to:
 
 To verify the final bringup, execute `my_robot_bringup_sw.launch.xml` launch file with your speciffic argument values: 
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True robot:=rubot/rubot_custom.urdf custom_world:=square3m_walls.world x0:=0.0 y0:=0.0 yaw0:=1.57
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=true robot:=rubot/rubot_custom.urdf custom_world:=square3m_walls.world x0:=0.0 y0:=0.0 yaw0:=1.57
 ```
 ![](./Images/02_rubot_model/07_mecanum_bringup.png)
 
@@ -528,7 +528,7 @@ sudo apt install ros-humble-teleop-twist-keyboard
 When you are using the virtual environment to simulate the robot behavior you have to:
 - Bringup our robot in Gazebo virtual environment
   ````shell
-  ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=True x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
+  ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml use_sim_time:=true x0:=0.5 y0:=-1.5 yaw0:=1.57 robot:=rubot/rubot_mecanum.urdf custom_world:=square4m_sign.world
   ````
 - In a new terminal, launch the teleop-twist-keyboard:
   ```shell
@@ -547,7 +547,7 @@ When you are using the virtual environment to simulate the robot behavior you ha
 When you are using the real robot, the bringup is done with:
 ```shell
 ros2 launch my_robot_bringup my_robot_bringup_hw.launch.py
-ros2 launch my_robot_description display.launch.xml use_sim_time:=False robot_model:=rubot/rubot_mecanum.urdf
+ros2 launch my_robot_description display.launch.xml use_sim_time:=false robot_model:=rubot/rubot_mecanum.urdf
 ````
 
 Launch the teleop-twist-keyboard control node:
