@@ -425,7 +425,7 @@ ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml
 ![](./Images/02_rubot_model/06_rubot_bringup1.png)
 If you want to use speciffic argument values, type in a new terminal:
 ```shell
-ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml robot:=limo/rubot_limo.urdf custom_world:=square4m_sign.world x0:=0.5 y0:=0.5 yaw0:=1.57
+ros2 launch my_robot_bringup my_robot_bringup_sw.launch.xml robot:=limo/rubot_limo.urdf x0:=0.5 y0:=0.5 yaw0:=1.57
 ```
 ![](./Images/02_rubot_model/06_bringup_limo.png)
 
@@ -447,6 +447,10 @@ ros2 launch my_robot_description display.launch.xml use_sim_time:=true robot_mod
 
 ![](./Images/02_rubot_model/06_topics_limo2.png)
 
+Ye have saved this RVIZ configuration in `urdf_lidar_cam.rviz` file and the bringup launch file `my_robot_bringup_sw_rviz.launch.xml` launch Gazebo and RVIZ with this configuration.
+````shell
+ros2 launch my_robot_bringup my_robot_bringup_sw_rviz.launch.xml robot:=limo/rubot_limo.urdf x0:=0.5 y0:=0.5 yaw0:=1.57
+````
 
 #### **Design a custom world**
 
