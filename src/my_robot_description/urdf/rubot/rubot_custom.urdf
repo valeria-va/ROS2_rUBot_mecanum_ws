@@ -49,17 +49,17 @@
 
 <!--Custom-->
 <joint name="top_part_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="base_link"/>
     <child link="top_part"/>
   </joint>
   <link name="top_part">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.01 -0.01 0.01"/>
       <geometry>
-        <mesh filename="file://$(find my_robot_description)/meshes/rubot/arc_columna lateral d v1.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="file://$(find my_robot_description)/meshes/rubot/bin_arc.stl" scale="0.005 0.005 0.005"/>
       </geometry>
-      <material name="light_grey"/>
+      <material name="yellow"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -227,30 +227,8 @@
     <parent link="base_link"/>
     <child link="base_scan"/>
   </joint>
-  <joint name="joint_part" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.10 0.0 0.08"/>
-    <parent link="base_link"/>
-    <child link="part"/>
-  </joint>
-  <link name="part">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="file://$(find my_robot_description)/meshes/rubot/number2.stl" scale="0.0008 0.0008 0.0008"/>
-        </geometry>
-      <material name="light_grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.05 0.05 0.025"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.01"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
-    </inertial>
-  </link>
+
+ 
   <gazebo>
         <plugin name="mecanum_controller" filename="libgazebo_ros_planar_move.so">
             <command_topic>cmd_vel</command_topic>
