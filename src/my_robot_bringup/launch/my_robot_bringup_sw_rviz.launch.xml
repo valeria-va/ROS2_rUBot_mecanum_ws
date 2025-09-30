@@ -11,7 +11,7 @@
     <let name="robot_path"
          value="$(find-pkg-share my_robot_description)/urdf/$(var robot)" />
     <let name="world_path"
-         value="$(find-pkg-share my_robot_bringup)/worlds/$(var custom_world)" />
+         value="$(find-pkg-share my_robot_bringup)/worlds/$(var CUSTOM1)" />
     <let name="rviz_config_path"
           value="$(find-pkg-share my_robot_bringup)/rviz/urdf_lidar_cam.rviz" />
     <node pkg="joint_state_publisher" exec="joint_state_publisher">

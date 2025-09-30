@@ -55,9 +55,9 @@
   </joint>
   <link name="top_part">
     <visual>
-      <origin rpy="0 0 0" xyz="-0.01 -0.01 0.01"/>
+      <origin rpy="0 0 0" xyz="0.45 -0.2 0.06"/>
       <geometry>
-        <mesh filename="file://$(find my_robot_description)/meshes/rubot/bin_arc.stl" scale="0.005 0.005 0.005"/>
+        <mesh filename="file://$(find my_robot_description)/meshes/rubot/bin_arc.stl" scale="0.003 0.003 0.003"/>
       </geometry>
       <material name="yellow"/>
     </visual>
