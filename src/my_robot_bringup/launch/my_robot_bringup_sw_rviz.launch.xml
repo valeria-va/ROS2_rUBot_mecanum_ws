@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="use_sim_time" default="true" description="Use simulation (Gazebo) clock if true" />
-    <arg name="x0" default="0.0" description="Initial X position of the robot" />
-    <arg name="y0" default="0.0" description="Initial Y position of the robot" />
+    <arg name="x0" default="1.0" description="Initial X position of the robot" />
+    <arg name="y0" default="1.0" description="Initial Y position of the robot" />
     <arg name="yaw0" default="0.0" description="Initial Yaw orientation of the robot (radians)" />
     <arg name="robot" default="rubot/rubot_mecanum.urdf"
          description="Name of the URDF file (e.g., rubot_limo.urdf)" />
@@ -11,7 +11,7 @@
     <let name="robot_path"
          value="$(find-pkg-share my_robot_description)/urdf/$(var robot)" />
     <let name="world_path"
-         value="$(find-pkg-share my_robot_bringup)/worlds/$(var CUSTOM1)" />
+         value="$(find-pkg-share my_robot_bringup)/worlds/$(var custom_world)" />
     <let name="rviz_config_path"
           value="$(find-pkg-share my_robot_bringup)/rviz/urdf_lidar_cam.rviz" />
     <node pkg="joint_state_publisher" exec="joint_state_publisher">
