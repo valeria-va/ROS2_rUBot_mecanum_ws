@@ -16,8 +16,6 @@ class RobotSelfControl(Node):
         self.declare_parameter('backward_speed', -0.2)
         self.declare_parameter('rotation_speed', 0.3)
         self.declare_parameter('time_to_stop', 5.0)
-        self.declare_parameter("left_speed", 0.2)
-        self.declare_parameter("right_speed", 0.2)
 
         
         self._distanceLaser = self.get_parameter('distance_laser').value

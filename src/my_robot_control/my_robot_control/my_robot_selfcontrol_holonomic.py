@@ -15,11 +15,11 @@ class RobotSelfControlHolonomic(Node):
         self.declare_parameter('distance_laser', 0.3)
         self.declare_parameter('speed_factor', 1.0)
         
-        # Added back forward/backward speeds, setting forward default to 0.0 for strafing
+        # Forward/backward speeds, setting forward default to 0.0 for strafing
         self.declare_parameter('forward_speed', 0.0)    
         self.declare_parameter('backward_speed', -0.2)
         
-        # Corrected declarations: one for left (positive Y), one for right (negative Y)
+        # One for left (positive Y), one for right (negative Y)
         self.declare_parameter('left_speed', 0.2)       # Strafe Left (Positive Y)
         self.declare_parameter('right_speed', -0.2)     # Strafe Right (Negative Y)
         
@@ -30,7 +30,6 @@ class RobotSelfControlHolonomic(Node):
         self._distanceLaser = self.get_parameter('distance_laser').value
         self._speedFactor = self.get_parameter('speed_factor').value
         
-        # Retrieved forward/backward speeds
         self._forwardSpeed = self.get_parameter('forward_speed').value
         self._backwardSpeed = self.get_parameter('backward_speed').value
         
@@ -63,7 +62,6 @@ class RobotSelfControlHolonomic(Node):
         elapsed_time = self.get_clock().now().seconds_nanoseconds()[0] - self.start_time
 
         self._cmdVel.publish(self._msg)
-        # UPDATED: Logging now shows Vy (sideways speed)
         self.get_logger().info(f"Vx: {self._msg.linear.x:.2f}, Vy: {self._msg.linear.y:.2f}, w: {self._msg.angular.z:.2f} in time: {elapsed_time:.1f}")
         
         if elapsed_time >= self._time_to_stop:
@@ -136,8 +134,6 @@ def main(args=None):
     try:
         rclpy.spin(rubot)
     except KeyboardInterrupt:
-        # ROS2 is already stopped and I can not execute any more functions
-        # if elapsed time is not reached, the robot will not stop
         pass
     finally:
         rubot.destroy_node()

@@ -1,13 +1,5 @@
-"""#normal
 
 vx: 0.0
 vy: 0.2
-w: 0
-td: 2"""
-
-#sideways
-
-vx: 0.2
-vy: 0
 w: 0
 td: 2
