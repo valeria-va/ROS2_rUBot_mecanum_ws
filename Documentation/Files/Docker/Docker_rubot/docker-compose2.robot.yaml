@@ -1,0 +1,33 @@
+name: robot_humble_container
+
+services:
+  robot-humble-container:
+    # Construeix la imatge utilitzant el Dockerfile.pc del directori actual
+    build:
+      context: .
+      dockerfile: Dockerfile.robot
+    image: robot_humble_image
+    container_name: robot-humble-container
+    privileged: true
+    #pull_policy: always
+    network_mode: host # Si fas servir 'host', el port ja està obert
+    # Essencial per a la visualització gràfica (RViz2, etc.)
+    environment:
+      # CANVIA 192.168.1.3 per la IP del TEU PC.
+      #- DISPLAY=192.168.1.6:0.0
+      # Assegura que l'entorn gràfic funcioni correctament
+      #- QT_X11_NO_MITSHM=1
+      #- LIBGL_ALWAYS_SOFTWARE=1
+      #- MESA_GL_VERSION_OVERRIDE=2.1 
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp # Millor per xarxes wifi amb oscilacions 
+      - CYCLONEDDS_URI=/var/lib/theconstruct.rrl/cyclonedds.xml
+    volumes:
+      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
+      - /dev:/dev # Això permet l'accés a tots els dispositius /dev del host
+      - ./bringup.sh:/bringup.sh
+      - ./entrypoint.robot.sh:/entrypoint.robot.sh
+    entrypoint: /entrypoint.robot.sh
+    #command: sleep infinity
+    #command: ["ros2", "launch", "my_robot_bringup", "my_robot_nano_bringup_hw.launch.py"]
+    command: ["/bringup.sh"]
+    restart: always

@@ -1,0 +1,34 @@
+name: pc_humble_container
+
+services:
+  pc-humble_container:
+    build:
+      context: .
+      dockerfile: Dockerfile.pc
+    image: pc_humble_image
+    container_name: pc_humble_container
+    privileged: true
+
+    # Exposem ports necessaris, especialment per a ROS 2 + CycloneDDS
+    ports:
+      - "7400:7400/udp"     # DDS discovery multicast
+      - "7401:7401/udp"     # Primer participant unicast
+      - "7410-7420:7410-7420/udp"  # Rang per altres participants/nodes
+      # - "11311:11311"     # Si fos ROS 1
+
+    environment:
+      # IP del teu PC host amb MobaXterm (X11 server)
+      - DISPLAY=192.168.1.6:0.0
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - MESA_GL_VERSION_OVERRIDE=2.1 
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+    volumes:
+      - /dev:/dev  # Subjecte a limitacions a Windows
+      - ./entrypoint.pc.sh:/entrypoint.pc.sh
+      # - ./pc_ws:/root/pc_ws         # Opcional: workspace ROS
+      # - ./maps:/root/maps           # Opcional: per mapes SLAM/NAV2
+
+    entrypoint: /entrypoint.pc.sh
+    command: sleep infinity

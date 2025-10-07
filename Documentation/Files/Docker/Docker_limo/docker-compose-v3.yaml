@@ -1,0 +1,18 @@
+name: limo_humble_v3
+
+services:
+  limo-humble-container:
+    pull_policy: always
+    image: theconstructai/limo:humble-v3
+    privileged: true
+    network_mode: host
+    container_name: limo-humble-container
+    volumes:
+      - /var/lib/theconstruct.rrl/cyclonedds.xml:/var/lib/theconstruct.rrl/cyclonedds.xml
+      - /dev:/dev
+      - ./limo_base.launch.py:/root/agilex_ws/install/limo_base/share/limo_base/launch/limo_base.launch.py
+      - ./limo_start.launch.py:/root/agilex_ws/install/limo_bringup/share/limo_bringup/launch/humble/limo_start.launch.py
+      - ./limo_entrypoint-v3.sh:/limo_entrypoint-v3.sh
+    entrypoint: /limo_entrypoint-v3.sh
+    command: ["ros2", "launch", "limo_bringup", "limo_start.launch.py"]
+    restart: always

@@ -1,0 +1,8 @@
+# ────── ROS 2 base ──────
+source /opt/ros/humble/setup.bash
+
+# NOTA: NO afegeixis aquí el workspace ni DDS si no vols que s’apliqui automàticament a tot
+
+# Opcional: Missatge informatiu per recordar-ho
+echo "[INFO] Per carregar l'entorn complet de ROS 2, executa:"
+echo "       source ~/source_env_ros2_robot.sh"

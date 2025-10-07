@@ -1,0 +1,42 @@
+# We use the explicit OSRF path for the ROS image to ensure it's found.
+FROM osrf/ros:humble-desktop-full
+
+# Fix for expired GPG key.
+# The base image has a correct sources.list, but the GPG key it points to is expired.
+# The most direct fix is to overwrite the existing key file with the new, valid one.
+# The conflicting key file is '/usr/share/keyrings/ros2-latest-archive-keyring.gpg'.
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros2-latest-archive-keyring.gpg
+
+# Now that the key is fixed, run apt-get update and install the required packages.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    x11-apps \
+    libgl1-mesa-glx \
+    mesa-utils \
+    libqt5x11extras5 \
+    libxkbcommon-x11-0 \
+    build-essential \
+    cmake \
+    python3-colcon-common-extensions \
+    python3-pip \
+    wget \
+    unzip \
+    git \
+    iputils-ping \
+    ros-humble-nav2-bringup \
+    ros-humble-nav2-simple-commander \
+    ros-humble-tf-transformations \
+    ros-humble-cartographer-ros \
+    ros-humble-teleop-twist-keyboard \
+    ros-humble-rmw-cyclonedds-cpp \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Yolo
+RUN pip3 install ultralytics "numpy<1.24"
+
+WORKDIR /root
+# Add the ROS environment to .bashrc for convenience
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+
+# By default, keep the container running with a terminal
+CMD ["bash"]
