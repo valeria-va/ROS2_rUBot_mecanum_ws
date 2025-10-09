@@ -1,0 +1,10 @@
+
+"""Robot Pose"""
+float64 pose_x
+float64 pose_y
+float64 pose_theta
+
+"""Sensor Data Array (6 channels * 7 values = 42 floats)
+Data order: [s1_eco2, s1_tvoc, s1_aqi, s1_r0, s1_r1, s1_r2, s1_r3, s2_eco2, ..., s6_r3]"""
+float32[42] sensor_readings
+
