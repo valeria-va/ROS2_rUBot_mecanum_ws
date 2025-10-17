@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry                  # Robot's pose
-from ens160_ros2_package.msg import SensorData     # Custom message for sensor data
+from ens160_interfaces.msg import SensorData          # Custom message format (from the sensors)
 import tf_transformations                          # For converting quaternion to Euler angles
 
 import serial

@@ -6,8 +6,8 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     sensor_pose_node = Node(
-        package="ENS160_Sensors",
-        executable="ENS160_Sensors_exec",
+        package="ens160_sensors",
+        executable="ens160_sensors_exec",
         name="sensor_pose_node",
       
         parameters=[
