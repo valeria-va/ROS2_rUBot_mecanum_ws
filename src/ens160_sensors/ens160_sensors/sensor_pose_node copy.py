@@ -15,7 +15,7 @@ class SensorPoseNode(Node):
     publishes the complete data set using the custom SensorData message.
     """
     def __init__(self):
-        super().__init__('sensor_pose_node')
+        super().__init__('sensor_pose_node_hw')
         
         # --- Configuration Constants ---
         self.PORT = '/dev/ttyUSB0'       # Serial port for Arduino

@@ -61,7 +61,6 @@
 <body>
     <div class="connection-form">
         <input type="text" id="map-name" placeholder="Nom del mapa (ex: map)">
-        <!-- <p>Adreça rosbridge: <span id="rosbridge-address"></span></p> -->
         <button onclick="connectToROS()">Connecta</button>
     </div>
     <div class="dashboard">
@@ -70,9 +69,10 @@
 
         <img class="image-view" id="camera-feed" alt="Camera Feed">
         <div class="position-display">
-            <h3>Posició</h3>
+            <h3>Posició i Orientació</h3>
             <p>X: <span id="position-x">0</span></p>
             <p>Y: <span id="position-y">0</span></p>
+            <p>Z_&Theta;: <span id="rotation-z">0</span></p>
         </div>
         <div class="map-display">
             <h3>Mapa</h3>
@@ -101,10 +101,11 @@
             const rosbridgeAddress = getRosbridgeAddress();
             const mapPath = `maps/${mapName}.png`;
 
-            // document.getElementById('rosbridge-address').textContent = rosbridgeAddress;
             document.getElementById('map-image').src = mapPath;
 
-            ros = new ROSLIB.Ros({url: rosbridgeAddress});
+            ros = new ROSLIB.Ros({
+                url: rosbridgeAddress
+            });
 
             ros.on('connection', function () {
                 console.log('Connectat a rosbridge:', rosbridgeAddress);
@@ -118,6 +119,15 @@
             ros.on('close', function () {
                 console.log('Connexió tancada.');
             });
+        }
+
+        function quaternionToYaw(orientation) {
+            const q = orientation;
+            // Yaw (Z) calculation
+            const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+            const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+            const yaw = Math.atan2(siny_cosp, cosy_cosp);
+            return yaw;
         }
 
         function setupTopics() {
@@ -134,7 +144,7 @@
             });
 
             imageTopic.subscribe(function (message) {
-                console.log("Imatge rebuda");
+                // console.log("Imatge rebuda");
                 document.getElementById('camera-feed').src = "data:image/jpeg;base64," + message.data;
             });
 
@@ -145,27 +155,39 @@
             });
 
             odomTopic.subscribe(function (message) {
-                console.log("Odometria rebuda", message.pose.pose.position);
+                // console.log("Odometria rebuda", message.pose.pose.position);
                 document.getElementById('position-x').textContent = message.pose.pose.position.x.toFixed(2);
                 document.getElementById('position-y').textContent = message.pose.pose.position.y.toFixed(2);
+
+                // Get Yaw from the Quaternion orientation
+                const yaw = quaternionToYaw(message.pose.pose.orientation);
+                document.getElementById('rotation-z').textContent = yaw.toFixed(2);
             });
+
 
             setupJoysticks();
         }
 
         const maxSpeed = 1.0;
         const maxTurn = 1.0;
+        const distanceFactor = 75;
 
         let currentLinearX = 0;
         let currentLinearY = 0;
         let currentAngularZ = 0;
 
-        const distanceFactor = 75;
-
         function publishTwist() {
             const twist = new ROSLIB.Message({
-                linear: {x: currentLinearX, y: currentLinearY, z: 0},
-                angular: {x: 0, y: 0, z: currentAngularZ}
+                linear: {
+                    x: currentLinearX,
+                    y: currentLinearY,
+                    z: 0
+                },
+                angular: {
+                    x: 0,
+                    y: 0,
+                    z: currentAngularZ
+                }
             });
             if (cmdVelTopic) {
                 cmdVelTopic.publish(twist);
@@ -173,47 +195,50 @@
         }
 
         function setupJoysticks() {
-            const options_l = { //linear movement
+            const options_l = { // Linear X and Angular Z
                 zone: document.getElementById('joystick_l'),
                 mode: 'static',
-                position: {left: '50%', top: '100%'},
+                position: {
+                    left: '50%',
+                    top: '50%'
+                },
                 color: 'blue',
                 size: 150
             };
 
-            const options_h = { //holonomic movement
+            const options_h = { // Linear Y (strafe)
                 zone: document.getElementById('joystick_h'),
                 mode: 'static',
-                position: {left: '50%', top: '0%'},
+                position: {
+                    left: '50%',
+                    top: '50%'
+                },
                 color: 'red',
                 size: 150
             };
-            joystick_l = nipplejs.create(options_l);
-            joystick_h = nipplejs.create(options_h);
+
+            const joystick_l = nipplejs.create(options_l);
+            const joystick_h = nipplejs.create(options_h);
+
 
             joystick_l.on('move', function (evt, data) {
-
                 // Linear X (Forward/Backward) is based on the vertical component (sin(angle))
                 currentLinearX = Math.sin(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-                // Angular Z (Turning) is based on the horizontal component (-cos(angle))
+                // Angular Z (Turning/Yaw) is based on the horizontal component (cos(angle))
                 currentAngularZ = -Math.cos(data.angle.radian) * maxTurn * data.distance / distanceFactor;
                 publishTwist();
-
             });
 
             joystick_l.on('end', function () {
+                // Stop linear X and angular Z
                 currentLinearX = 0;
                 currentAngularZ = 0;
                 publishTwist();
             });
 
             joystick_h.on('move', function (evt, data) {
-
-                // Linear Y (Strafe Left/Right) is based on the horizontal component
+                // Linear Y (Strafe Left/Right). Use the horizontal component (X-axis)
                 currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-
-                // If you wanted the vertical axis to control Linear X as well, you would 
-                // calculate currentLinearX here too, but we keep it separate as requested.
 
                 publishTwist();
             });

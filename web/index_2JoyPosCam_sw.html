@@ -61,6 +61,7 @@
 <body>
     <div class="connection-form">
         <input type="text" id="map-name" placeholder="Nom del mapa (ex: map)">
+        <!-- <p>Adreça rosbridge: <span id="rosbridge-address"></span></p> -->
         <button onclick="connectToROS()">Connecta</button>
     </div>
     <div class="dashboard">
@@ -69,31 +70,20 @@
 
         <img class="image-view" id="camera-feed" alt="Camera Feed">
         <div class="position-display">
-            <h3>Posició i Orientació</h3>
+            <h3>Posició</h3>
             <p>X: <span id="position-x">0</span></p>
             <p>Y: <span id="position-y">0</span></p>
-            <p>Z_&Theta;: <span id="rotation-z">0</span></p>
         </div>
         <div class="map-display">
             <h3>Mapa</h3>
-            <canvas id="map-canvas" class="map-image" width="200" height="200"></canvas>
+            <img id="map-image" class="map-image" alt="Mapa">
         </div>
     </div>
 
     <script>
         let ros;
         let cmdVelTopic;
-        let joystick_l, joystick_h; // Ensure these are declared
-        
-        // --- Map Variables ---
-        // You MUST adjust these based on your actual map size and resolution!
-        const MAP_WIDTH_PIXELS = 200; // Match canvas width
-        const MAP_HEIGHT_PIXELS = 200; // Match canvas height
-        const MAP_RESOLUTION = 0.05; // meters/pixel (Common value, adjust if needed)
-        const ROBOT_RADIUS = 5; // pixels
-        const SPEED_VECTOR_SCALE = 50; // pixels per m/s (Adjust for visible vector length)
-        let mapImage = new Image();
-        // ---------------------
+        let joystick;
 
         function getRosbridgeAddress() {
             const currentUrl = window.location.href;
@@ -111,15 +101,10 @@
             const rosbridgeAddress = getRosbridgeAddress();
             const mapPath = `maps/${mapName}.png`;
 
-            // Load the map image first
-            mapImage.onload = () => {
-                console.log('Map image loaded.');
-            };
-            mapImage.src = mapPath;
+            // document.getElementById('rosbridge-address').textContent = rosbridgeAddress;
+            document.getElementById('map-image').src = mapPath;
 
-            ros = new ROSLIB.Ros({
-                url: rosbridgeAddress
-            });
+            ros = new ROSLIB.Ros({url: rosbridgeAddress});
 
             ros.on('connection', function () {
                 console.log('Connectat a rosbridge:', rosbridgeAddress);
@@ -135,21 +120,12 @@
             });
         }
 
-        function quaternionToYaw(orientation) {
-            const q = orientation;
-            const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-            const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-            const yaw = Math.atan2(siny_cosp, cosy_cosp);
-            return yaw;
-        }
-
         function setupTopics() {
             cmdVelTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: '/cmd_vel',
                 messageType: 'geometry_msgs/Twist'
             });
-            // ... (Image and Odom topic setup remains similar)
 
             const imageTopic = new ROSLIB.Topic({
                 ros: ros,
@@ -158,6 +134,7 @@
             });
 
             imageTopic.subscribe(function (message) {
+                console.log("Imatge rebuda");
                 document.getElementById('camera-feed').src = "data:image/jpeg;base64," + message.data;
             });
 
@@ -168,104 +145,27 @@
             });
 
             odomTopic.subscribe(function (message) {
-                const position = message.pose.pose.position;
-                const orientation = message.pose.pose.orientation;
-                const twist = message.twist.twist;
-
-                // Update position text displays
-                document.getElementById('position-x').textContent = position.x.toFixed(2);
-                document.getElementById('position-y').textContent = position.y.toFixed(2);
-                const yaw = quaternionToYaw(orientation);
-                document.getElementById('rotation-z').textContent = yaw.toFixed(2);
-
-                // Draw state on map
-                drawRobotState(position.x, position.y, twist.linear.x, twist.linear.y);
+                console.log("Odometria rebuda", message.pose.pose.position);
+                document.getElementById('position-x').textContent = message.pose.pose.position.x.toFixed(2);
+                document.getElementById('position-y').textContent = message.pose.pose.position.y.toFixed(2);
             });
-
 
             setupJoysticks();
         }
 
-        function drawRobotState(robotX, robotY, velX, velY) {
-            const canvas = document.getElementById('map-canvas');
-            const ctx = canvas.getContext('2d');
-
-            ctx.clearRect(0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
-            if (mapImage.complete) {
-                ctx.drawImage(mapImage, 0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
-            }
-
-            // Assuming (0,0) world coordinates map to the center of the image.
-            const pixelX = robotX / MAP_RESOLUTION + MAP_WIDTH_PIXELS / 2;
-            const pixelY = MAP_HEIGHT_PIXELS / 2 - robotY / MAP_RESOLUTION; 
-            // The subtraction for Y is common because canvas Y is down, but ROS Y is up.
-
-
-            // Draw Robot Position
-            ctx.beginPath();
-            ctx.arc(pixelX, pixelY, ROBOT_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = 'green';
-            ctx.fill();
-            ctx.strokeStyle = 'black';
-            ctx.stroke();
-
-            // Calculate Speed and Movement Direction
-            const speed = Math.sqrt(velX * velX + velY * velY);
-            if (speed > 0.01) { // Only draw the vector if speed is significant
-                
-                // Angle of the velocity vector (direction of movement)
-                const movementAngle = Math.atan2(velY, velX); 
-                
-                // Length of the vector based on speed
-                const vectorLength = speed * SPEED_VECTOR_SCALE; 
-
-                // Calculate the endpoint of the vector
-                const endX = pixelX + Math.cos(movementAngle) * vectorLength;
-                const endY = pixelY - Math.sin(movementAngle) * vectorLength; // Y is inverted
-
-                // Draw Speed/Direction Vector
-                ctx.beginPath();
-                ctx.moveTo(pixelX, pixelY);
-                ctx.lineTo(endX, endY);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'red';
-                ctx.stroke();
-
-                // Draw a small arrow head
-                ctx.fillStyle = 'red';
-                ctx.save();
-                ctx.translate(endX, endY);
-                ctx.rotate(-movementAngle);
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(-10, 5);
-                ctx.lineTo(-10, -5);
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
         const maxSpeed = 1.0;
         const maxTurn = 1.0;
-        const distanceFactor = 75;
 
         let currentLinearX = 0;
         let currentLinearY = 0;
         let currentAngularZ = 0;
 
+        const distanceFactor = 75;
+
         function publishTwist() {
             const twist = new ROSLIB.Message({
-                linear: {
-                    x: currentLinearX,
-                    y: currentLinearY,
-                    z: 0
-                },
-                angular: {
-                    x: 0,
-                    y: 0,
-                    z: currentAngularZ
-                }
+                linear: {x: currentLinearX, y: currentLinearY, z: 0},
+                angular: {x: 0, y: 0, z: currentAngularZ}
             });
             if (cmdVelTopic) {
                 cmdVelTopic.publish(twist);
@@ -273,35 +173,32 @@
         }
 
         function setupJoysticks() {
-            // ... (Joystick Options and Creation remain the same) ...
-             const options_l = { // Linear X and Angular Z
+            const options_l = { //linear movement
                 zone: document.getElementById('joystick_l'),
                 mode: 'static',
-                position: {
-                    left: '50%',
-                    top: '50%' },
+                position: {left: '50%', top: '50%'},
                 color: 'blue',
-                size: 150  };
+                size: 150
+            };
 
-            const options_h = { // Linear Y (strafe)
+            const options_h = { //holonomic movement
                 zone: document.getElementById('joystick_h'),
                 mode: 'static',
-                position: {
-                    left: '50%',
-                    top: '50%' },
+                position: {left: '50%', top: '50%'},
                 color: 'red',
-                size: 150 };
+                size: 150
+            };
+            joystick_l = nipplejs.create(options_l);
+            joystick_h = nipplejs.create(options_h);
 
-            joystick_l = nipplejs.create(options_l); // Used 'let' declaration above
-            joystick_h = nipplejs.create(options_h); // Used 'let' declaration above
-
-            // Corrected joystick logic for accurate movement
             joystick_l.on('move', function (evt, data) {
+
                 // Linear X (Forward/Backward) is based on the vertical component (sin(angle))
                 currentLinearX = Math.sin(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-                // Angular Z (Turning/Yaw) - Corrected with negative sign
+                // Angular Z (Turning) is based on the horizontal component (-cos(angle))
                 currentAngularZ = -Math.cos(data.angle.radian) * maxTurn * data.distance / distanceFactor;
                 publishTwist();
+
             });
 
             joystick_l.on('end', function () {
@@ -311,16 +208,20 @@
             });
 
             joystick_h.on('move', function (evt, data) {
-                // Linear Y (Strafe Left/Right) - Corrected with negative sign
+
+                // Linear Y (Strafe Left/Right) is based on the horizontal component
                 currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
 
                 publishTwist();
             });
 
             joystick_h.on('end', function () {
+                // Stop Linear Y motion
                 currentLinearY = 0;
                 publishTwist();
             });
         }
     </script>
 </body>
+
+</html>

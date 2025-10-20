@@ -25,7 +25,9 @@ setup(
     maintainer='root',    
     entry_points={
         'console_scripts': [
-            'ens160_sensors_exec = ens160_sensors.sensor_pose_node:main',
+            'ens160_sensors_hw_exec = ens160_sensors.sensor_pose_node_hw:main',
+            'ens160_sensors_sw_exec = ens160_sensors.sensor_pose_node_sw:main',
+
         ],
     },
 )
