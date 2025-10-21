@@ -193,9 +193,7 @@
 
             joystick_l.on('move', function (evt, data) {
 
-                // Linear X (Forward/Backward) is based on the vertical component (sin(angle))
                 currentLinearX = Math.sin(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-                // Angular Z (Turning) is based on the horizontal component (-cos(angle))
                 currentAngularZ = -Math.cos(data.angle.radian) * maxTurn * data.distance / distanceFactor;
                 publishTwist();
 

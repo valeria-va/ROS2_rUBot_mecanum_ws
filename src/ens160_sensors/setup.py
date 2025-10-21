@@ -9,12 +9,9 @@ setup(
     version='0.0.0',
     packages=find_packages(exclude=['test']),
     data_files=[
-        # Standard ROS 2 Metadata
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        
-        # Other source files (like launch files)
         (os.path.join('share', package_name, 'launch'), glob('launch/*.*')),
         
     ],
@@ -27,6 +24,7 @@ setup(
         'console_scripts': [
             'ens160_sensors_hw_exec = ens160_sensors.sensor_pose_node_hw:main',
             'ens160_sensors_sw_exec = ens160_sensors.sensor_pose_node_sw:main',
+            'my_robot_control_exec = my_robot_control.my_robot_control_node:main',
 
         ],
     },

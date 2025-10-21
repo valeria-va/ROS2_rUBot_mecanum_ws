@@ -7,8 +7,8 @@ def generate_launch_description():
 
     sensor_pose_node = Node(
         package="ens160_sensors",
-        executable="ens160_sensors_hw_exec",
-        name="sensor_pose_node_hw",
+        executable="ens160_sensors_sw_exec",
+        name="sensor_pose_node_sw",
       
         parameters=[
           
@@ -19,5 +19,20 @@ def generate_launch_description():
         ]
       
     )
+
+    my_robot_control_node = Node(
+        package="my_robot_control",
+        executable="my_robot_control_exec",
+        name="robot_control",
+        parameters=[
+            {"vx": 0.3},
+            {"vy": 0.0},
+            {"w": 0.0},
+            {"td": 2.0}
+        ]
+    )
+
+    ld.add_action(my_robot_control_node)
     ld.add_action(sensor_pose_node)
+    
     return ld
