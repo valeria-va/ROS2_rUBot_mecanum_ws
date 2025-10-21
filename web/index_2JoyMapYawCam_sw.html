@@ -2,335 +2,335 @@
 <html lang="ca">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ROS Web Dashboard</title>
-	<script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 20px;
-			background-color: #f0f0f0;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS Web Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
 
-		.dashboard {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 20px;
-		}
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
 
-		.connection-form {
-			width: 100%;
-			margin-bottom: 20px;
-		}
+        .connection-form {
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
-		.joystick-container {
-			width: 200px;
-			height: 200px;
-			background-color: #ddd;
-			border-radius: 50%;
-			position: relative;
-			overflow: hidden;
-		}
+        .joystick-container {
+            width: 200px;
+            height: 200px;
+            background-color: #ddd;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
 
-		.image-view {
-			width: 320px;
-			height: 240px;
-			background-color: #000;
-		}
+        .image-view {
+            width: 320px;
+            height: 240px;
+            background-color: #000;
+        }
 
-		.position-display,
-		.map-display {
-			width: 200px;
-			padding: 10px;
-			background-color: #fff;
-			border-radius: 5px;
-		}
+        .position-display,
+        .map-display {
+            width: 200px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
 
-		.map-image {
-			width: 100%;
-			height: auto;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-		}
-	</style>
+        .map-image {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
-	<div class="connection-form">
-		<input type="text" id="map-name" placeholder="Nom del mapa (ex: map)">
-		<button onclick="connectToROS()">Connecta</button>
-	</div>
-	<div class="dashboard">
-		<div class="joystick-container" id="joystick_l"></div>
-		<div class="joystick-container" id="joystick_h"></div>
+    <div class="connection-form">
+        <input type="text" id="map-name" placeholder="Nom del mapa (ex: map)">
+        <button onclick="connectToROS()">Connecta</button>
+    </div>
+    <div class="dashboard">
+        <div class="joystick-container" id="joystick_l"></div>
+        <div class="joystick-container" id="joystick_h"></div>
 
-		<img class="image-view" id="camera-feed" alt="Camera Feed">
-		<div class="position-display">
-			<h3>Posició i Orientació</h3>
-			<p>X: <span id="position-x">0</span></p>
-			<p>Y: <span id="position-y">0</span></p>
-			<p>Z_&Theta;: <span id="rotation-z">0</span></p>
-		</div>
-		<div class="map-display">
-			<h3>Mapa</h3>
-			<canvas id="map-canvas" class="map-image" width="200" height="200"></canvas>
-		</div>
-	</div>
+        <img class="image-view" id="camera-feed" alt="Camera Feed">
+        <div class="position-display">
+            <h3>Posició i Orientació</h3>
+            <p>X: <span id="position-x">0</span></p>
+            <p>Y: <span id="position-y">0</span></p>
+            <p>Z_&Theta;: <span id="rotation-z">0</span></p>
+        </div>
+        <div class="map-display">
+            <h3>Mapa</h3>
+            <canvas id="map-canvas" class="map-image" width="200" height="200"></canvas>
+        </div>
+    </div>
 
-	<script>
-		let ros;
-		let cmdVelTopic;
-		let joystick_l, joystick_h; 
+    <script>
+        let ros;
+        let cmdVelTopic;
+        let joystick_l, joystick_h;
 
-		const MAP_WIDTH_PIXELS = 200;
-		const MAP_HEIGHT_PIXELS = 200;
-		const MAP_RESOLUTION = 0.05; 
-		const ROBOT_RADIUS = 5; 
-		const SPEED_VECTOR_SCALE = 50; 
-		let mapImage = new Image();
+        const MAP_WIDTH_PIXELS = 200;
+        const MAP_HEIGHT_PIXELS = 200;
+        const MAP_RESOLUTION = 0.05;
+        const ROBOT_RADIUS = 5;
+        const SPEED_VECTOR_SCALE = 50;
+        let mapImage = new Image();
 
-		function getRosbridgeAddress() {
-			const currentUrl = window.location.href;
-			const rosbridgeUrl = currentUrl.replace(/\/webpage\/?$/, '/rosbridge/');
-			const rosbridgeAddress = rosbridgeUrl.replace(/^http/, 'ws').replace(/^https/, 'wss');
-			return rosbridgeAddress;
-		}
+        function getRosbridgeAddress() {
+            const currentUrl = window.location.href;
+            const rosbridgeUrl = currentUrl.replace(/\/webpage\/?$/, '/rosbridge/');
+            const rosbridgeAddress = rosbridgeUrl.replace(/^http/, 'ws').replace(/^https/, 'wss');
+            return rosbridgeAddress;
+        }
 
-		function connectToROS() {
-			let mapName = document.getElementById('map-name').value.trim();
-			if (!mapName) {
-				mapName = "map";
-			}
+        function connectToROS() {
+            let mapName = document.getElementById('map-name').value.trim();
+            if (!mapName) {
+                mapName = "map";
+            }
 
-			const rosbridgeAddress = getRosbridgeAddress();
-			const mapPath = `maps/${mapName}.png`;
+            const rosbridgeAddress = getRosbridgeAddress();
+            const mapPath = `maps/${mapName}.png`;
 
-			mapImage.onload = () => {
-				console.log('Map image loaded.');
-			};
-			mapImage.src = mapPath;
+            mapImage.onload = () => {
+                console.log('Map image loaded.');
+            };
+            mapImage.src = mapPath;
 
-			ros = new ROSLIB.Ros({
-				url: rosbridgeAddress
-			});
+            ros = new ROSLIB.Ros({
+                url: rosbridgeAddress
+            });
 
-			ros.on('connection', function () {
-				console.log('Connectat a rosbridge:', rosbridgeAddress);
-				setupTopics();
-			});
+            ros.on('connection', function () {
+                console.log('Connectat a rosbridge:', rosbridgeAddress);
+                setupTopics();
+            });
 
-			ros.on('error', function (error) {
-				console.error('Error de connexió:', error);
-			});
+            ros.on('error', function (error) {
+                console.error('Error de connexió:', error);
+            });
 
-			ros.on('close', function () {
-				console.log('Connexió tancada.');
-			});
-		}
+            ros.on('close', function () {
+                console.log('Connexió tancada.');
+            });
+        }
 
-		function quaternionToYaw(orientation) {
-			const q = orientation;
-			const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-			const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-			const yaw = Math.atan2(siny_cosp, cosy_cosp);
-			return yaw;
-		}
+        function quaternionToYaw(orientation) {
+            const q = orientation;
+            const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+            const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+            const yaw = Math.atan2(siny_cosp, cosy_cosp);
+            return yaw;
+        }
 
-		function setupTopics() {
-			cmdVelTopic = new ROSLIB.Topic({
-				ros: ros,
-				name: '/cmd_vel',
-				messageType: 'geometry_msgs/Twist'
-			});
+        function setupTopics() {
+            cmdVelTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/cmd_vel',
+                messageType: 'geometry_msgs/Twist'
+            });
 
-			const imageTopic = new ROSLIB.Topic({
-				ros: ros,
-				name: '/camera1/image_raw/compressed',
-				messageType: 'sensor_msgs/CompressedImage'
-			});
+            const imageTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/camera1/image_raw/compressed',
+                messageType: 'sensor_msgs/CompressedImage'
+            });
 
-			imageTopic.subscribe(function (message) {
-				document.getElementById('camera-feed').src = "data:image/jpeg;base64," + message.data;
-			});
+            imageTopic.subscribe(function (message) {
+                document.getElementById('camera-feed').src = "data:image/jpeg;base64," + message.data;
+            });
 
-			const odomTopic = new ROSLIB.Topic({
-				ros: ros,
-				name: '/odom',
-				messageType: 'nav_msgs/Odometry'
-			});
+            const odomTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/odom',
+                messageType: 'nav_msgs/Odometry'
+            });
 
-			odomTopic.subscribe(function (message) {
-				const position = message.pose.pose.position;
-				const orientation = message.pose.pose.orientation;
-				const twist = message.twist.twist;
+            odomTopic.subscribe(function (message) {
+                const position = message.pose.pose.position;
+                const orientation = message.pose.pose.orientation;
+                const twist = message.twist.twist;
 
-				// Update position text displays
-				document.getElementById('position-x').textContent = position.x.toFixed(2);
-				document.getElementById('position-y').textContent = position.y.toFixed(2);
-				const yaw = quaternionToYaw(orientation);
-				document.getElementById('rotation-z').textContent = yaw.toFixed(2);
+                // Update position text displays
+                document.getElementById('position-x').textContent = position.x.toFixed(2);
+                document.getElementById('position-y').textContent = position.y.toFixed(2);
+                const yaw = quaternionToYaw(orientation);
+                document.getElementById('rotation-z').textContent = yaw.toFixed(2);
 
-				const velX_robot = twist.linear.x;
-				const velY_robot = twist.linear.y;
+                const velX_robot = twist.linear.x;
+                const velY_robot = twist.linear.y;
 
-				// Global velocity (Using rotation matrix)
-				const velX_global = velX_robot * Math.cos(yaw) - velY_robot * Math.sin(yaw);
-				const velY_global = velX_robot * Math.sin(yaw) + velY_robot * Math.cos(yaw);
-				
-				drawRobotState(position.x, position.y, velX_global, velY_global, yaw);
-			});
+                // Global velocity (Using rotation matrix)
+                const velX_global = velX_robot * Math.cos(yaw) - velY_robot * Math.sin(yaw);
+                const velY_global = velX_robot * Math.sin(yaw) + velY_robot * Math.cos(yaw);
 
-
-			setupJoysticks();
-		}
-
-		function drawRobotState(robotX, robotY, velX_global, velY_global, yaw) {
-			const canvas = document.getElementById('map-canvas');
-			const ctx = canvas.getContext('2d');
-
-			ctx.clearRect(0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
-			if (mapImage.complete) {
-				ctx.drawImage(mapImage, 0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
-			}
-
-			// Mapping ROS to pixels from Canvas (Y inverted)
-			const pixelX = robotX / MAP_RESOLUTION + MAP_WIDTH_PIXELS / 2;
-			const pixelY = MAP_HEIGHT_PIXELS / 2 - robotY / MAP_RESOLUTION;
+                drawRobotState(position.x, position.y, velX_global, velY_global, yaw);
+            });
 
 
-			// Draw Robot Position
-			ctx.beginPath();
-			ctx.arc(pixelX, pixelY, ROBOT_RADIUS, 0, Math.PI * 2);
-			ctx.fillStyle = 'yellow';
-			ctx.fill();
-			ctx.strokeStyle = 'black';
-			ctx.stroke();
-			
-			
-			ctx.beginPath();
-			ctx.moveTo(pixelX, pixelY);
-			const robotHeadX = pixelX + ROBOT_RADIUS * Math.cos(yaw);
-			const robotHeadY = pixelY - ROBOT_RADIUS * Math.sin(yaw); // 
-			ctx.lineTo(robotHeadX, robotHeadY);
-			ctx.lineWidth = 1;
-			ctx.strokeStyle = 'black';
-			ctx.stroke();
+            setupJoysticks();
+        }
+
+        function drawRobotState(robotX, robotY, velX_global, velY_global, yaw) {
+            const canvas = document.getElementById('map-canvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
+            if (mapImage.complete) {
+                ctx.drawImage(mapImage, 0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
+            }
+
+            // Mapping ROS to pixels from Canvas (Y inverted)
+            const pixelX = robotX / MAP_RESOLUTION + MAP_WIDTH_PIXELS / 2;
+            const pixelY = MAP_HEIGHT_PIXELS / 2 - robotY / MAP_RESOLUTION;
 
 
-			// Calculate Speed and Movement Direction
-			const speed = Math.sqrt(velX_global * velX_global + velY_global * velY_global);
-			if (speed > 0.01) { // Only draw the vector if speed is significant
+            // Draw Robot Position
+            ctx.beginPath();
+            ctx.arc(pixelX, pixelY, ROBOT_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = 'yellow';
+            ctx.fill();
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
 
-				// Ángulo de movimiento en el sistema ROS/Global
-				const movementAngle = Math.atan2(velY_global, velX_global);
 
-				// Length of the vector based on speed
-				const vectorLength = speed * SPEED_VECTOR_SCALE;
+            ctx.beginPath();
+            ctx.moveTo(pixelX, pixelY);
+            const robotHeadX = pixelX + ROBOT_RADIUS * Math.cos(yaw);
+            const robotHeadY = pixelY - ROBOT_RADIUS * Math.sin(yaw); // 
+            ctx.lineTo(robotHeadX, robotHeadY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
 
-				const endX = pixelX + Math.cos(movementAngle) * vectorLength;
-				const endY = pixelY - Math.sin(movementAngle) * vectorLength; // Subtraction applies Canvas Y inversion
 
-				// Draw Speed/Direction Vector
-				ctx.beginPath();
-				ctx.moveTo(pixelX, pixelY);
-				ctx.lineTo(endX, endY);
-				ctx.lineWidth = 2;
-				ctx.strokeStyle = 'red';
-				ctx.stroke();
+            // Calculate Speed and Movement Direction
+            const speed = Math.sqrt(velX_global * velX_global + velY_global * velY_global);
+            if (speed > 0.01) { // Only draw the vector if speed is significant
 
-				// Draw a small arrow head
-				ctx.fillStyle = 'red';
-				ctx.save();
-				ctx.translate(endX, endY);
-				ctx.rotate(-movementAngle);
-				ctx.beginPath();
-				ctx.moveTo(0, 0);
-				ctx.lineTo(-10, 5);
-				ctx.lineTo(-10, -5);
-				ctx.closePath();
-				ctx.fill();
-				ctx.restore();
-			}
-		}
+                const movementAngle = Math.atan2(velY_global, velX_global);
 
-		const maxSpeed = 1.0;
-		const maxTurn = 1.0;
-		const distanceFactor = 75;
+                // Length of the vector based on speed
+                const vectorLength = speed * SPEED_VECTOR_SCALE;
 
-		let currentLinearX = 0;
-		let currentLinearY = 0;
-		let currentAngularZ = 0;
+                const endX = pixelX + Math.cos(movementAngle) * vectorLength;
+                const endY = pixelY - Math.sin(movementAngle) * vectorLength; // Subtraction applies Canvas Y inversion
 
-		function publishTwist() {
-			const twist = new ROSLIB.Message({
-				linear: {
-					x: currentLinearX,
-					y: currentLinearY,
-					z: 0
-				},
-				angular: {
-					x: 0,
-					y: 0,
-					z: currentAngularZ
-				}
-			});
-			if (cmdVelTopic) {
-				cmdVelTopic.publish(twist);
-			}
-		}
+                // Draw Speed/Direction Vector
+                ctx.beginPath();
+                ctx.moveTo(pixelX, pixelY);
+                ctx.lineTo(endX, endY);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'red';
+                ctx.stroke();
 
-		function setupJoysticks() {
-			const options_l = { 
-				zone: document.getElementById('joystick_l'),
-				mode: 'static',
-				position: {
-					left: '50%',
-					top: '50%'
-				},
-				color: 'blue',
-				size: 150
-			};
+                // Draw a small arrow head
+                ctx.fillStyle = 'red';
+                ctx.save();
+                ctx.translate(endX, endY);
+                ctx.rotate(-movementAngle);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-10, 5);
+                ctx.lineTo(-10, -5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
-			const options_h = { 
-				zone: document.getElementById('joystick_h'),
-				mode: 'static',
-				position: {
-					left: '50%',
-					top: '50%'
-				},
-				color: 'red',
-				size: 150
-			};
+        const maxSpeed = 1.0;
+        const maxTurn = 1.0;
+        const distanceFactor = 75;
 
-			joystick_l = nipplejs.create(options_l);
-			joystick_h = nipplejs.create(options_h);
+        let currentLinearX = 0;
+        let currentLinearY = 0;
+        let currentAngularZ = 0;
 
-			joystick_l.on('move', function (evt, data) {
-				currentLinearX = Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-				currentAngularZ = -Math.sin(data.angle.radian) * maxTurn * data.distance / distanceFactor;
-				publishTwist();
-			});
+        function publishTwist() {
+            const twist = new ROSLIB.Message({
+                linear: {
+                    x: currentLinearX,
+                    y: currentLinearY,
+                    z: 0
+                },
+                angular: {
+                    x: 0,
+                    y: 0,
+                    z: currentAngularZ
+                }
+            });
+            if (cmdVelTopic) {
+                cmdVelTopic.publish(twist);
+            }
+        }
 
-			joystick_l.on('end', function () {
-				currentLinearX = 0;
-				currentAngularZ = 0;
-				publishTwist();
-			});
+        function setupJoysticks() {
+            const options_l = {
+                zone: document.getElementById('joystick_l'),
+                mode: 'static',
+                position: {
+                    left: '50%',
+                    top: '50%'
+                },
+                color: 'blue',
+                size: 150
+            };
 
-			joystick_h.on('move', function (evt, data) {
-				currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
+            const options_h = {
+                zone: document.getElementById('joystick_h'),
+                mode: 'static',
+                position: {
+                    left: '50%',
+                    top: '50%'
+                },
+                color: 'red',
+                size: 150
+            };
 
-				publishTwist();
-			});
+            joystick_l = nipplejs.create(options_l);
+            joystick_h = nipplejs.create(options_h);
 
-			joystick_h.on('end', function () {
-				currentLinearY = 0;
-				publishTwist();
-			});
-		}
-	</script>
+            joystick_l.on('move', function (evt, data) {
+                currentLinearX = Math.sin(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
+                currentAngularZ = -Math.cos(data.angle.radian) * maxTurn * data.distance / distanceFactor;
+                publishTwist();
+            });
+
+            joystick_l.on('end', function () {
+                currentLinearX = 0;
+                currentAngularZ = 0;
+                publishTwist();
+            });
+
+            joystick_h.on('move', function (evt, data) {
+                currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
+
+                publishTwist();
+            });
+
+            joystick_h.on('end', function () {
+                currentLinearY = 0;
+                publishTwist();
+            });
+        }
+    </script>
 </body>
+
 </html>

@@ -12,7 +12,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #414141;
         }
 
         .dashboard {
@@ -48,7 +48,7 @@
             background-color: #fff;
             border-radius: 5px;
         }
-        
+
         .position-display {
             width: 200px;
         }
@@ -59,9 +59,10 @@
 
         .readings-display {
             min-width: 600px;
-            background-color: #9caf88; /* Sensor readings background */
+            background-color: #f0f0f0;
+            /* Sensor readings background */
         }
-        
+
         .readings-container {
             min-height: 200px;
             padding: 5px;
@@ -72,19 +73,19 @@
             list-style-type: none;
             padding: 0;
             margin: 5px 0 5px 10px;
-            columns: 3; /* Display 7 values in 2 columns for compactness */
+            columns: 3;
         }
-        
+
         .readings-container li {
             font-size: 0.9em;
             padding: 1px 0;
         }
-        
+
         .sensor-channel {
-            margin-bottom: 10px; 
-            border: 1px solid #00000030; 
-            padding: 5px; 
-            border-radius: 3px; 
+            margin-bottom: 10px;
+            border: 1px solid #00000030;
+            padding: 5px;
+            border-radius: 3px;
             background-color: #f9f9f9;
         }
 
@@ -107,14 +108,14 @@
         <div class="joystick-container" id="joystick_h"></div>
 
         <img class="image-view" id="camera-feed" alt="Camera Feed">
-        
+
         <div class="position-display">
             <h3>Position & Orientation</h3>
             <p>X: <span id="position-x">0</span></p>
             <p>Y: <span id="position-y">0</span></p>
             <p>Yaw (&Theta;): <span id="rotation-z">0</span></p>
         </div>
-        
+
         <div class="map-display">
             <h3>Map</h3>
             <canvas id="map-canvas" class="map-image" width="200" height="200"></canvas>
@@ -129,22 +130,20 @@
     <script>
         let ros;
         let cmdVelTopic;
-        let joystick_l, joystick_h; 
+        let joystick_l, joystick_h;
 
         // --- Configuration Constants ---
         const MAP_WIDTH_PIXELS = 200;
         const MAP_HEIGHT_PIXELS = 200;
-        const MAP_RESOLUTION = 0.1; // meters/pixel
+        const MAP_RESOLUTION = 0.05; // meters/pixel
         const ROBOT_RADIUS = 5; // pixels
         const SPEED_VECTOR_SCALE = 50; // pixels per m/s 
         let mapImage = new Image();
 
-        // Constants based on your Python node for SensorData message
         const EXPECTED_KEYS = ['eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'];
         const KEYS_PER_CHANNEL = EXPECTED_KEYS.length; // 7
         const MAX_CHANNELS = 6; // CH0 to CH5
-        // -------------------------------
-        
+
         function getRosbridgeAddress() {
             const currentUrl = window.location.href;
             const rosbridgeUrl = currentUrl.replace(/\/webpage\/?$/, '/rosbridge/');
@@ -161,7 +160,6 @@
             const rosbridgeAddress = getRosbridgeAddress();
             const mapPath = `maps/${mapName}.png`;
 
-            // Load the map image first
             mapImage.onload = () => {
                 console.log('Map image loaded.');
             };
@@ -230,24 +228,31 @@
                 const yaw = quaternionToYaw(orientation);
                 document.getElementById('rotation-z').textContent = yaw.toFixed(2);
 
-                // Draw state on map
-                drawRobotState(position.x, position.y, twist.linear.x, twist.linear.y);
+                const velX_robot = twist.linear.x;
+                const velY_robot = twist.linear.y;
+
+                // Global velocity (Using rotation matrix)
+                const velX_global = velX_robot * Math.cos(yaw) - velY_robot * Math.sin(yaw);
+                const velY_global = velX_robot * Math.sin(yaw) + velY_robot * Math.cos(yaw);
+
+                // --- Pass global velocities AND yaw to the drawing function ---
+                drawRobotState(position.x, position.y, velX_global, velY_global, yaw);
             });
-            
+
             // --- Sensor Data Subscription (Custom Message) ---
             const sensorTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: 'ens160_fused_data',
-                messageType: 'ens160_interfaces/msg/SensorData' 
+                messageType: 'ens160_interfaces/msg/SensorData'
             });
 
             sensorTopic.subscribe(function (message) {
-                updateSensorDisplay(message.sensor_readings); 
+                updateSensorDisplay(message.sensor_readings);
             });
 
             setupJoysticks();
         }
-        
+
         function updateSensorDisplay(readings) {
             const container = document.getElementById('readings');
             container.innerHTML = ''; // Clear previous content
@@ -256,33 +261,33 @@
                 container.innerHTML = '<p>No sensor data received.</p>';
                 return;
             }
-            
+
             // 1. Calculate how many complete channels were received
             const receivedChannels = Math.floor(readings.length / KEYS_PER_CHANNEL);
-            
+
             // Optional integrity check
             if (readings.length % KEYS_PER_CHANNEL !== 0 || receivedChannels > MAX_CHANNELS) {
                 container.innerHTML = `<p style="color: red;">Error in data structure: ${readings.length} readings received, not a multiple of ${KEYS_PER_CHANNEL} or exceeds ${MAX_CHANNELS} channels.</p>`;
                 return;
             }
-            
+
             let htmlContent = '';
-            
+
             // 2. Iterate only over the number of received channels
             for (let i = 0; i < receivedChannels; i++) {
                 const channelName = `CH${i}`;
-                
+
                 htmlContent += `<div class="sensor-channel">
                                     <strong>${channelName}</strong>:<ul>`;
-                
+
                 // 3. Iterate over the 7 keys per channel
                 for (let j = 0; j < KEYS_PER_CHANNEL; j++) {
                     const key = EXPECTED_KEYS[j];
                     const index = i * KEYS_PER_CHANNEL + j; // Calculate the index in the flat array
-                    
+
                     // The ternary operator: check if the value exists, then format, otherwise use "N/A"
                     const value = readings[index] !== undefined ? readings[index].toFixed(2) : "N/A";
-                    
+
                     htmlContent += `<li>${key}: ${value}</li>`;
                 }
 
@@ -292,7 +297,7 @@
             container.innerHTML = htmlContent;
         }
 
-        function drawRobotState(robotX, robotY, velX, velY) {
+        function drawRobotState(robotX, robotY, velX, velY, yaw) {
             const canvas = document.getElementById('map-canvas');
             const ctx = canvas.getContext('2d');
 
@@ -314,19 +319,27 @@
             ctx.strokeStyle = 'black';
             ctx.stroke();
 
+            const orientationLength = ROBOT_RADIUS * 1.5;
+            const endYawX = pixelX + Math.cos(yaw) * orientationLength;
+            const endYawY = pixelY - Math.sin(yaw) * orientationLength; // Y is inverted
+
+            // Draw the orientation line
+            ctx.beginPath();
+            ctx.moveTo(pixelX, pixelY);
+            ctx.lineTo(endYawX, endYawY);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+
             // Calculate Speed and Movement Direction
             const speed = Math.sqrt(velX * velX + velY * velY);
-            if (speed > 0.01) { // Only draw the vector if speed is significant
+            if (speed > 0.01) {
 
-                // Angle of the velocity vector
-                const movementAngle = - Math.atan2(velY, velX);
-
-                // Length of the vector based on speed
+                const movementAngle = Math.atan2(velY, velX);
                 const vectorLength = speed * SPEED_VECTOR_SCALE;
 
-                // Calculate the endpoint of the vector
                 const endX = pixelX + Math.cos(movementAngle) * vectorLength;
-                const endY = pixelY - Math.sin(movementAngle) * vectorLength; // Y is inverted
+                const endY = pixelY - Math.sin(movementAngle) * vectorLength;
 
                 // Draw Speed/Direction Vector
                 ctx.beginPath();
@@ -422,7 +435,6 @@
             joystick_h.on('move', function (evt, data) {
                 // Linear Y (Strafe Left/Right)
                 currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
-
                 publishTwist();
             });
 
@@ -433,4 +445,5 @@
         }
     </script>
 </body>
+
 </html>
