@@ -12,7 +12,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #a3a3a3;
+            background-color: #414141;
         }
 
         .dashboard {
@@ -43,9 +43,8 @@
 
         .position-display,
         .map-display,
-        .rviz-map-display,
-        .readings-display,
-        .eco2-legend {
+        .rviz-map-display, 
+        .readings-display {
             padding: 10px;
             background-color: #fff;
             border-radius: 5px;
@@ -56,50 +55,12 @@
         }
 
         .map-display,
-        .rviz-map-display {
+        .rviz-map-display { 
             width: 200px;
-        }
-        
-        .eco2-legend {
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-            width: 100px;
-            height: 300px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .eco2-legend h3 {
-            margin: 0 0 40px 0;
-            font-size: 1em;
-        }
-
-        .legend-body {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            height: 150px;
-        }
-
-        .legend-gradient {
-            width: 25px;
-            height: 100%;
-            border: 1px solid #888;
-            background: linear-gradient(to top, #70fdff, #7bff7b, #f6ff53, #ffca61, #ff4343);
-        }
-
-        .legend-labels {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            margin-left: 10px;
-            font-size: 0.9em;
         }
 
         .readings-display {
-            min-width: 500px;
+            min-width: 600px;
             background-color: #f0f0f0;
         }
 
@@ -136,7 +97,7 @@
             border-radius: 5px;
         }
         
-        #rviz-canvas {
+        #rviz-canvas { 
             width: 200px;
             height: 200px;
             border: 1px solid #ccc;
@@ -169,18 +130,6 @@
             <canvas id="map-canvas" class="map-image" width="200" height="200"></canvas>
         </div>
 
-        <div class="eco2-legend">
-            <h3>eCO2 (ppm)</h3>
-            <div class="legend-body">
-                <div class="legend-gradient"></div>
-                <div class="legend-labels">
-                    <span>2000+</span>
-                    <span>1200</span>
-                    <span>400</span>
-                </div>
-            </div>
-        </div>
-
         <div class="rviz-map-display">
             <h3>LiDAR Map</h3>
             <canvas id="rviz-canvas" width="200" height="200"></canvas>
@@ -196,29 +145,23 @@
         let ros;
         let cmdVelTopic;
         let joystick_l, joystick_h;
-        let lidarPoints = null; 
+        let lidarPoints = null; // New global variable to hold LIDAR data
 
-        let eCO2DataPoints = [];
-        let currentRobotPos = { x: 0, y: 0 };
-        let currentECO2 = null;
-
+        // --- Configuration Constants ---
         const MAP_WIDTH_PIXELS = 200;
         const MAP_HEIGHT_PIXELS = 200;
-        const MAP_RESOLUTION = 0.05; 
-        const ROBOT_RADIUS = 5; 
-        const SPEED_VECTOR_SCALE = 50; 
+        const MAP_RESOLUTION = 0.05; // meters/pixel
+        const ROBOT_RADIUS = 5; // pixels
+        const SPEED_VECTOR_SCALE = 50; // pixels per m/s 
         let mapImage = new Image();
 
+        // NEW LIDAR CONSTANTS
         const LIDAR_POINT_SIZE = 3;
         const LIDAR_COLOR = 'rgba(255, 0, 0, 0.8)';
 
-        const ECO2_MIN = 400;
-        const ECO2_MAX = 2000;
-        const ECO2_POINT_RADIUS = 3;
-
         const EXPECTED_KEYS = ['eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'];
-        const KEYS_PER_CHANNEL = EXPECTED_KEYS.length; 
-        const MAX_CHANNELS = 6; 
+        const KEYS_PER_CHANNEL = EXPECTED_KEYS.length; // 7
+        const MAX_CHANNELS = 6; // CH0 to CH5
 
         function getRosbridgeAddress() {
             const currentUrl = window.location.href;
@@ -261,10 +204,11 @@
 
         function quaternionToYaw(orientation) {
             const q = orientation;
+            // Yaw calculation (rotation around Z-axis)
             const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
             const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
             const yaw = Math.atan2(siny_cosp, cosy_cosp);
-            return yaw; 
+            return yaw; // in radians
         }
 
         function setupTopics() {
@@ -274,6 +218,7 @@
                 messageType: 'geometry_msgs/Twist'
             });
 
+            // --- Camera Feed Subscription ---
             const imageTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: '/camera1/image_raw/compressed',
@@ -284,6 +229,7 @@
                 document.getElementById('camera-feed').src = "data:image/jpeg;base64," + message.data;
             });
 
+            // --- Odometry Subscription (for Pose and Map Drawing) ---
             const odomTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: '/odom',
@@ -295,9 +241,7 @@
                 const orientation = message.pose.pose.orientation;
                 const twist = message.twist.twist;
 
-                currentRobotPos.x = position.x;
-                currentRobotPos.y = position.y;
-
+                // Update position text displays
                 document.getElementById('position-x').textContent = position.x.toFixed(2);
                 document.getElementById('position-y').textContent = position.y.toFixed(2);
                 const yaw = quaternionToYaw(orientation);
@@ -306,9 +250,11 @@
                 const velX_robot = twist.linear.x;
                 const velY_robot = twist.linear.y;
 
+                // Global velocity (Using rotation matrix)
                 const velX_global = velX_robot * Math.cos(yaw) - velY_robot * Math.sin(yaw);
                 const velY_global = velX_robot * Math.sin(yaw) + velY_robot * Math.cos(yaw);
- 
+
+                // Static Map Drawing 
                 drawRobotState(position.x, position.y, velX_global, velY_global, yaw); 
                 
                 drawLidarScan(yaw);
@@ -329,6 +275,7 @@
                 };
             });
 
+            // --- Sensor Data Subscription (Custom Message) ---
             const sensorTopic = new ROSLIB.Topic({
                 ros: ros,
                 name: 'ens160_fused_data',
@@ -337,13 +284,6 @@
 
             sensorTopic.subscribe(function (message) {
                 updateSensorDisplay(message.sensor_readings);
-
-                const ch0_eco2_index = EXPECTED_KEYS.indexOf('eCO2');
-                if (message.sensor_readings.length > ch0_eco2_index) {
-                    const newECO2 = message.sensor_readings[ch0_eco2_index];
-                    currentECO2 = newECO2;
-                    eCO2DataPoints.push({ x: currentRobotPos.x, y: currentRobotPos.y, eco2: newECO2 });
-                }
             });
 
             setupJoysticks();
@@ -351,7 +291,7 @@
 
         function updateSensorDisplay(readings) {
             const container = document.getElementById('readings');
-            container.innerHTML = ''; 
+            container.innerHTML = ''; // Clear previous content
 
             if (readings.length === 0) {
                 container.innerHTML = '<p>No sensor data received.</p>';
@@ -371,7 +311,7 @@
                 const channelName = `CH${i}`;
 
                 htmlContent += `<div class="sensor-channel">
-                                    <strong>${channelName}</strong>:<ul>`;
+                                <strong>${channelName}</strong>:<ul>`;
 
                 for (let j = 0; j < KEYS_PER_CHANNEL; j++) {
                     const key = EXPECTED_KEYS[j];
@@ -388,45 +328,6 @@
             container.innerHTML = htmlContent;
         }
 
-        function getECO2Color(eco2) {
-            let val = (eco2 - ECO2_MIN) / (ECO2_MAX - ECO2_MIN);
-            val = Math.max(0, Math.min(1, val)); 
-            
-            let r = 0, g = 0, b = 0;
-
-            if (val < 0.25) {
-                r = 0;
-                g = val * 4 * 255;
-                b = 255;
-            } else if (val < 0.5) {
-                r = 0;
-                g = 255;
-                b = 255 - (val - 0.25) * 4 * 255;
-            } else if (val < 0.75) {
-                r = (val - 0.5) * 4 * 255;
-                g = 255;
-                b = 0;
-            } else {
-                r = 255;
-                g = 255 - (val - 0.75) * 4 * 255;
-                b = 0;
-            }
-            return `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, 0.7)`;
-        }
-        
-        function drawECO2Heatmap(ctx) {
-            for (const point of eCO2DataPoints) {
-                const pixelX = point.x / MAP_RESOLUTION + MAP_WIDTH_PIXELS / 2;
-                const pixelY = MAP_HEIGHT_PIXELS / 2 - point.y / MAP_RESOLUTION;
-                const color = getECO2Color(point.eco2);
-                
-                ctx.beginPath();
-                ctx.arc(pixelX, pixelY, ECO2_POINT_RADIUS, 0, Math.PI * 2);
-                ctx.fillStyle = color;
-                ctx.fill();
-            }
-        }
-
         function drawRobotState(robotX, robotY, velX, velY, yaw) {
             const canvas = document.getElementById('map-canvas');
             const ctx = canvas.getContext('2d');
@@ -435,12 +336,12 @@
             if (mapImage.complete) {
                 ctx.drawImage(mapImage, 0, 0, MAP_WIDTH_PIXELS, MAP_HEIGHT_PIXELS);
             }
-            
-            drawECO2Heatmap(ctx);
 
+            // MAPPING ROS to pixels from Canvas (Y inverted, ROS(0,0) is center)
             const pixelX = robotX / MAP_RESOLUTION + MAP_WIDTH_PIXELS / 2;
             const pixelY = MAP_HEIGHT_PIXELS / 2 - robotY / MAP_RESOLUTION;
 
+            // Draw Robot Position
             ctx.beginPath();
             ctx.arc(pixelX, pixelY, ROBOT_RADIUS, 0, Math.PI * 2);
             ctx.fillStyle = 'green';
@@ -450,8 +351,9 @@
 
             const orientationLength = ROBOT_RADIUS * 1.5;
             const endYawX = pixelX + Math.cos(yaw) * orientationLength;
-            const endYawY = pixelY - Math.sin(yaw) * orientationLength; 
+            const endYawY = pixelY - Math.sin(yaw) * orientationLength; // Y is inverted
 
+            // Draw the orientation line
             ctx.beginPath();
             ctx.moveTo(pixelX, pixelY);
             ctx.lineTo(endYawX, endYawY);
@@ -459,6 +361,7 @@
             ctx.strokeStyle = 'blue';
             ctx.stroke();
 
+            // Calculate Speed and Movement Direction
             const speed = Math.sqrt(velX * velX + velY * velY);
             if (speed > 0.01) {
 
@@ -468,6 +371,7 @@
                 const endX = pixelX + Math.cos(movementAngle) * vectorLength;
                 const endY = pixelY - Math.sin(movementAngle) * vectorLength;
 
+                // Draw Speed/Direction Vector
                 ctx.beginPath();
                 ctx.moveTo(pixelX, pixelY);
                 ctx.lineTo(endX, endY);
@@ -475,6 +379,7 @@
                 ctx.strokeStyle = 'red';
                 ctx.stroke();
 
+                // Draw a small arrow head
                 ctx.fillStyle = 'red';
                 ctx.save();
                 ctx.translate(endX, endY);
@@ -493,6 +398,7 @@
             const canvas = document.getElementById('rviz-canvas');
             const ctx = canvas.getContext('2d');
             
+            // Center of the Rviz canvas is the robot's fixed position (local frame origin)
             const center_X = MAP_WIDTH_PIXELS / 2;
             const center_Y = MAP_HEIGHT_PIXELS / 2;
 
@@ -500,6 +406,10 @@
 
             if (lidarPoints && lidarPoints.ranges && lidarPoints.ranges.length > 0) {
                 
+                // Setup transformation for fixed local view:
+                // 1. Move origin to center
+                // 2. Rotate by the negative yaw (LIDAR scan points are already in the robot's frame, 
+                //    but we rotate the *canvas* so the points appear static relative to the *world* on a fixed canvas)
                 ctx.save();
                 ctx.translate(center_X, center_Y);
                 
@@ -510,25 +420,30 @@
                     const range = lidarPoints.ranges[i];
 
                     if (isFinite(range) && range > 0.01 && range < lidarPoints.range_max) { 
+                        // Angle is relative to the sensor frame
                         const angle = lidarPoints.angle_min + i * lidarPoints.angle_increment;
                         
+                        // Calculate point coordinates relative to the sensor (in meters)
                         const pointX_rel_m = range * Math.cos(angle);
                         const pointY_rel_m = range * Math.sin(angle);
 
+                        // Convert meters to pixels.
                         const pixelX = pointX_rel_m / MAP_RESOLUTION;
                         const pixelY = -pointY_rel_m / MAP_RESOLUTION; 
                         
+                        // Draw the point (relative to the translated/rotated origin)
                         ctx.rect(pixelX - LIDAR_POINT_SIZE/2, pixelY - LIDAR_POINT_SIZE/2, LIDAR_POINT_SIZE, LIDAR_POINT_SIZE);
                     }
                 }
                 ctx.fill();
                 
+                // Draw a small dot for the robot center
                 ctx.fillStyle = 'blue';
                 ctx.beginPath();
                 ctx.arc(0, 0, 3, 0, Math.PI * 2); 
                 ctx.fill();
 
-                ctx.restore(); 
+                ctx.restore(); // Restore context to remove rotation/translation
             }
         }
 
@@ -560,7 +475,7 @@
         }
 
         function setupJoysticks() {
-            const options_l = { 
+            const options_l = { // Linear X and Angular Z
                 zone: document.getElementById('joystick_l'),
                 mode: 'static',
                 position: {
@@ -571,7 +486,7 @@
                 size: 150
             };
 
-            const options_h = { 
+            const options_h = { // Linear Y (strafe)
                 zone: document.getElementById('joystick_h'),
                 mode: 'static',
                 position: {
@@ -585,8 +500,11 @@
             joystick_l = nipplejs.create(options_l);
             joystick_h = nipplejs.create(options_h);
 
+            // Left Joystick: Linear X (Forward/Backward) and Angular Z (Turning)
             joystick_l.on('move', function (evt, data) {
+                // Linear X (Forward/Backward)
                 currentLinearX = Math.sin(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
+                // Angular Z (Turning/Yaw)
                 currentAngularZ = -Math.cos(data.angle.radian) * maxTurn * data.distance / distanceFactor;
                 publishTwist();
             });
@@ -597,7 +515,9 @@
                 publishTwist();
             });
 
+            // Right Joystick: Linear Y (Strafe Left/Right)
             joystick_h.on('move', function (evt, data) {
+                // Linear Y (Strafe Left/Right)
                 currentLinearY = -Math.cos(data.angle.radian) * maxSpeed * data.distance / distanceFactor;
                 publishTwist();
             });

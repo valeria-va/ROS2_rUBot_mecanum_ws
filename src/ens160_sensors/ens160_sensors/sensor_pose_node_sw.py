@@ -3,7 +3,8 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry # Robot's pose
 from ens160_interfaces.msg import SensorData # Custom message format (from the sensors)
-from scipy.spatial.transform import Rotation as R
+import transforms3d.euler as t3d_euler
+import numpy as np
 
 import random 
 
@@ -21,13 +22,13 @@ class SensorPoseNode(Node):
         self.TOTAL_SENSOR_COUNT = self.NUM_CHANNELS * self.KEYS_PER_CHANNEL # 42 expected keys
 
         self.SENSOR_RANGES = {
-            'eCO2': (400.0, 2000.0), # Equivalent CO2 in ppm
-            'TVOC': (0.0, 500.0), # Total Volatile Organic Compounds in ppb
+            'eCO2': (400.0, 65000.0), # Equivalent CO2 in ppm
+            'TVOC': (0.0, 6000.0), # Total Volatile Organic Compounds in ppb
             'AQI': (1.0, 5.0), # Air Quality Index (1=Excellent, 5=Poor)
-            'R0': (10000.0, 12000.0), # Baseline resistance
-            'R1': (9000.0, 11000.0),
-            'R2': (8000.0, 10000.0),
-            'R3': (7000.0, 9000.0),
+            'R0': (30000, 100000), # Baseline resistance
+            'R1': (1, 1),
+            'R2': (15000, 200000),
+            'R3': (1000, 150000),
         }
 
         self.EXPECTED_KEYS = list(self.SENSOR_RANGES.keys())
@@ -66,14 +67,10 @@ class SensorPoseNode(Node):
         self.robot_y = msg.pose.pose.position.y
         
         # Convert orientation quaternion to Euler angles
-        q = msg.pose.pose.orientation # Corrected: q is the Orientation message object
-        
-        # Corrected: rotation is the R object, no trailing comma
-        rotation = R.from_quat([q.x, q.y, q.z, q.w]) 
-        
-        # roll, pitch, self.robot_theta
-        # self.robot_theta is the yaw angle (rotation around Z-axis)
-        _, _, self.robot_theta = rotation.as_euler('zyx')
+        q = msg.pose.pose.orientation
+        quat_array = np.array([q.w, q.x, q.y, q.z])
+        roll, pitch, yaw = t3d_euler.quat2euler(quat_array, axes='rzyx')
+        self.robot_theta = yaw
 
     def read_ens160_sensors(self):
         """
@@ -138,7 +135,6 @@ def main(args=None):
     try:
         rclpy.spin(sensor_pose_node)
     except KeyboardInterrupt:
-        # User shutdown using Ctrl+C
         pass
     finally:
         sensor_pose_node.destroy_node()

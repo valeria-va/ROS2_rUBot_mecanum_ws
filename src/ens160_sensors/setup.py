@@ -25,7 +25,6 @@ setup(
             'ens160_sensors_hw_exec = ens160_sensors.sensor_pose_node_hw:main',
             'ens160_sensors_sw_exec = ens160_sensors.sensor_pose_node_sw:main',
             'my_robot_control_exec = my_robot_control.my_robot_control_node:main',
-
         ],
     },
 )
