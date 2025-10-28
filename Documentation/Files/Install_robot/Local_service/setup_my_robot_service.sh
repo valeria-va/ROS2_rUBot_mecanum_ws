@@ -25,11 +25,11 @@ Restart=on-failure
 # Entorn ROS2 + DDS
 Environment=ROS_DOMAIN_ID=0
 Environment=RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-Environment=CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
+#Environment=CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
 
 # Per suport gràfic (RViz, etc.)
-Environment=DISPLAY=192.168.1.3:0.0
-Environment=XDG_RUNTIME_DIR=/run/user/1000
+#Environment=DISPLAY=192.168.1.3:0.0
+#Environment=XDG_RUNTIME_DIR=/run/user/1000
 
 # Per evitar problemes d'entorn incomplet
 Environment=RCUTILS_CONSOLE_OUTPUT_FORMAT=[{time}] [{name}] [{severity}] [{function_name}]: {message}
