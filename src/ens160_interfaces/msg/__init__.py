@@ -1,12 +1,12 @@
 try:
-    # Standard ROS2 generated name (often with underscore)
+    # Standard ROS2 generated name
     from ._SensorData import SensorData
 except ImportError:
     try:
         # Alternate standard name (no underscore)
         from .SensorData import SensorData
     except ImportError:
-        # Fallback for lowercased name, if any
+        # Fallback for lowercased name
         try:
             from .sensor_data import SensorData
         except ImportError:
