@@ -4,8 +4,8 @@ Generate a CO₂ heatmap from merged position+sensor CSV.
 
 Usage:
   python3 heatmap_generator.py \
-    --csv merged_for_heatmap.csv \
-    --out heatmap.png \
+    --csv data/merged_for_heatmap.csv \
+    --out results/heatmap.png \
     --black-for-empty
 
     png is optional, the script saves the plotted heatmap as an image file 

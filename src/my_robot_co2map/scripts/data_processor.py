@@ -13,7 +13,7 @@ terminal command format:
   --pos_csv map_data_testrajoles2.csv \
   --sensor_csv sensor_data_testrajoles2.csv \
   --remove-drift \
-  --out merged_for_heatmap.csv
+  --out data/merged_for_heatmap.csv
 
 """
 

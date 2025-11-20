@@ -5,7 +5,8 @@ Trajectory generator that writes a CSV of (x,y,yaw) waypoints.
 ros2 run my_robot_co2map trajectory_generator \
   --xmin 0.0 --xmax 3.0 --ymin 0.0 --ymax 2.0 \
   --spacing 0.5 --zigzag --yaw-mode fixed --yaw 0.0 \
-  --out sweep.csv
+  --out trajectories/sweep.csv
+
 
 ros2 run my_robot_co2map trajectory_generator \
   --xmin 0.0 \              # position: min X bound (meters, map frame)

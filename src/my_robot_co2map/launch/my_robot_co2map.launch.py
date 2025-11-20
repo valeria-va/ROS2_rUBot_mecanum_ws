@@ -4,8 +4,9 @@ from launch.actions import DeclareLaunchArgument
 import os
 
 """
-ros2 launch my_robot_co2map my_robot_co2map.launch.py trajectory_csv:=sweep.csv
+1st launch the trajectory generator file to obtain the trajectory, then run launch file:
 
+ros2 launch my_robot_co2map my_robot_co2map.launch.py trajectory_csv:=trajectories/sweep.csv
 """
 
 
