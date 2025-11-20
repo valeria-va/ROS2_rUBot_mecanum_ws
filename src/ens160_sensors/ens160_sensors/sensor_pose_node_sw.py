@@ -10,7 +10,7 @@ import random
 
 class SensorPoseNode(Node):
     """
-    Subscribes to robot odometry to track pose and GENERATES RANDOM sensor data.
+    Subscribes to robot odometry to track pose and generates RANDOM sensor data.
     It fuses these two inputs and publishes the complete data set using the custom SensorData message.
     """
     def __init__(self):
