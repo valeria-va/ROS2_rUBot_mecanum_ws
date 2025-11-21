@@ -16,7 +16,7 @@ def generate_launch_description():
     # --- 2. ROBOT DESCRIPTION (URDF) ---
     bringup_package_name = 'my_robot_description'
     bringup_pkg_dir = get_package_share_directory(bringup_package_name)
-    robot_urdf_path = os.path.join(bringup_pkg_dir, 'urdf', 'hw_rubot_mecanum.urdf')
+    robot_urdf_path = os.path.join(bringup_pkg_dir, 'urdf','rubot', 'hw_rubot_mecanum.urdf')
 
     # --- 3. SENSOR NODE ---
     sensor_pose_node = Node(
@@ -27,7 +27,7 @@ def generate_launch_description():
         parameters=[
             {'timer_period': timer_period_arg.default_value},
             {'use_sim_time': False},  # real robot does NOT use simulation time
-            {'serial_port': 'COM8'},  # Windows COM port
+            {'serial_port': ''},
             {'baud_rate': 9600},
         ]
     )
