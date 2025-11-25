@@ -18,7 +18,7 @@ class SensorPoseNode(Node):
         self.robot_theta = 0.0
 
         # Serial port for PCB (change port to your OS device)
-        serial_port_name = os.getenv('SENSOR_SERIAL_PORT', 'COM8')  # or '/dev/ttyUSB0' on Linux
+        serial_port_name = os.getenv('SENSOR_SERIAL_PORT', '/dev/ttyUSB0')
         serial_baud = int(os.getenv('SENSOR_BAUD', '9600'))
         try:
             self.serial_port = serial.Serial(serial_port_name, serial_baud, timeout=1)
