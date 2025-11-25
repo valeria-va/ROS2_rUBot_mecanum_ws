@@ -7,12 +7,12 @@ def generate_launch_description():
 
     sensor_pose_node = Node(
         package="ens160_sensors",
-        executable="ens160_sensors_sw_exec",
-        name="sensor_pose_node_sw",
+        executable="ens160_sensors_hw_exec",
+        name="sensor_pose_node_real",
       
         parameters=[
           
-        {"serial_port": "/dev/ttyACM0"}, # Placeholder 
+        {"serial_port": "/dev/ttyUSB1"},
         {"baud_rate": 9600},
         {"timer_period": 0.5} # Placeholder, publishes fused data at 2 Hz 
           

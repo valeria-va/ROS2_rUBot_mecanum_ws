@@ -48,11 +48,11 @@ def generate_launch_description():
     sensor_pose_node = Node(
         package="ens160_sensors",
         executable="ens160_sensors_sw_exec",
-        name="sensor_pose_node_sw",
+        name="sensor_pose_node_random",
         output='screen',
         parameters=[
             {'timer_period': timer_period_arg.default_value},
-            # CRITICAL: Always use sim time when running with Gazebo
+            # Always use sim time when running with Gazebo
             {'use_sim_time': True}, 
         ]
     )

@@ -315,6 +315,10 @@
     </div>
 
     <div class="eco2-legend">
+      <h3>CSV Logging</h3>
+      <button id="startLogBtn">Start Logging</button>
+      <button id="stopLogBtn">Stop Logging</button>
+
       <h3>eCO2 (ppm)</h3>
       <div class="legend-body">
         <div class="legend-gradient"></div>
@@ -324,7 +328,6 @@
           <span>400</span>
         </div>
       </div>
-    </div>
     </div>
 
   <script>
@@ -852,6 +855,55 @@
       });
       cmdVelTopic.publish(twist);
     }
+
+
+    function setupCSVLoggingButtons() {
+      if (!ros || !ros.isConnected) return;
+
+      const startBtn = document.getElementById('startLogBtn');
+      const stopBtn  = document.getElementById('stopLogBtn');
+
+      // Create ROS service clients
+      const startService = new ROSLIB.Service({
+        ros: ros,
+        name: '/start_csv_logging',
+        serviceType: 'std_srvs/srv/Trigger'
+        });
+
+      const stopService = new ROSLIB.Service({
+        ros: ros,
+        name: '/stop_csv_logging',
+        serviceType: 'std_srvs/srv/Trigger'
+        });
+
+      startBtn.onclick = () => {
+      const request = new ROSLIB.ServiceRequest();
+      startService.callService(request, (result) => {
+        console.log("Start Logging:", result.message);
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        });
+      };
+
+      stopBtn.onclick = () => {
+      const request = new ROSLIB.ServiceRequest();
+      stopService.callService(request, (result) => {
+        console.log("Stop Logging:", result.message);
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        });
+      };
+
+      // Initially disable stop button
+      stopBtn.disabled = true;
+      }
+
+    // Call this after ROS connection established
+    ros.on('connection', () => {
+      console.log('Connected to ROS for CSV logging buttons');
+      setupCSVLoggingButtons();
+    });
+
 
     function setupControls() {
       const j = nipplejs.create({

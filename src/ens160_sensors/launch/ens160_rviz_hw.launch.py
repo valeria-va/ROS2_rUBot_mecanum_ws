@@ -22,7 +22,7 @@ def generate_launch_description():
     sensor_pose_node = Node(
         package="ens160_sensors",
         executable="ens160_sensors_hw_exec",  
-        name="sensor_pose_node_hw",
+        name="sensor_pose_node_real",
         output='screen',
         parameters=[
             {'timer_period': timer_period_arg.default_value},

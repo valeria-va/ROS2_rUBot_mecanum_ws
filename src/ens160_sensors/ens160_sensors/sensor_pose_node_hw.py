@@ -17,9 +17,13 @@ class SensorPoseNode(Node):
         self.robot_y = 0.0
         self.robot_theta = 0.0
 
-        # Serial port for PCB (change port to your OS device)
-        serial_port_name = os.getenv('SENSOR_SERIAL_PORT', '/dev/ttyUSB0')
-        serial_baud = int(os.getenv('SENSOR_BAUD', '9600'))
+        # Declare ROS 2 parameters
+        self.declare_parameter('serial_port', '/dev/ttyUSB1')
+        self.declare_parameter('baud_rate', 9600)
+
+        serial_port_name = self.get_parameter('serial_port').value
+        serial_baud = self.get_parameter('baud_rate').value
+
         try:
             self.serial_port = serial.Serial(serial_port_name, serial_baud, timeout=1)
             self.get_logger().info(f'Connected to sensor board on {serial_port_name} at {serial_baud} baud')
