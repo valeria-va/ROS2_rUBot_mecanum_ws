@@ -101,7 +101,7 @@ def generate_launch_description():
     # Definició del node per als sensors ENS160
     sensor_node = Node(
         package='ens160_sensors',    
-        executable='sensor_pose_node_hw_exec', 
+        executable='ens160_sensors_hw_exec', 
         name='sensor_pose_node_real',
         output='screen',
         parameters=[
