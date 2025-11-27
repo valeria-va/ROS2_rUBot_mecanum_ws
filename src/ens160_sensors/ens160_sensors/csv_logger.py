@@ -14,7 +14,7 @@ class CSVLogger(Node):
         super().__init__('csv_logger')
 
         # --- Directory for logs ---
-        self.log_dir = '/home/robot/logs'
+        self.log_dir = os.path.expanduser('~/ens160_logs')
         os.makedirs(self.log_dir, exist_ok=True)
 
         # --- CSV logging ---
