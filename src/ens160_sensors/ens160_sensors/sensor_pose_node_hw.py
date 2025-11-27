@@ -10,7 +10,7 @@ import os
 
 class SensorPoseNode(Node):
     def __init__(self):
-        super().__init__('sensor_pose_node_real')
+        super().__init__('sensor_pose_node_hw')
 
         # Robot pose
         self.robot_x = 0.0
@@ -18,7 +18,7 @@ class SensorPoseNode(Node):
         self.robot_theta = 0.0
 
         # Declare ROS 2 parameters
-        self.declare_parameter('serial_port', '/dev/ttyUSB1')
+        self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
 
         serial_port_name = self.get_parameter('serial_port').value

@@ -14,7 +14,7 @@ class SensorPoseNode(Node):
     It fuses these two inputs and publishes the complete data set using the custom SensorData message.
     """
     def __init__(self):
-        super().__init__('sensor_pose_node_random')
+        super().__init__('sensor_pose_node_sw')
         
         # --- Configuration Constants ---
         self.NUM_CHANNELS = 6
