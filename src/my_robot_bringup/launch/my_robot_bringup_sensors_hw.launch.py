@@ -36,9 +36,9 @@ def generate_launch_description():
     )
 
     # Arguments per sensors ENS160
-    declare_sensor_serial_port_arg = DefineLaunchArgument(
+    declare_sensor_serial_port_arg = DeclareLaunchArgument(
     'sensor_serial_port',
-    default_value='/dev/ttyUSB1',
+    default_value='/dev/ttyACM1', #Port comprovat, correspon a Arduino Nano 33 IoT
     description='Port sèrie per sensors ENS160'
     )
 
