@@ -49,7 +49,7 @@ class SensorPoseNode(Node):
         # --- Fused Data Publisher ---
         self.sensor_publisher = self.create_publisher(
             SensorData,
-            'ens160_fused_data', 
+            'ens160_data', 
             10)
             
         # --- Timer to trigger data reading and publishing (1 Hz) ---

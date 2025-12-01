@@ -27,7 +27,7 @@ class CSVLogger(Node):
 
         # --- Subscriptions ---
         self.sensor_sub = self.create_subscription(
-            SensorData, 'ens160_fused_data', self.sensor_callback, 10)
+            SensorData, 'ens160_data', self.sensor_callback, 10)
         self.odom_sub = self.create_subscription(
             Odometry, '/odom', self.odom_callback, 10)
 

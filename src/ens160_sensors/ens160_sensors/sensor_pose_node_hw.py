@@ -35,7 +35,7 @@ class SensorPoseNode(Node):
         self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
 
         # Sensor readings publisher
-        self.sensor_publisher = self.create_publisher(SensorData, 'ens160_readings', 10) #ros2 topic echo /ens160_readings
+        self.sensor_publisher = self.create_publisher(SensorData, 'ens160_data', 10) #ros2 topic echo /ens160_data
 
 
         # Timer to read serial and publish at 2 Hz
