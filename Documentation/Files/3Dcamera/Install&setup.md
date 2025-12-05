@@ -62,12 +62,13 @@ When camera is on **raspberrypi** you have to:
   ros2 launch realsense2_camera rs_launch.py \
     initial_reset:=true \
     enable_color:=true \
+    enable_depth:=true \
+    align_depth:=true \
     enable_sync:=false \
     pointcloud.enable:=false \
     depth_module.depth_profile:=640x360x15 \
     rgb_camera.color_profile:=640x480x30 \
-    enable_infra1:=false enable_infra2:=false \
-    align_depth:=false
+    enable_infra1:=false enable_infra2:=false
   ```
 
 # Install Orbbec DaBai
