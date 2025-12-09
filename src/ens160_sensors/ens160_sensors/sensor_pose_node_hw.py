@@ -51,9 +51,6 @@ class SensorPoseNode(Node):
         # ROS service to send commands to Arduino
         self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
 
-        # Default command to send
-        self.command_to_send = ""
-
     def odom_callback(self, msg: Odometry):
         self.robot_x = msg.pose.pose.position.x
         self.robot_y = msg.pose.pose.position.y
@@ -105,15 +102,18 @@ class SensorPoseNode(Node):
 
     def send_command_callback(self, request, response):
         """Service callback to send a command string to Arduino."""
-        if not self.command_to_send:
+        # Get the latest command parameter
+        command_to_send = self.get_parameter('command_to_send').get_parameter_value().string_value
+
+        if not command_to_send:
             response.success = False
             response.message = "No command set. Please set 'command_to_send' parameter."
             return response
 
         try:
-            self.serial_port.write((self.command_to_send + '\n').encode())
+            self.serial_port.write((command_to_send + '\n').encode())
             response.success = True
-            response.message = f"Sent command: {self.command_to_send}"
+            response.message = f"Sent command: {command_to_send}"
         except Exception as e:
             response.success = False
             response.message = f"Failed to send command: {e}"
@@ -135,6 +135,5 @@ if __name__ == '__main__':
     main()
 
 
-#EXAMPLE USAGE:
-#   ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 2000"
-#   ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
+#ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
+#ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
