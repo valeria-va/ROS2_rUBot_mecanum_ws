@@ -16,9 +16,10 @@ class SensorPoseNode(Node):
         self.robot_x = 0.0
         self.robot_y = 0.0
         self.robot_theta = 0.0
-
+        
         # Declare ROS 2 parameters
         self.declare_parameter('serial_port', '/dev/ttyACM1')
+        self.declare_parameter('command_to_send', '')
         self.declare_parameter('baud_rate', 9600)
 
         serial_port_name = self.get_parameter('serial_port').value
@@ -135,5 +136,5 @@ if __name__ == '__main__':
 
 
 #EXAMPLE USAGE:
-#   ros2 param set /sensor_pose_node_hw command_to_send "STREAM_START 2000"
+#   ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 2000"
 #   ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
