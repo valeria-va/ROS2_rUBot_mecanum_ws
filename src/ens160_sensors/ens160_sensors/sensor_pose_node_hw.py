@@ -75,40 +75,44 @@ class SensorPoseNode(Node):
                 return
 
             numbers = self.number_regex.findall(raw_line)
-            if len(numbers) <= self.numeric_offset + 7:
-                self.get_logger().warn(f"Ignored serial line, not enough fields: {numbers}")
+            if len(numbers) <= self.numeric_offset:
+                self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
                 return
 
-            # Skip timestamp/Arduino_MS
-            data_numbers = numbers[self.numeric_offset:]
+            # Extract numeric sensor values, skip timestamp/Arduino_MS
+            sensor_numbers = numbers[self.numeric_offset:]
 
-            # Parse the 10 fields
-            channel = int(data_numbers[0])
-            eCO2 = float(data_numbers[1])
-            TVOC = float(data_numbers[2])
-            AQI = float(data_numbers[3])
-            R0 = float(data_numbers[4])
-            R1 = float(data_numbers[5])
-            R2 = float(data_numbers[6])
-            R3 = float(data_numbers[7])
+            # Each channel has 7 measurements: eCO2, TVOC, AQI, R0, R1, R2, R3
+            num_channels = len(sensor_numbers) // 8  # 1 channel index + 7 values
+            if num_channels == 0:
+                self.get_logger().warn(f'No sensor values in line: "{raw_line}"')
+                return
+
+            channels = []
+            sensor_readings = []
+
+            for i in range(num_channels):
+                idx = i * 8
+                channels.append(int(sensor_numbers[idx]))  # channel number
+                sensor_readings.extend([float(sensor_numbers[idx + 1]),  # eCO2
+                                        float(sensor_numbers[idx + 2]),  # TVOC
+                                        float(sensor_numbers[idx + 3]),  # AQI
+                                        float(sensor_numbers[idx + 4]),  # R0
+                                        float(sensor_numbers[idx + 5]),  # R1
+                                        float(sensor_numbers[idx + 6]),  # R2
+                                        float(sensor_numbers[idx + 7])]) # R3
 
             msg = SensorData()
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.channel = channel
-            msg.eCO2 = [eCO2]
-            msg.TVOC = [TVOC]
-            msg.AQI = [AQI]
-            msg.R0 = [R0]
-            msg.R1 = [R1]
-            msg.R2 = [R2]
-            msg.R3 = [R3]
+            msg.channels = channels
+            msg.sensor_readings = sensor_readings
 
             self.sensor_publisher.publish(msg)
 
             self.get_logger().info(
-                f'Published sensor data: channel={channel}, eCO2={eCO2}, TVOC={TVOC}, R0={R0}, R1={R1}, R2={R2}, R3={R3}'
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
             )
 
         except Exception as e:
@@ -149,8 +153,6 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 
-
-
 # Example usage:
-# ros2 param set /sensor_pose_node_hw command_to_send "STREAM_START 1000"
+# ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
 # ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
