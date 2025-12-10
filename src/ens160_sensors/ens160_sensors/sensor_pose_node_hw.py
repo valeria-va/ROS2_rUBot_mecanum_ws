@@ -76,41 +76,31 @@ class SensorPoseNode(Node):
 
             numbers = self.number_regex.findall(raw_line)
             if len(numbers) <= self.numeric_offset:
-                # Ignore lines with insufficient numeric fields
+                self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
                 return
 
-            # Extract numeric sensor values, skipping timestamp/Arduino_MS
+            # Extract numeric sensor values, skip timestamp/Arduino_MS
             sensor_numbers = numbers[self.numeric_offset:]
 
             # Each channel has 7 measurements: eCO2, TVOC, AQI, R0, R1, R2, R3
             num_channels = len(sensor_numbers) // 8  # 1 channel index + 7 values
             if num_channels == 0:
-                return  # Ignore lines with no valid channels
+                self.get_logger().warn(f'No sensor values in line: "{raw_line}"')
+                return
 
             channels = []
             sensor_readings = []
-            missing_channels = 0  # Optional counter for corrupted/missing channels
 
             for i in range(num_channels):
                 idx = i * 8
-                try:
-                    ch = int(sensor_numbers[idx])
-                    channels.append(ch)
-                    sensor_readings.extend([
-                        float(sensor_numbers[idx + 1]),  # eCO2
-                        float(sensor_numbers[idx + 2]),  # TVOC
-                        float(sensor_numbers[idx + 3]),  # AQI
-                        float(sensor_numbers[idx + 4]),  # R0
-                        float(sensor_numbers[idx + 5]),  # R1
-                        float(sensor_numbers[idx + 6]),  # R2
-                        float(sensor_numbers[idx + 7])   # R3
-                    ])
-                except ValueError:
-                    missing_channels += 1
-                    continue
-
-            if len(channels) == 0:
-                return  # If no valid channel, skip
+                channels.append(int(sensor_numbers[idx]))  # channel number
+                sensor_readings.extend([float(sensor_numbers[idx + 1]),  # eCO2
+                                        float(sensor_numbers[idx + 2]),  # TVOC
+                                        float(sensor_numbers[idx + 3]),  # AQI
+                                        float(sensor_numbers[idx + 4]),  # R0
+                                        float(sensor_numbers[idx + 5]),  # R1
+                                        float(sensor_numbers[idx + 6]),  # R2
+                                        float(sensor_numbers[idx + 7])]) # R3
 
             msg = SensorData()
             msg.pose_x = self.robot_x
@@ -121,10 +111,9 @@ class SensorPoseNode(Node):
 
             self.sensor_publisher.publish(msg)
 
-            log_msg = f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
-            if missing_channels > 0:
-                log_msg += f' | skipped {missing_channels} invalid channels'
-            self.get_logger().info(log_msg)
+            self.get_logger().info(
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
+            )
 
         except Exception as e:
             self.get_logger().error(f'Error reading serial: {e}')
