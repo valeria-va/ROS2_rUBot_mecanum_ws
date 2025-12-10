@@ -11,3 +11,65 @@ Timestamp,Arduino_MS,Channel,eCO2,TVOC,AQI,R0,R1,R2,R3
 2025-10-28 10:20:03,68903,3,408,27,1,174703,1,473026,51293
 2025-10-28 10:20:03,68919,4,409,27,1,207618,1,672821,69065
 2025-10-28 10:20:03,68934,5,415,30,1,187763,1,648232,60239
+
+valeria@PC5:~/Desktop/ROS2_rUBot_mecanum_ws$ ros2 topic echo /ens160_data
+pose_x: 0.0
+pose_y: 0.0
+pose_theta: 0.0
+channel: 7
+eco2: 419.0
+tvoc: 32.0
+aqi: 1.0
+r0: 0.0
+r1: 562336.0
+r2: 1.0
+r3: 1.0
+---
+pose_x: 0.0
+pose_y: 0.0
+pose_theta: 0.0
+channel: 7
+eco2: 435.0
+tvoc: 39.0
+aqi: 1.0
+r0: 0.0
+r1: 454815.0
+r2: 1.0
+r3: 1.0
+---
+pose_x: 0.0
+pose_y: 0.0
+pose_theta: 0.0
+channel: 7
+eco2: 434.0
+tvoc: 39.0
+aqi: 1.0
+r0: 0.0
+r1: 694805.0
+r2: 1.0
+r3: 1.0
+---
+pose_x: 0.0
+pose_y: 0.0
+pose_theta: 0.0
+channel: 7
+eco2: 432.0
+tvoc: 38.0
+aqi: 1.0
+r0: 0.0
+r1: 599685.0
+r2: 1.0
+r3: 1.0
+---
+pose_x: 0.0
+pose_y: 0.0
+pose_theta: 0.0
+channel: 7
+eco2: 426.0
+tvoc: 35.0
+aqi: 1.0
+r0: 0.0
+r1: 404007.0
+r2: 1.0
+r3: 1.0
+---
