@@ -10,6 +10,3 @@ float32 r0
 float32 r1
 float32 r2
 float32 r3
-float64 pose_x
-float64 pose_y
-float64 pose_theta
