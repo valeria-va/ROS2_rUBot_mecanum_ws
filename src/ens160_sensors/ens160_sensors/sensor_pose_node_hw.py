@@ -96,7 +96,7 @@ class SensorPoseNode(Node):
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.channel = [channel]
+            msg.channel = channel
             msg.eCO2 = [eCO2]
             msg.TVOC = [TVOC]
             msg.AQI = [AQI]
