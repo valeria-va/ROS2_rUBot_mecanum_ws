@@ -20,12 +20,10 @@ class SensorPoseNode(Node):
         # ROS 2 parameters
         self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
-        self.declare_parameter('numeric_offset', 2)
         self.declare_parameter('command_to_send', '')
 
         serial_port_name = self.get_parameter('serial_port').value
         serial_baud = self.get_parameter('baud_rate').value
-        self.numeric_offset = self.get_parameter('numeric_offset').value
 
         # Connect to Arduino
         try:
@@ -44,8 +42,10 @@ class SensorPoseNode(Node):
         # Timer to read serial and publish at 2 Hz
         self.create_timer(0.5, self.read_serial_publish)
 
-        # Regex to extract numbers
-        self.number_regex = re.compile(r'[-+]?\d*\.\d+|\d+')
+        # Regex to parse Arduino output
+        self.serial_line_regex = re.compile(
+            r'(\d+),CH(\d+),eCO2=(\d+),TVOC=(\d+),AQI=(\d+),R0=(\d+),R1=(\d+),R2=(\d+),R3=(\d+)'
+        )
 
         # ROS service to send commands to Arduino
         self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
@@ -70,49 +70,27 @@ class SensorPoseNode(Node):
             if not raw_line:
                 return
 
-            # Only process lines containing 'eCO2='
             if 'eCO2=' not in raw_line:
                 return
 
-            numbers = self.number_regex.findall(raw_line)
-            if len(numbers) <= self.numeric_offset:
-                self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
+            match = self.serial_line_regex.match(raw_line)
+            if not match:
+                self.get_logger().warn(f'Ignored serial line, could not parse: "{raw_line}"')
                 return
 
-            # Extract numeric sensor values, skip timestamp/Arduino_MS
-            sensor_numbers = numbers[self.numeric_offset:]
-
-            # Each channel has 7 measurements: eCO2, TVOC, AQI, R0, R1, R2, R3
-            num_channels = len(sensor_numbers) // 8  # 1 channel index + 7 values
-            if num_channels == 0:
-                self.get_logger().warn(f'No sensor values in line: "{raw_line}"')
-                return
-
-            channels = []
-            sensor_readings = []
-
-            for i in range(num_channels):
-                idx = i * 8
-                channels.append(int(sensor_numbers[idx]))  # channel number
-                sensor_readings.extend([float(sensor_numbers[idx + 1]),  # eCO2
-                                        float(sensor_numbers[idx + 2]),  # TVOC
-                                        float(sensor_numbers[idx + 3]),  # AQI
-                                        float(sensor_numbers[idx + 4]),  # R0
-                                        float(sensor_numbers[idx + 5]),  # R1
-                                        float(sensor_numbers[idx + 6]),  # R2
-                                        float(sensor_numbers[idx + 7])]) # R3
+            timestamp, ch, eco2, tvoc, aqi, r0, r1, r2, r3 = map(int, match.groups())
 
             msg = SensorData()
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.channels = channels
-            msg.sensor_readings = sensor_readings
+            msg.channels = [ch]
+            msg.sensor_readings = [eco2, tvoc, aqi, r0, r1, r2, r3]
 
             self.sensor_publisher.publish(msg)
 
             self.get_logger().info(
-                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channel={ch}'
             )
 
         except Exception as e:
