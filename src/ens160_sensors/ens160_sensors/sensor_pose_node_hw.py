@@ -69,8 +69,8 @@ class SensorPoseNode(Node):
             if not raw_line:
                 return
 
-            # Only process lines containing 'eCO2='
-            if 'eCO2=' not in raw_line:
+            # Only process lines containing 'eCO2'
+            if 'eCO2' not in raw_line:
                 return
 
             numbers = self.number_regex.findall(raw_line)
@@ -81,8 +81,8 @@ class SensorPoseNode(Node):
             # Extract numeric sensor values, skip timestamp/Arduino_MS
             sensor_numbers = numbers[self.numeric_offset:]
 
-            # Each channel has 7 values: eCO2, TVOC, AQI, R0, R1, R2, R3
-            num_channels = len(sensor_numbers) // 7
+            # Each channel has 8 values: Channel, eCO2, TVOC, AQI, R0, R1, R2, R3
+            num_channels = len(sensor_numbers) // 8
             if num_channels == 0:
                 self.get_logger().warn(f'No sensor values in line: "{raw_line}"')
                 return
@@ -97,7 +97,7 @@ class SensorPoseNode(Node):
             R3 = []
 
             for i in range(num_channels):
-                idx = i * 7
+                idx = i * 8
                 channels.append(int(sensor_numbers[idx]))  # channel number
                 eCO2.append(float(sensor_numbers[idx + 1]))
                 TVOC.append(float(sensor_numbers[idx + 2]))
@@ -164,6 +164,6 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 
-
-#ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
-#ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
+# Example usage:
+# ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
+# ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
