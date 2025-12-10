@@ -1,61 +1,47 @@
 #!/usr/bin/env python3
 """
-Trajectory generator that writes a CSV of (x,y,yaw) waypoints.
+Minimal trajectory generator (raster/zigzag) with map filtering.
 
+Example:
 ros2 run my_robot_co2map trajectory_generator \
-  --xmin 0.0 --xmax 3.0 --ymin 0.0 --ymax 2.0 \
-  --spacing 0.1 --pattern zigzag --yaw-mode fixed --yaw 0.0 \
-  --map-yaml test_delete.yaml \
-  --inflate 0.25 \
-  --out ../trajectories/test_delete.csv
-
-
-ros2 run my_robot_co2map trajectory_generator \
-  --xmin 0.0 \              # position: min X bound (meters, map frame)
-  --xmax 3.0 \              # position: max X bound
-  --ymin 0.0 \              # position: min Y bound
-  --ymax 2.0 \              # position: max Y bound
-  --spacing 0.5 \           # non-position: grid spacing (meters)
-
-  --sweep-axis y \          # non-position: raster direction ('y' rows or 'x' columns)
-  --zigzag \                # PATTERN CHOICE A: lawnmower (alternate direction each row)
-  # (Alternative to --zigzag) OMIT THIS FLAG for straight raster (same direction each row)
-
-  --yaw-mode fixed \        # non-position: orientation mode ('fixed' or 'along_path')
-  --yaw 0.0 \               # non-position: yaw in radians if fixed (ignored in along_path)
-
-  --map-yaml maps/room.yaml \  # non-position: SLAM map for obstacle/unknown filtering (map.yaml)
-  --inflate 0.25 \          # non-position: extra clearance from obstacles (meters)
-  --out sweep.csv           # non-position: output CSV filename (generated trajectory)
-
-
-Outputs a CSV with rows: x,y,yaw
-
+  --xmin -7.35 --xmax 5.05 \
+  --ymin -6.48 --ymax 2.92 \
+  --spacing 0.5 \
+  --sweep-axis y \
+  --pattern zigzag \
+  --yaw-mode fixed --yaw 0.0 \
+  --map-yaml /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/slam_maps/test_rajoles1_justincase.yaml \
+  --inflate 0.4 \
+  --out /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/trajectories/trajectory1.csv
 """
 
+from pathlib import Path
+import argparse
 import csv
 import math
-import argparse
-from pathlib import Path
 from typing import List, Tuple, Optional
+import numpy as np
+from PIL import Image, ImageFilter
 
 try:
     import yaml
-except ImportError:
+except Exception:
     yaml = None
 
 try:
     from PIL import Image, ImageFilter
-except ImportError:
+except Exception:
     Image = None
 
 
-# ---------- utility ----------
+# ---------------- utilities ----------------
 
 def frange(start: float, stop: float, step: float) -> List[float]:
     vals = []
     x = start
-    while x <= stop + 1e-9:
+    # include endpoint with a tiny epsilon
+    eps = 1e-9
+    while x <= stop + eps:
         vals.append(round(x, 6))
         x += step
     return vals
@@ -69,7 +55,7 @@ def clamp_bounds(xmin, xmax, ymin, ymax):
     return xmin, xmax, ymin, ymax
 
 
-# ---------- pattern generators ----------
+# ---------------- raster/zigzag ----------------
 
 def generate_raster(
     xmin: float, xmax: float, ymin: float, ymax: float,
@@ -106,154 +92,31 @@ def generate_raster(
     return waypoints
 
 
-def generate_spiral(
-    xmin: float, xmax: float, ymin: float, ymax: float,
-    spacing: float, yaw_mode: str, fixed_yaw: float
-) -> List[Tuple[float, float, float]]:
-    """
-    Simple rectangular spiral: start near center and expand outward layer by layer.
-    Produces smoother paths and fewer long transits than raster end-hops.
-    """
-    cx = (xmin + xmax) / 2.0
-    cy = (ymin + ymax) / 2.0
-    # round center to nearest grid
-    gx = round((cx - xmin) / spacing) * spacing + xmin
-    gy = round((cy - ymin) / spacing) * spacing + ymin
-
-    waypoints: List[Tuple[float, float, float]] = []
-    prev = None
-
-    # Create layers expanding from center
-    max_half_x = math.ceil((xmax - gx) / spacing)
-    max_half_y = math.ceil((ymax - gy) / spacing)
-    max_half = int(max(max_half_x, max_half_y, math.ceil((gx - xmin) / spacing), math.ceil((gy - ymin) / spacing)))
-
-    for k in range(1, max_half + 1):
-        x_left = gx - k * spacing
-        x_right = gx + k * spacing
-        y_bottom = gy - k * spacing
-        y_top = gy + k * spacing
-
-        # Clamp within bounds
-        x_left, x_right = max(x_left, xmin), min(x_right, xmax)
-        y_bottom, y_top = max(y_bottom, ymin), min(y_top, ymax)
-
-        # Traverse a rectangle perimeter counter-clockwise: bottom row, right col, top row, left col
-        # bottom row (left -> right)
-        x_vals = frange(x_left, x_right, spacing)
-        for x in x_vals:
-            y = y_bottom
-            yaw = fixed_yaw
-            if yaw_mode == "along_path" and prev is not None:
-                dx, dy = x - prev[0], y - prev[1]
-                if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                    yaw = math.atan2(dy, dx)
-            waypoints.append((x, y, yaw))
-            prev = (x, y, yaw)
-        # right column (bottom -> top)
-        y_vals = frange(y_bottom + spacing, y_top, spacing)
-        for y in y_vals:
-            x = x_right
-            yaw = fixed_yaw
-            if yaw_mode == "along_path" and prev is not None:
-                dx, dy = x - prev[0], y - prev[1]
-                if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                    yaw = math.atan2(dy, dx)
-            waypoints.append((x, y, yaw))
-            prev = (x, y, yaw)
-        # top row (right -> left)
-        x_vals_rev = list(reversed(frange(x_left, x_right - 1e-9, spacing)))
-        for x in x_vals_rev:
-            y = y_top
-            yaw = fixed_yaw
-            if yaw_mode == "along_path" and prev is not None:
-                dx, dy = x - prev[0], y - prev[1]
-                if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                    yaw = math.atan2(dy, dx)
-            waypoints.append((x, y, yaw))
-            prev = (x, y, yaw)
-        # left column (top -> bottom)
-        y_vals_rev = list(reversed(frange(y_bottom + spacing, y_top - 1e-9, spacing)))
-        for y in y_vals_rev:
-            x = x_left
-            yaw = fixed_yaw
-            if yaw_mode == "along_path" and prev is not None:
-                dx, dy = x - prev[0], y - prev[1]
-                if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                    yaw = math.atan2(dy, dx)
-            waypoints.append((x, y, yaw))
-            prev = (x, y, yaw)
-
-    # Add the center if inside bounds
-    if xmin <= gx <= xmax and ymin <= gy <= ymax:
-        yaw = fixed_yaw
-        if yaw_mode == "along_path" and prev is not None:
-            dx, dy = gx - prev[0], gy - prev[1]
-            if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                yaw = math.atan2(dy, dx)
-        waypoints.insert(0, (gx, gy, yaw))
-
-    return waypoints
-
-
-def generate_poisson(
-    xmin: float, xmax: float, ymin: float, ymax: float,
-    spacing: float, yaw_mode: str, fixed_yaw: float, max_attempts: int = 20000
-) -> List[Tuple[float, float, float]]:
-    """
-    Poisson-disk sampling: randomly distributed points with minimum spacing.
-    Good for irregular rooms and uniform coverage density.
-    """
-    import random
-    waypoints: List[Tuple[float, float, float]] = []
-
-    def valid(pt):
-        x, y = pt
-        for (xp, yp, _) in waypoints:
-            dx, dy = x - xp, y - yp
-            if dx * dx + dy * dy < spacing * spacing:
-                return False
-        return True
-
-    attempts = 0
-    prev = None
-    while attempts < max_attempts:
-        x = random.uniform(xmin, xmax)
-        y = random.uniform(ymin, ymax)
-        if valid((x, y)):
-            yaw = fixed_yaw
-            if yaw_mode == "along_path" and prev is not None:
-                dx, dy = x - prev[0], y - prev[1]
-                if abs(dx) > 1e-9 or abs(dy) > 1e-9:
-                    yaw = math.atan2(dy, dx)
-            waypoints.append((x, y, yaw))
-            prev = (x, y, yaw)
-        attempts += 1
-
-    return waypoints
-
-
-# ---------- map filtering ----------
+# ---------------- map utils (fixed logic) ----------------
 
 def load_map_yaml(map_yaml_path: Path):
     if yaml is None:
-        raise RuntimeError("PyYAML not installed. Install with: pip install pyyaml")
+        raise RuntimeError("PyYAML is required. Install with: pip install pyyaml")
     with open(map_yaml_path, "r") as f:
         data = yaml.safe_load(f)
     required = ["image", "resolution", "origin"]
     for k in required:
         if k not in data:
             raise ValueError(f"map.yaml missing required key: {k}")
+    # ensure numeric defaults exist
     data.setdefault("occupied_thresh", 0.65)
-    data.setdefault("free_thresh", 0.196)
+    data.setdefault("free_thresh", 0.25)
     data.setdefault("negate", 0)
     return data
 
 
 def load_map_image(image_path: Path, negate: int):
     if Image is None:
-        raise RuntimeError("Pillow not installed. Install with: pip install pillow")
+        raise RuntimeError("Pillow is required. Install with: pip install pillow")
+    if not image_path.exists():
+        raise FileNotFoundError(f"Map image not found: {image_path}")
     img = Image.open(image_path)
+    # convert to grayscale if needed
     if img.mode != "L":
         img = img.convert("L")
     if negate == 1:
@@ -261,51 +124,59 @@ def load_map_image(image_path: Path, negate: int):
     return img
 
 
-def inflate_mask(img: Image.Image, inflation_radius_m: float, resolution: float) -> Image.Image:
-    radius_px = max(0, int(round(inflation_radius_m / resolution)))
+
+# paste/replace these functions in your trajectory_generator.py
+
+import numpy as np
+from PIL import Image, ImageFilter
+
+def build_occupied_mask_np(img: Image.Image, occupied_thresh: float, free_thresh: float):
+    """
+    Return a boolean numpy array occ_mask (shape h,w), True = occupied (includes unknown).
+    unknown (between occ and free) -> treated as occupied.
+    img is a PIL L-mode image.
+    """
+    arr = np.array(img, dtype=np.uint8)        # shape (h,w), values 0..255
+    occ_px = int(round(occupied_thresh * 255.0))
+    free_px = int(round(free_thresh * 255.0))
+
+    # occupied if val <= occ_px OR (val between occ_px+1 and free_px-1) -> unknown treated occupied
+    occ_mask = (arr <= occ_px) | ((arr > occ_px) & (arr < free_px))
+    # Note: free pixels are arr >= free_px
+    return occ_mask  # dtype=bool, shape (h,w)
+
+
+def inflate_occupied_mask_np(occ_mask: np.ndarray, inflation_radius_m: float, resolution: float):
+    """
+    Inflate boolean occ_mask (h,w) by inflation_radius_m using PIL MaxFilter.
+    Returns inflated boolean numpy array.
+    """
+    if inflation_radius_m <= 0.0:
+        return occ_mask
+
+    radius_px = max(0, int(math.ceil(inflation_radius_m / resolution)))
     if radius_px == 0:
-        return img
-    # Build occupied mask using a conservative threshold
-    occupied_thresh = 0.65
-    w, h = img.size
-    occ = Image.new("1", (w, h), 0)
-    px = img.load()
-    oc = occ.load()
-    for x in range(w):
-        for y in range(h):
-            prob = px[x, y] / 255.0
-            oc[x, y] = 1 if prob >= occupied_thresh else 0
-    # Dilate occupied
-    dilated = occ.filter(ImageFilter.MaxFilter(size=2 * radius_px + 1))
-    out = Image.new("L", (w, h))
-    out_px = out.load()
-    dil_px = dilated.load()
-    for x in range(w):
-        for y in range(h):
-            out_px[x, y] = 255 if dil_px[x, y] == 1 else px[x, y]
-    return out
+        return occ_mask
+
+    # Convert to PIL image (mode 'L'): 0 free -> 0, occupied -> 255
+    pil = Image.fromarray((occ_mask.astype(np.uint8) * 255))
+    kernel = 2 * radius_px + 1
+    inflated = pil.filter(ImageFilter.MaxFilter(size=kernel))
+    inflated_np = np.array(inflated, dtype=np.uint8) > 0
+    return inflated_np  # bool array
 
 
-def world_to_map_xy(x: float, y: float, origin, resolution: float) -> Tuple[int, int]:
+def world_to_map_pixel(x: float, y: float, origin, resolution: float, img_h: int):
+    """
+    Convert world coordinates (x,y) -> image pixel coords consistent with PIL indexing.
+    Returns (mx, my_img) where mx in [0..w-1], my_img in [0..h-1] with top-left origin.
+    """
     x0, y0, _ = origin
-    mx = int((x - x0) / resolution)
-    my = int((y - y0) / resolution)
-    return mx, my
-
-
-def pixel_is_free(img: Image.Image, mx: int, my: int, free_thresh: float, occupied_thresh: float) -> Optional[bool]:
-    w, h = img.size
-    if mx < 0 or my < 0 or mx >= w or my >= h:
-        return None
-    # flip Y to match map coordinates vs. image rows
-    pix = img.getpixel((mx, h - 1 - my))
-    prob = pix / 255.0
-    if prob >= occupied_thresh:
-        return False
-    elif prob <= free_thresh:
-        return True
-    else:
-        return None
+    mx = int(math.floor((x - x0) / resolution))
+    my = int(math.floor((y - y0) / resolution))
+    # flip Y for PIL image coordinates (top-left origin)
+    my_img = img_h - 1 - my
+    return mx, my_img
 
 
 def filter_waypoints_by_map(
@@ -313,31 +184,49 @@ def filter_waypoints_by_map(
     map_yaml_path: Optional[Path],
     inflation_radius_m: float = 0.0,
 ) -> List[Tuple[float, float, float]]:
-    if map_yaml_path is None:
+    """
+    Filters waypoints; returns list of accepted waypoints.
+    Strict rules:
+      - unknown (mid-gray) is treated occupied
+      - outside-map is treated occupied (rejected)
+    """
+    if not map_yaml_path:
         return waypoints
 
     params = load_map_yaml(map_yaml_path)
     image_path = Path(map_yaml_path.parent) / params["image"]
     img = load_map_image(image_path, negate=int(params.get("negate", 0)))
-    if inflation_radius_m > 0.0:
-        img = inflate_mask(img, inflation_radius_m, float(params["resolution"]))
+    # img is PIL L-mode with shape (w,h) in previous code; we need numpy (h,w)
+    arr_img = img  # PIL Image
+    h, w = np.array(arr_img).shape
 
+    resolution = float(params["resolution"])
     origin = tuple(params["origin"])
-    res = float(params["resolution"])
-    free_thresh = float(params.get("free_thresh", 0.196))
     occupied_thresh = float(params.get("occupied_thresh", 0.65))
+    free_thresh = float(params.get("free_thresh", 0.25))
 
-    filtered = []
+    # Build occupied mask (unknown => occupied)
+    occ_mask = build_occupied_mask_np(arr_img, occupied_thresh, free_thresh)  # bool h,w
+
+    # Inflate
+    if inflation_radius_m > 0.0:
+        occ_mask = inflate_occupied_mask_np(occ_mask, inflation_radius_m, resolution)
+
+    # Now classify points
+    filtered: List[Tuple[float, float, float]] = []
     for (x, y, yaw) in waypoints:
-        mx, my = world_to_map_xy(x, y, origin, res)
-        ok = pixel_is_free(img, mx, my, free_thresh, occupied_thresh)
-        if ok is True:
+        mx, my_img = world_to_map_pixel(x, y, origin, resolution, h)
+        # Reject if out of bounds
+        if mx < 0 or my_img < 0 or mx >= w or my_img >= h:
+            continue
+        # occ_mask is indexed as [row=y_img, col=x]
+        if not occ_mask[my_img, mx]:
+            # not occupied => free
             filtered.append((x, y, yaw))
-        # unknown/occupied skipped
+        # else occupied (including unknown) -> skip
     return filtered
 
-
-# ---------- IO ----------
+# ---------------- IO ----------------
 
 def write_csv(path: Path, waypoints: List[Tuple[float, float, float]]):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -348,30 +237,25 @@ def write_csv(path: Path, waypoints: List[Tuple[float, float, float]]):
             w.writerow([f"{x:.6f}", f"{y:.6f}", f"{yaw:.6f}"])
 
 
-# ---------- CLI ----------
+# ---------------- CLI ----------------
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Trajectory generator with multiple patterns")
-    # Position-related
+    p = argparse.ArgumentParser(description="Minimal trajectory generator (raster/zigzag) with safe map filtering")
     p.add_argument("--xmin", type=float, required=True, help="min X (meters, map frame)")
     p.add_argument("--xmax", type=float, required=True, help="max X")
     p.add_argument("--ymin", type=float, required=True, help="min Y")
     p.add_argument("--ymax", type=float, required=True, help="max Y")
-    # Non-position
     p.add_argument("--spacing", type=float, default=0.5, help="grid/coverage spacing (meters)")
-    p.add_argument("--pattern", choices=["raster", "zigzag", "spiral", "poisson"], default="raster",
-                   help="coverage pattern")
+    p.add_argument("--pattern", choices=["raster", "zigzag"], default="raster",
+                   help="coverage pattern (raster or zigzag)")
     p.add_argument("--sweep-axis", choices=["x", "y"], default="y",
                    help="for raster/zigzag: traverse rows (y) or columns (x)")
     p.add_argument("--yaw-mode", choices=["fixed", "along_path"], default="fixed",
                    help="orientation mode: fixed yaw or along direction of motion")
     p.add_argument("--yaw", type=float, default=0.0, help="fixed yaw (radians) if yaw-mode=fixed")
     p.add_argument("--out", type=str, default="trajectory.csv", help="output CSV path")
-    # Map filtering
-    p.add_argument("--map-yaml", type=str, default=None,
-                   help="SLAM map.yaml for obstacle/unknown filtering")
-    p.add_argument("--inflate", type=float, default=0.0,
-                   help="inflation radius (meters) for obstacle clearance")
+    p.add_argument("--map-yaml", type=str, default=None, help="SLAM map.yaml for obstacle/unknown filtering")
+    p.add_argument("--inflate", type=float, default=0.0, help="inflation radius (meters) for obstacle clearance")
     return p.parse_args()
 
 
@@ -379,7 +263,7 @@ def main():
     args = parse_args()
     xmin, xmax, ymin, ymax = clamp_bounds(args.xmin, args.xmax, args.ymin, args.ymax)
 
-    # Generate waypoints by pattern
+    # generate waypoints
     if args.pattern in ("raster", "zigzag"):
         zigzag = (args.pattern == "zigzag")
         wps = generate_raster(
@@ -389,28 +273,17 @@ def main():
             yaw_mode=args.yaw_mode,
             fixed_yaw=args.yaw
         )
-    elif args.pattern == "spiral":
-        wps = generate_spiral(
-            xmin, xmax, ymin, ymax, args.spacing,
-            yaw_mode=args.yaw_mode, fixed_yaw=args.yaw
-        )
-    elif args.pattern == "poisson":
-        wps = generate_poisson(
-            xmin, xmax, ymin, ymax, args.spacing,
-            yaw_mode=args.yaw_mode, fixed_yaw=args.yaw
-        )
     else:
-        raise ValueError(f"Unknown pattern: {args.pattern}")
+        raise ValueError("Unsupported pattern")
 
-    # Filter against map
+    # filter against map if provided
     map_yaml = Path(args.map_yaml) if args.map_yaml else None
     if map_yaml:
         try:
             wps = filter_waypoints_by_map(wps, map_yaml_path=map_yaml, inflation_radius_m=args.inflate)
         except Exception as e:
             print(f"[WARN] Map filtering failed: {e}. Proceeding without filtering.")
-
-    # Save
+    # save
     out_path = Path(args.out)
     write_csv(out_path, wps)
     print(f"Saved {len(wps)} waypoints to {out_path}")
@@ -418,4 +291,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

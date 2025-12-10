@@ -16,15 +16,17 @@ class SensorPoseNode(Node):
         self.robot_x = 0.0
         self.robot_y = 0.0
         self.robot_theta = 0.0
-        
-        # Declare ROS 2 parameters
+
+        # ROS 2 parameters
         self.declare_parameter('serial_port', '/dev/ttyACM1')
-        self.declare_parameter('command_to_send', '')
         self.declare_parameter('baud_rate', 9600)
+        self.declare_parameter('numeric_offset', 2)  # adjust based on your serial format
 
         serial_port_name = self.get_parameter('serial_port').value
         serial_baud = self.get_parameter('baud_rate').value
+        self.numeric_offset = self.get_parameter('numeric_offset').value
 
+        # Connect to Arduino
         try:
             self.serial_port = serial.Serial(serial_port_name, serial_baud, timeout=1)
             self.get_logger().info(f'Connected to sensor board on {serial_port_name} at {serial_baud} baud')
@@ -35,7 +37,7 @@ class SensorPoseNode(Node):
         # Odometry subscriber
         self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
 
-        # Sensor readings publisher
+        # Sensor publisher
         self.sensor_publisher = self.create_publisher(SensorData, 'ens160_data', 10)
 
         # Timer to read serial and publish at 2 Hz
@@ -43,10 +45,6 @@ class SensorPoseNode(Node):
 
         # Regex to extract numbers
         self.number_regex = re.compile(r'[-+]?\d*\.\d+|\d+')
-
-        # Expected number of sensor values
-        self.expected_sensor_values = 42
-        self.numeric_offset = 2
 
         # ROS service to send commands to Arduino
         self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
@@ -80,13 +78,13 @@ class SensorPoseNode(Node):
                 self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
                 return
 
+            # Extract actual sensor values (eCO2, TVOC, AQI, R0, R1, R2)
             sensor_numbers = numbers[self.numeric_offset:]
-            sensor_values = [float(n) for n in sensor_numbers]
+            if len(sensor_numbers) < 6:
+                self.get_logger().warn(f'Ignored serial line, less than 6 sensor values: {sensor_numbers}')
+                return
 
-            # Pad or trim to expected_sensor_values
-            while len(sensor_values) < self.expected_sensor_values:
-                sensor_values.extend(sensor_values)
-            sensor_values = sensor_values[:self.expected_sensor_values]
+            sensor_values = [float(n) for n in sensor_numbers[:6]]
 
             msg = SensorData()
             msg.pose_x = self.robot_x
@@ -95,14 +93,15 @@ class SensorPoseNode(Node):
             msg.sensor_readings = sensor_values
             self.sensor_publisher.publish(msg)
 
-            self.get_logger().info(f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}')
+            self.get_logger().info(
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f} -> {sensor_values}'
+            )
 
         except Exception as e:
             self.get_logger().error(f'Error reading serial: {e}')
 
     def send_command_callback(self, request, response):
         """Service callback to send a command string to Arduino."""
-        # Get the latest command parameter
         command_to_send = self.get_parameter('command_to_send').get_parameter_value().string_value
 
         if not command_to_send:
@@ -120,6 +119,7 @@ class SensorPoseNode(Node):
 
         return response
 
+
 def main(args=None):
     rclpy.init(args=args)
     node = SensorPoseNode()
@@ -130,6 +130,7 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.try_shutdown()
+
 
 if __name__ == '__main__':
     main()

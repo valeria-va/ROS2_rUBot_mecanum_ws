@@ -102,7 +102,7 @@ def generate_launch_description():
     sensor_node = Node(
         package='ens160_sensors',    
         executable='ens160_sensors_hw_exec', 
-        name='sensor_pose_node_real',
+        name='sensor_pose_node_hw',
         output='screen',
         parameters=[
         {'serial_port': LaunchConfiguration('sensor_serial_port')},
