@@ -17,12 +17,15 @@ class SensorPoseNode(Node):
         self.robot_y = 0.0
         self.robot_theta = 0.0
 
-        # ROS 2 parameters
+        # --- Declare parameters ---
         self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
+        self.declare_parameter('numeric_offset', 2)
+        self.declare_parameter('command_to_send', '')  # must declare before using in service
 
         serial_port_name = self.get_parameter('serial_port').value
         serial_baud = self.get_parameter('baud_rate').value
+        self.numeric_offset = self.get_parameter('numeric_offset').value
 
         # Connect to Arduino
         try:
@@ -47,6 +50,9 @@ class SensorPoseNode(Node):
         # ROS service to send commands to Arduino
         self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
 
+    # -----------------------------
+    # Odometry callback
+    # -----------------------------
     def odom_callback(self, msg: Odometry):
         self.robot_x = msg.pose.pose.position.x
         self.robot_y = msg.pose.pose.position.y
@@ -58,6 +64,9 @@ class SensorPoseNode(Node):
         except Exception:
             self.robot_theta = 0.0
 
+    # -----------------------------
+    # Read serial and publish
+    # -----------------------------
     def read_serial_publish(self):
         try:
             if self.serial_port.in_waiting == 0:
@@ -67,49 +76,72 @@ class SensorPoseNode(Node):
             if not raw_line:
                 return
 
-            # Skip header line
-            if 'Timestamp' in raw_line:
+            # Only process lines containing 'eCO2'
+            if 'eCO2' not in raw_line:
                 return
 
             numbers = self.number_regex.findall(raw_line)
-            if len(numbers) < 8:
+            if len(numbers) <= self.numeric_offset:
                 self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
                 return
 
-            # Parse single channel line: Arduino_MS, Channel, eCO2, TVOC, AQI, R0, R1, R2, R3
-            channel = int(numbers[1])
-            eCO2 = float(numbers[2])
-            TVOC = float(numbers[3])
-            AQI = float(numbers[4])
-            R0 = float(numbers[5])
-            R1 = float(numbers[6])
-            R2 = float(numbers[7])
-            R3 = float(numbers[8])
+            # Skip timestamp/Arduino_MS fields
+            sensor_numbers = numbers[self.numeric_offset:]
+
+            # Each channel has 7 values: channel, eCO2, TVOC, AQI, R0, R1, R2, R3
+            if len(sensor_numbers) % 8 != 0:
+                self.get_logger().warn(f'Unexpected number of sensor values: "{sensor_numbers}"')
+                return
+
+            num_channels = len(sensor_numbers) // 8
+
+            # Prepare arrays for the message
+            channels = []
+            eCO2 = []
+            TVOC = []
+            AQI = []
+            R0 = []
+            R1 = []
+            R2 = []
+            R3 = []
+
+            for i in range(num_channels):
+                idx = i * 8
+                channels.append(int(sensor_numbers[idx]))
+                eCO2.append(float(sensor_numbers[idx + 1]))
+                TVOC.append(float(sensor_numbers[idx + 2]))
+                AQI.append(float(sensor_numbers[idx + 3]))
+                R0.append(float(sensor_numbers[idx + 4]))
+                R1.append(float(sensor_numbers[idx + 5]))
+                R2.append(float(sensor_numbers[idx + 6]))
+                R3.append(float(sensor_numbers[idx + 7]))
 
             msg = SensorData()
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.channel = [channel]
-            msg.eCO2 = [eCO2]
-            msg.TVOC = [TVOC]
-            msg.AQI = [AQI]
-            msg.R0 = [R0]
-            msg.R1 = [R1]
-            msg.R2 = [R2]
-            msg.R3 = [R3]
+            msg.channel = channels
+            msg.eCO2 = eCO2
+            msg.TVOC = TVOC
+            msg.AQI = AQI
+            msg.R0 = R0
+            msg.R1 = R1
+            msg.R2 = R2
+            msg.R3 = R3
 
             self.sensor_publisher.publish(msg)
 
             self.get_logger().info(
-                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channel={channel}'
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
             )
 
         except Exception as e:
             self.get_logger().error(f'Error reading serial: {e}')
 
+    # -----------------------------
+    # Service to send command to Arduino
+    # -----------------------------
     def send_command_callback(self, request, response):
-        """Service callback to send a command string to Arduino."""
         command_to_send = self.get_parameter('command_to_send').get_parameter_value().string_value
 
         if not command_to_send:
@@ -128,6 +160,9 @@ class SensorPoseNode(Node):
         return response
 
 
+# -----------------------------
+# Main
+# -----------------------------
 def main(args=None):
     rclpy.init(args=args)
     node = SensorPoseNode()
@@ -145,5 +180,5 @@ if __name__ == '__main__':
 
 
 # Example usage:
-# ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
+# ros2 param set /sensor_pose_node_hw command_to_send "STREAM_START 1000"
 # ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
