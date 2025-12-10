@@ -2,11 +2,14 @@ float64 pose_x
 float64 pose_y
 float64 pose_theta
 
-int32[] channel   # 0, 1, 2, 3, 4, 5
-float32[] eCO2
-float32[] TVOC
-float32[] AQI
-float32[] R0
-float32[] R1
-float32[] R2
-float32[] R3
+uint8 channel       
+float32 eco2
+float32 tvoc
+float32 aqi
+float32 r0
+float32 r1
+float32 r2
+float32 r3
+float64 pose_x
+float64 pose_y
+float64 pose_theta
