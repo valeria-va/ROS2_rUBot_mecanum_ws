@@ -20,10 +20,12 @@ class SensorPoseNode(Node):
         # ROS 2 parameters
         self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
+        self.declare_parameter('numeric_offset', 2)
         self.declare_parameter('command_to_send', '')
 
         serial_port_name = self.get_parameter('serial_port').value
         serial_baud = self.get_parameter('baud_rate').value
+        self.numeric_offset = self.get_parameter('numeric_offset').value
 
         # Connect to Arduino
         try:
@@ -42,10 +44,8 @@ class SensorPoseNode(Node):
         # Timer to read serial and publish at 2 Hz
         self.create_timer(0.5, self.read_serial_publish)
 
-        # Regex to parse Arduino output
-        self.serial_line_regex = re.compile(
-            r'(\d+),CH(\d+),eCO2=(\d+),TVOC=(\d+),AQI=(\d+),R0=(\d+),R1=(\d+),R2=(\d+),R3=(\d+)'
-        )
+        # Regex to extract numbers
+        self.number_regex = re.compile(r'[-+]?\d*\.\d+|\d+')
 
         # ROS service to send commands to Arduino
         self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
@@ -70,28 +70,61 @@ class SensorPoseNode(Node):
             if not raw_line:
                 return
 
+            # Only process lines containing 'eCO2='
             if 'eCO2=' not in raw_line:
                 return
 
-            match = self.serial_line_regex.match(raw_line)
-            if not match:
-                self.get_logger().warn(f'Ignored serial line, could not parse: "{raw_line}"')
+            numbers = self.number_regex.findall(raw_line)
+            if len(numbers) <= self.numeric_offset:
+                # Ignore lines with insufficient numeric fields
                 return
 
-            timestamp, ch, eco2, tvoc, aqi, r0, r1, r2, r3 = map(int, match.groups())
+            # Extract numeric sensor values, skipping timestamp/Arduino_MS
+            sensor_numbers = numbers[self.numeric_offset:]
+
+            # Each channel has 7 measurements: eCO2, TVOC, AQI, R0, R1, R2, R3
+            num_channels = len(sensor_numbers) // 8  # 1 channel index + 7 values
+            if num_channels == 0:
+                return  # Ignore lines with no valid channels
+
+            channels = []
+            sensor_readings = []
+            missing_channels = 0  # Optional counter for corrupted/missing channels
+
+            for i in range(num_channels):
+                idx = i * 8
+                try:
+                    ch = int(sensor_numbers[idx])
+                    channels.append(ch)
+                    sensor_readings.extend([
+                        float(sensor_numbers[idx + 1]),  # eCO2
+                        float(sensor_numbers[idx + 2]),  # TVOC
+                        float(sensor_numbers[idx + 3]),  # AQI
+                        float(sensor_numbers[idx + 4]),  # R0
+                        float(sensor_numbers[idx + 5]),  # R1
+                        float(sensor_numbers[idx + 6]),  # R2
+                        float(sensor_numbers[idx + 7])   # R3
+                    ])
+                except ValueError:
+                    missing_channels += 1
+                    continue
+
+            if len(channels) == 0:
+                return  # If no valid channel, skip
 
             msg = SensorData()
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.channels = [ch]
-            msg.sensor_readings = [eco2, tvoc, aqi, r0, r1, r2, r3]
+            msg.channels = channels
+            msg.sensor_readings = sensor_readings
 
             self.sensor_publisher.publish(msg)
 
-            self.get_logger().info(
-                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channel={ch}'
-            )
+            log_msg = f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
+            if missing_channels > 0:
+                log_msg += f' | skipped {missing_channels} invalid channels'
+            self.get_logger().info(log_msg)
 
         except Exception as e:
             self.get_logger().error(f'Error reading serial: {e}')
