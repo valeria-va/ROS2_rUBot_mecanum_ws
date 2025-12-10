@@ -20,7 +20,7 @@ class SensorPoseNode(Node):
         # ROS 2 parameters
         self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
-        self.declare_parameter('numeric_offset', 2)  # adjust based on your serial format
+        self.declare_parameter('numeric_offset', 2)
 
         serial_port_name = self.get_parameter('serial_port').value
         serial_baud = self.get_parameter('baud_rate').value
@@ -55,7 +55,7 @@ class SensorPoseNode(Node):
         q = msg.pose.pose.orientation
         quat_array = [q.w, q.x, q.y, q.z]
         try:
-            roll, pitch, yaw = t3d_euler.quat2euler(quat_array, axes='rzyx')
+            _, _, yaw = t3d_euler.quat2euler(quat_array, axes='rzyx')
             self.robot_theta = yaw
         except Exception:
             self.robot_theta = 0.0
@@ -78,23 +78,52 @@ class SensorPoseNode(Node):
                 self.get_logger().warn(f'Ignored serial line, not enough numeric fields: "{raw_line}"')
                 return
 
-            # Extract actual sensor values (eCO2, TVOC, AQI, R0, R1, R2)
+            # Extract numeric sensor values, skip timestamp/Arduino_MS
             sensor_numbers = numbers[self.numeric_offset:]
-            if len(sensor_numbers) < 6:
-                self.get_logger().warn(f'Ignored serial line, less than 6 sensor values: {sensor_numbers}')
+
+            # Each channel has 7 values: eCO2, TVOC, AQI, R0, R1, R2, R3
+            num_channels = len(sensor_numbers) // 7
+            if num_channels == 0:
+                self.get_logger().warn(f'No sensor values in line: "{raw_line}"')
                 return
 
-            sensor_values = [float(n) for n in sensor_numbers[:6]]
+            channels = []
+            eCO2 = []
+            TVOC = []
+            AQI = []
+            R0 = []
+            R1 = []
+            R2 = []
+            R3 = []
+
+            for i in range(num_channels):
+                idx = i * 7
+                channels.append(int(sensor_numbers[idx]))  # channel number
+                eCO2.append(float(sensor_numbers[idx + 1]))
+                TVOC.append(float(sensor_numbers[idx + 2]))
+                AQI.append(float(sensor_numbers[idx + 3]))
+                R0.append(float(sensor_numbers[idx + 4]))
+                R1.append(float(sensor_numbers[idx + 5]))
+                R2.append(float(sensor_numbers[idx + 6]))
+                R3.append(float(sensor_numbers[idx + 7]))
 
             msg = SensorData()
             msg.pose_x = self.robot_x
             msg.pose_y = self.robot_y
             msg.pose_theta = self.robot_theta
-            msg.sensor_readings = sensor_values
+            msg.channel = channels
+            msg.eCO2 = eCO2
+            msg.TVOC = TVOC
+            msg.AQI = AQI
+            msg.R0 = R0
+            msg.R1 = R1
+            msg.R2 = R2
+            msg.R3 = R3
+
             self.sensor_publisher.publish(msg)
 
             self.get_logger().info(
-                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f} -> {sensor_values}'
+                f'Published sensor data at pose x={self.robot_x:.2f}, y={self.robot_y:.2f}, channels={channels}'
             )
 
         except Exception as e:

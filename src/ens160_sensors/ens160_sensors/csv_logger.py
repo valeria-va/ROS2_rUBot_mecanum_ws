@@ -67,9 +67,12 @@ class CSVLogger(Node):
 
         with open(self.csv_path, 'a', newline='') as f:
             writer = csv.writer(f)
-            for channel_idx, reading in enumerate(self.sensor_data):
-                # You can add more columns if needed (TVOC, R3, etc.)
-                writer.writerow([timestamp, channel_idx, x, y, yaw, reading])
+            for channel_idx, readings in enumerate(self.sensor_data):
+                # readings is assumed to be a list: [eCO2, TVOC, AQI, R0, R1, R2, R3]
+                if len(readings) < 7:
+                    self.get_logger().warn(f"Channel {channel_idx} has incomplete sensor data: {readings}")
+                    continue
+                writer.writerow([timestamp, channel_idx, x, y, yaw, *readings])
 
     # -----------------------------
     # Start logging service
@@ -80,7 +83,7 @@ class CSVLogger(Node):
         # Write header
         with open(self.csv_path, 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(['Timestamp', 'Channel', 'Pose_X', 'Pose_Y', 'Pose_Yaw', 'eCO2'])
+            writer.writerow(['Timestamp', 'Channel', 'Pose_X', 'Pose_Y', 'Pose_Yaw', 'eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'])
 
         self.logging_enabled = True
         response.success = True
