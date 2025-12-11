@@ -104,6 +104,7 @@ class SensorPoseNode(Node):
                 return
 
             raw_line = self.serial_port.readline().decode('utf-8', errors='ignore').strip()
+            self.get_logger().info(f'Received raw: {raw_line}')
             if not raw_line:
                 return
 
