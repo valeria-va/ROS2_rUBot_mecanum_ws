@@ -1,167 +1,81 @@
 #!/usr/bin/env python3
+
 import rclpy
 from rclpy.node import Node
-from nav_msgs.msg import Odometry
-from ens160_interfaces.msg import SensorData
-from std_srvs.srv import Trigger
-import transforms3d.euler as t3d_euler
+from std_msgs.msg import String
 import serial
 
-class SensorPoseNode(Node):
+class SensorPoseNodeHW(Node):
     def __init__(self):
         super().__init__('sensor_pose_node_hw')
 
-        # Robot pose
-        self.robot_x = 0.0
-        self.robot_y = 0.0
-        self.robot_theta = 0.0
-
-        # ROS 2 parameters
+        # --- PARAMETERS ---
         self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 9600)
-        self.declare_parameter('command_to_send', '')
+        self.declare_parameter('publish_topic', 'ens160_data')
+        self.declare_parameter('timer_period_ms', 100)  # 100 ms
 
-        serial_port_name = self.get_parameter('serial_port').value
-        serial_baud = self.get_parameter('baud_rate').value
+        port = self.get_parameter('serial_port').get_parameter_value().string_value
+        baud = self.get_parameter('baud_rate').get_parameter_value().integer_value
+        topic_name = self.get_parameter('publish_topic').get_parameter_value().string_value
+        period_ms = self.get_parameter('timer_period_ms').get_parameter_value().integer_value
 
-        # Connect to Arduino
+        self.get_logger().info(f'Initializing node with port={port}, baud={baud}, topic={topic_name}, period={period_ms}ms')
+
+        # --- SERIAL SETUP ---
         try:
-            self.serial_port = serial.Serial(serial_port_name, serial_baud, timeout=1)
-            self.get_logger().info(f'Connected to sensor board on {serial_port_name} at {serial_baud} baud')
+            self.serial_port = serial.Serial(port, baud, timeout=0.1)
+            self.get_logger().info(f'Connected to sensor board on {port} at {baud} baud')
         except Exception as e:
-            self.get_logger().error(f'Could not open serial port {serial_port_name}: {e}')
-            raise
+            self.get_logger().error(f'Failed to open serial port {port}: {e}')
+            raise e
 
-        # Odometry subscriber
-        self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+        # --- PUBLISHER ---
+        self.publisher = self.create_publisher(String, topic_name, 10)
+        self.get_logger().info(f'Publisher created for topic: {topic_name}')
 
-        # Sensor publisher
-        self.sensor_publisher = self.create_publisher(SensorData, 'ens160_data', 10)
+        # --- TIMER ---
+        self.timer = self.create_timer(period_ms / 1000.0, self.timer_callback)
+        self.get_logger().info('Timer created')
 
-        # Timer to read serial and publish
-        self.create_timer(0.1, self.read_serial_publish)   # 10 Hz read rate
-
-        # ROS service to send commands to Arduino
-        self.create_service(Trigger, '/ens160_send_command', self.send_command_callback)
-
-    def odom_callback(self, msg: Odometry):
-        self.robot_x = msg.pose.pose.position.x
-        self.robot_y = msg.pose.pose.position.y
-        q = msg.pose.pose.orientation
-        quat_array = [q.w, q.x, q.y, q.z]
-        try:
-            _, _, yaw = t3d_euler.quat2euler(quat_array, axes='rzyx')
-            self.robot_theta = yaw
-        except Exception:
-            self.robot_theta = 0.0
-
-    def parse_line(self, line: str):
-        # Example line:
-        # 567479,CH1,eCO2=400,TVOC=19,AQI=1,R0=209311,R1=1,R2=683146,R3=54589
-
-        parts = line.split(',')
-        if len(parts) < 9:
-            return None  # not enough fields
-
-        # Extract channel number: "CH3" -> 3
-        ch_str = parts[1]
-        if not ch_str.startswith("CH"):
-            return None
-        try:
-            channel = int(ch_str[2:])
-        except ValueError:
-            return None
-
-        values = {}
-        for token in parts[2:]:
-            if '=' not in token:
-                continue
-            k, v = token.split('=')
-            try:
-                values[k] = float(v)
-            except ValueError:
-                return None
-
-        required = ["eCO2", "TVOC", "AQI", "R0", "R1", "R2", "R3"]
-        if not all(k in values for k in required):
-            return None
-
-        reading = [
-            values["eCO2"],
-            values["TVOC"],
-            values["AQI"],
-            values["R0"],
-            values["R1"],
-            values["R2"],
-            values["R3"],
-        ]
-
-        return channel, reading
+    def timer_callback(self):
+        self.get_logger().debug('Timer callback fired')
+        self.read_serial_publish()
 
     def read_serial_publish(self):
         try:
             if self.serial_port.in_waiting == 0:
+                self.get_logger().debug('No data in serial buffer')
                 return
 
             raw_line = self.serial_port.readline().decode('utf-8', errors='ignore').strip()
             self.get_logger().info(f'Received raw: {raw_line}')
+
             if not raw_line:
+                self.get_logger().debug('Empty line received from serial')
                 return
 
-            parsed = self.parse_line(raw_line)
-            if parsed is None:
-                return
-
-            channel, reading = parsed
-
-            msg = SensorData()
-            msg.pose_x = self.robot_x
-            msg.pose_y = self.robot_y
-            msg.pose_theta = self.robot_theta
-            msg.channels = [channel]
-            msg.sensor_readings = reading
-
-            self.sensor_publisher.publish(msg)
-
-            self.get_logger().info(f'CH{channel} eCO2={reading[0]} TVOC={reading[1]}')
+            # Here you can add parsing of raw_line if needed
+            msg = String()
+            msg.data = raw_line
+            self.publisher.publish(msg)
+            self.get_logger().debug(f'Published message: {raw_line}')
 
         except Exception as e:
             self.get_logger().error(f'Error reading serial: {e}')
 
-    def send_command_callback(self, request, response):
-        command_to_send = self.get_parameter('command_to_send').get_parameter_value().string_value
-        if not command_to_send:
-            response.success = False
-            response.message = "No command set. Please set 'command_to_send' parameter."
-            return response
-
-        try:
-            self.serial_port.write((command_to_send + '\n').encode())
-            response.success = True
-            response.message = f"Sent command: {command_to_send}"
-        except Exception as e:
-            response.success = False
-            response.message = f"Failed to send command: {e}"
-
-        return response
-
 
 def main(args=None):
     rclpy.init(args=args)
-    node = SensorPoseNode()
+    node = SensorPoseNodeHW()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        node.get_logger().info('Node interrupted by user')
     finally:
         node.destroy_node()
-        rclpy.try_shutdown()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
     main()
-
-
-# Example usage:
-# ros2 param set /sensor_pose_node_real command_to_send "STREAM_START 1000"
-# ros2 service call /ens160_send_command std_srvs/srv/Trigger "{}"
