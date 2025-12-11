@@ -1,6 +1,5 @@
 float64 pose_x
 float64 pose_y
 float64 pose_theta
-
-float32[] sensor_readings   
-int32[] channels           
+int32[] channels
+float64[] sensor_readings
