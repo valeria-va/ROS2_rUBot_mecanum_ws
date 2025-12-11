@@ -41,7 +41,7 @@ class CSVLogger(Node):
     # Sensor callback
     # -----------------------------
     def sensor_callback(self, msg):
-        self.sensor_data = msg.sensor_readings
+        self.sensor_data = msg  # store the full SensorData message
         if self.logging_enabled:
             self.write_csv()
 
@@ -67,12 +67,14 @@ class CSVLogger(Node):
 
         with open(self.csv_path, 'a', newline='') as f:
             writer = csv.writer(f)
-            for channel_idx, readings in enumerate(self.sensor_data):
-                # readings is assumed to be a list: [eCO2, TVOC, AQI, R0, R1, R2, R3]
-                if len(readings) < 7:
-                    self.get_logger().warn(f"Channel {channel_idx} has incomplete sensor data: {readings}")
-                    continue
-                writer.writerow([timestamp, channel_idx, x, y, yaw, *readings])
+            writer.writerow([
+                timestamp,
+                self.sensor_data.channels[0] if self.sensor_data.channels else -1,
+                self.sensor_data.pose_x,
+                self.sensor_data.pose_y,
+                self.sensor_data.pose_theta,
+                *self.sensor_data.sensor_readings
+            ])
 
     # -----------------------------
     # Start logging service
@@ -83,7 +85,10 @@ class CSVLogger(Node):
         # Write header
         with open(self.csv_path, 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(['Timestamp', 'Channel', 'Pose_X', 'Pose_Y', 'Pose_Yaw', 'eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'])
+            writer.writerow([
+                'Timestamp', 'Channel', 'Pose_X', 'Pose_Y', 'Pose_Theta',
+                'eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'
+            ])
 
         self.logging_enabled = True
         response.success = True
@@ -113,6 +118,7 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
