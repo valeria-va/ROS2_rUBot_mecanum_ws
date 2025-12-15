@@ -1,79 +1,115 @@
+
+
 #!/usr/bin/env python3
 """
-Generate a CO₂ heatmap from merged position+sensor CSV.
+Generate CO2 heatmap over ROS2 SLAM map.
 
 Usage:
-  python3 heatmap_generator.py \
-    --csv data/merged_for_heatmap.csv \
-    --out results/heatmap.png \
-    --black-for-empty
 
-    png is optional, the script saves the plotted heatmap as an image file 
-    instead of (or in addition to) showing it interactively.
+python3 heatmap_generator.py \
+    --csv /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251212_113802.csv \
+    --map /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/1ECO2MAP.yaml \
+    --out /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/co2maps/co2map1_overlay.png
 """
 
 import argparse
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import cv2
+import yaml
+import os
 
-def build_heatmap(df, x_col="pose_x", y_col="pose_y", value_col="avg_eCO2",
-                  black_for_empty=True, out=None):
-    # Clean data
-    df = df.dropna(subset=[x_col, y_col, value_col])
-    df[x_col] = df[x_col].astype(int)
-    df[y_col] = df[y_col].astype(int)
+# Offset between measurement start and SLAM map origin
+OFFSET_X = 3.71  # meters
+OFFSET_Y = -3.33 # meters
 
-    min_x, min_y = df[x_col].min(), df[y_col].min()
-    max_x, max_y = df[x_col].max(), df[y_col].max()
+def load_map(yaml_file):
+    with open(yaml_file, 'r') as f:
+        map_data = yaml.safe_load(f)
+    map_path = os.path.join(os.path.dirname(yaml_file), map_data['image'])
+    map_img = cv2.imread(map_path, cv2.IMREAD_GRAYSCALE)
+    if map_img is None:
+        raise FileNotFoundError(f"Map image not found: {map_path}")
+    return map_img, map_data
 
-    cols = max_x - min_x + 1
-    rows = max_y - min_y + 1
-    print(f"Map X range: {min_x}–{max_x}, Y range: {min_y}–{max_y}")
+def poses_to_pixels(x, y, map_data, map_img):
+    """
+    Convert poses in meters to pixel coordinates in the map.
+    """
+    resolution = map_data['resolution']
+    origin_x, origin_y = map_data['origin'][:2]
+    
+    px = ((x - origin_x) / resolution).astype(int)
+    py = map_img.shape[0] - ((y - origin_y) / resolution).astype(int)  # invert y-axis
+    
+    return px, py
 
-    heatmap = np.full((rows, cols), np.nan)
+def generate_heatmap(df, map_img, map_data):
+    """
+    Generate a heatmap overlay of eCO2 values on the map.
+    """
+    # Average eCO2 across channels per timestamp
+    df_grouped = df.groupby(['Pose_X', 'Pose_Y']).agg({'eCO2': 'mean'}).reset_index()
 
-    for _, row in df.iterrows():
-        x_idx = row[x_col] - min_x
-        y_idx = row[y_col] - min_y
-        if 0 <= x_idx < cols and 0 <= y_idx < rows:
-            heatmap[y_idx, x_idx] = row[value_col]
+    # Apply offset to align with SLAM map
+    x_aligned = df_grouped['Pose_X'] - OFFSET_X
+    y_aligned = df_grouped['Pose_Y'] - OFFSET_Y
+    eco2 = df_grouped['eCO2'].values
 
-    plt.figure(figsize=(10, 8))
-    cmap = plt.cm.jet.copy()
-    if black_for_empty:
-        cmap.set_bad(color="black")
+    # Convert to pixel coordinates
+    px, py = poses_to_pixels(x_aligned, y_aligned, map_data, map_img)
 
-    plt.imshow(heatmap, cmap=cmap, interpolation="nearest", origin="lower")
-    plt.title("CO₂ Heatmap")
+    # Create empty heatmap
+    heatmap = np.zeros_like(map_img, dtype=float)
+    count = np.zeros_like(map_img, dtype=int)
 
-    # Custom ticks
-    x_ticks = np.arange(0, cols, max(1, cols // 9))
-    y_ticks = np.arange(0, rows, max(1, rows // 9))
-    plt.xticks(x_ticks, x_ticks + min_x)
-    plt.yticks(y_ticks, y_ticks + min_y)
+    # Accumulate eCO2 values
+    for i in range(len(px)):
+        if 0 <= px[i] < map_img.shape[1] and 0 <= py[i] < map_img.shape[0]:
+            heatmap[py[i], px[i]] += eco2[i]
+            count[py[i], px[i]] += 1
 
-    plt.xlabel("X Position")
-    plt.ylabel("Y Position")
-    plt.colorbar(label="eCO₂ (ppm)")
-    plt.tight_layout()
+    # Average values
+    mask = count > 0
+    heatmap[mask] = heatmap[mask] / count[mask]
 
-    if out:
-        plt.savefig(out, dpi=150)
-        print(f"Saved heatmap to {out}")
+    # Mask walls/unknown
+    if map_data.get('negate', 0) == 0:
+        free_mask = map_img < map_data['occupied_thresh'] * 255
     else:
-        plt.show()
+        free_mask = map_img > map_data['occupied_thresh'] * 255
+    heatmap[~free_mask] = 0
+
+    # Normalize heatmap to 0-255 for coloring
+    if np.any(mask):
+        heatmap_norm = cv2.normalize(heatmap, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    else:
+        heatmap_norm = heatmap.astype(np.uint8)
+
+    # Apply color map
+    heatmap_color = cv2.applyColorMap(heatmap_norm, cv2.COLORMAP_JET)
+
+    # Overlay on SLAM map
+    map_color = cv2.cvtColor(map_img, cv2.COLOR_GRAY2BGR)
+    overlay = cv2.addWeighted(map_color, 0.6, heatmap_color, 0.4, 0)
+
+    return overlay
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate CO₂ heatmap from merged CSV")
-    parser.add_argument("--csv", required=True, help="Merged CSV with pose_x, pose_y, avg_eCO2")
-    parser.add_argument("--out", help="Optional output image file (PNG)")
-    parser.add_argument("--black-for-empty", action="store_true",
-                        help="Render empty cells as black")
+    parser = argparse.ArgumentParser(description="Generate eCO2 heatmap on top of ROS2 SLAM map")
+    parser.add_argument("--csv", required=True, help="CSV log file with eCO2 and poses")
+    parser.add_argument("--map", required=True, help="Map YAML file")
+    parser.add_argument("--out", required=True, help="Output image file")
     args = parser.parse_args()
 
+    # Load CSV
     df = pd.read_csv(args.csv)
-    build_heatmap(df, black_for_empty=args.black_for_empty, out=args.out)
+    map_img, map_data = load_map(args.map)
+
+    overlay = generate_heatmap(df, map_img, map_data)
+
+    cv2.imwrite(args.out, overlay)
+    print(f"Heatmap saved to {args.out}")
 
 if __name__ == "__main__":
     main()
