@@ -1,47 +1,68 @@
-import csv
-from pathlib import Path
+import pandas as pd
 import matplotlib.pyplot as plt
-from PIL import Image
+from pathlib import Path
+
+# python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/plot_waypoints.py 
+
+# --- CONFIGURATION ---
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251216_154129.csv")
+
+# --- 1. LOAD DATA USING PANDAS ---
+try:
+    # Read the CSV file. The first row is the header.
+    df = pd.read_csv(csv_path)
+
+    # Check if the necessary columns exist
+    required_cols = ['Pose_X', 'Pose_Y', 'eCO2']
+    if not all(col in df.columns for col in required_cols):
+        print(f"Error: CSV is missing one or more required columns: {required_cols}")
+        print(f"Available columns: {df.columns.tolist()}")
+        exit()
+
+except FileNotFoundError:
+    print(f"ERROR: CSV file not found at: {csv_path}")
+    exit()
+except Exception as e:
+    print(f"An error occurred during file loading: {e}")
+    exit()
 
 
-#   python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/plot_waypoints.py
+# --- 2. PREPARE DATA FOR PLOTTING ---
+# Extract the relevant columns
+x_coords = df['Pose_X'].to_numpy()
+y_coords = df['Pose_Y'].to_numpy()
+co2_levels = df['eCO2'].to_numpy()
+
+# --- 3. PLOT THE HEATMAP TRAJECTORY ---
+plt.figure(figsize=(10, 8))
+
+# Use a scatter plot to map colors to the eCO2 values.
+# The 'c' argument specifies the data used for coloring, and 'cmap' defines the color scheme.
+scatter = plt.scatter(x_coords, y_coords,
+                      c=co2_levels,       # Color points based on eCO2
+                      cmap='viridis',     # Colormap: Good contrast, low (blue) to high (yellow)
+                      s=50,               # Size of the points
+                      alpha=0.8,          # Transparency
+                      label='Trajectory Points')
+
+# Connect the points with a thin gray line to show the path
+plt.plot(x_coords, y_coords, 
+         linestyle='-', 
+         color='gray', 
+         linewidth=1, 
+         alpha=0.5,
+         zorder=0) # zorder=0 ensures the line is drawn beneath the colored points
+
+# 4. Add Colorbar for Interpretation
+cbar = plt.colorbar(scatter)
+cbar.set_label('eCO2 Level (PPM)', fontsize=12)
 
 
-# Paths
-map_yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/slam_maps/test_rajoles1_justincase.yaml")
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/trajectories/trajectory1.csv")
+# 5. Personalization and Display
+plt.title(f"Robot Trajectory Colored by eCO2 Concentration")
+plt.xlabel("Pose X (meters)", fontsize=12)
+plt.ylabel("Pose Y (meters)", fontsize=12)
+plt.grid(True, linestyle=':')
+plt.axis('equal') # Ensure proportional scaling
 
-# Load map
-import yaml
-with open(map_yaml_path, "r") as f:
-    map_data = yaml.safe_load(f)
-
-img_path = Path(map_yaml_path.parent) / map_data["image"]
-img = Image.open(img_path).convert("L")
-resolution = map_data["resolution"]
-origin_x, origin_y, _ = map_data["origin"]
-
-# Flip image to match world coordinates
-img = img.transpose(Image.FLIP_TOP_BOTTOM)
-img_w, img_h = img.size
-
-# Load waypoints
-wps = []
-with open(csv_path) as f:
-    reader = csv.reader(f)
-    for row in reader:
-        if row[0].startswith("#"):
-            continue
-        x, y, yaw = map(float, row)
-        wps.append((x, y))
-
-# Convert world coordinates to pixels
-px = [(int((x - origin_x) / resolution), int((y - origin_y) / resolution)) for x, y in wps]
-
-# Plot
-plt.figure(figsize=(8, 6))
-plt.imshow(img, cmap="gray", origin="lower")
-px_vals, py_vals = zip(*px)
-plt.scatter(px_vals, py_vals, c="red", s=40)
-plt.title(f"{len(wps)} waypoints on map")
 plt.show()
