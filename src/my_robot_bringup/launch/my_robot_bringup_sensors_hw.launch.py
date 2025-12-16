@@ -98,7 +98,7 @@ def generate_launch_description():
 
     )
 
-    # Definició del node per als sensors ENS160
+    # ENS160
     sensor_node = Node(
         package='ens160_sensors',    
         executable='ens160_sensors_hw_exec', 
@@ -120,6 +120,16 @@ def generate_launch_description():
         {'use_sim_time': use_sim_time}        ],    
     )
 
+    # CeO2 Cloud
+    eco2_cloud_node = Node(
+        package='ens160_sensors',
+        executable='eco2_cloud_exec',
+        name='eco2_cloud',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time}
+        ],
+    )
 
 
     # Inclusió dels altres llançadors de drivers
@@ -180,5 +190,6 @@ def generate_launch_description():
     ld.add_action(start_usb_cam_cmd)
     ld.add_action(sensor_node)
     ld.add_action(csv_logger)
+    ld.add_action(eco2_cloud)
 
     return ld

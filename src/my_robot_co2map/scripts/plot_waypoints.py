@@ -5,7 +5,7 @@ from pathlib import Path
 # python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/plot_waypoints.py 
 
 # --- CONFIGURATION ---
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251216_154129.csv")
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251216_161421.csv")
 
 # --- 1. LOAD DATA USING PANDAS ---
 try:

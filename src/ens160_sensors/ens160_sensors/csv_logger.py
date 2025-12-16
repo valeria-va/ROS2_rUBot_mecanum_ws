@@ -11,7 +11,7 @@ from std_srvs.srv import Trigger  # Simple start/stop logging service
 
 class CSVLogger(Node):
     def __init__(self):
-        super().__init__('csv_logger')
+        super().__init__('csv_logger_node')
 
         # --- Directory for logs ---
         self.log_dir = os.path.expanduser('~/ens160_logs')
