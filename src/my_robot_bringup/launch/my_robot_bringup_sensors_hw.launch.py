@@ -121,7 +121,7 @@ def generate_launch_description():
     )
 
     # CeO2 Cloud
-    eco2_cloud_node = Node(
+    eco2_cloud = Node(
         package='ens160_sensors',
         executable='eco2_cloud_exec',
         name='eco2_cloud',
