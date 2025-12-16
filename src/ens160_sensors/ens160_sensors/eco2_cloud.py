@@ -2,8 +2,10 @@
 import rclpy
 from rclpy.node import Node
 from ens160_interfaces.msg import SensorData
-from sensor_msgs.msg import PointCloud2, PointField, Header
+from sensor_msgs.msg import PointCloud2, PointField
+from std_msgs.msg import Header
 import sensor_msgs_py.point_cloud2 as pc2
+
 
 class ECO2CloudNode(Node):
     def __init__(self):
