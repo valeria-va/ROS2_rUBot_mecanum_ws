@@ -7,7 +7,9 @@ import csv
 from datetime import datetime
 import os
 import math
-from std_srvs.srv import Trigger  # Simple start/stop logging service
+from std_srvs.srv import Trigger
+import tf2_ros
+import geometry_msgs.msg
 
 class CSVLogger(Node):
     def __init__(self):
@@ -19,17 +21,18 @@ class CSVLogger(Node):
 
         # --- CSV logging ---
         self.logging_enabled = False
-        self.csv_path = None  # will be set when logging starts
+        self.csv_path = None
 
-        # --- Latest sensor & odom ---
+        # --- Latest sensor data ---
         self.sensor_data = None
-        self.odom_data = None
+
+        # --- TF ---
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         # --- Subscriptions ---
         self.sensor_sub = self.create_subscription(
             SensorData, 'ens160_data', self.sensor_callback, 10)
-        self.odom_sub = self.create_subscription(
-            Odometry, '/odom', self.odom_callback, 10)
 
         # --- Services to start/stop logging ---
         self.start_srv = self.create_service(Trigger, 'start_csv_logging', self.start_logging)
@@ -41,38 +44,50 @@ class CSVLogger(Node):
     # Sensor callback
     # -----------------------------
     def sensor_callback(self, msg):
-        self.sensor_data = msg  # store the full SensorData message
+        self.sensor_data = msg
         if self.logging_enabled:
             self.write_csv()
 
     # -----------------------------
-    # Odometry callback
+    # Get robot pose in map frame
     # -----------------------------
-    def odom_callback(self, msg):
-        p = msg.pose.pose.position
-        o = msg.pose.pose.orientation
-        # Correct yaw from quaternion
-        yaw = math.atan2(2*(o.w*o.z + o.x*o.y), 1 - 2*(o.y*o.y + o.z*o.z))
-        self.odom_data = (p.x, p.y, yaw)
+    def get_map_pose(self):
+        try:
+            t = self.tf_buffer.lookup_transform(
+                'map',            # target frame
+                'base_link',      # source frame
+                rclpy.time.Time()
+            )
+            x = t.transform.translation.x
+            y = t.transform.translation.y
+            q = t.transform.rotation
+            yaw = math.atan2(2*(q.w*q.z + q.x*q.y), 1 - 2*(q.y*q.y + q.z*q.z))
+            return x, y, yaw
+        except (tf2_ros.LookupException, tf2_ros.ExtrapolationException, tf2_ros.ConnectivityException):
+            self.get_logger().warn("TF lookup failed for map -> base_link")
+            return None, None, None
 
     # -----------------------------
     # Write CSV
     # -----------------------------
     def write_csv(self):
-        if self.sensor_data is None or self.odom_data is None or self.csv_path is None:
+        if self.sensor_data is None or self.csv_path is None:
             return
 
+        x, y, yaw = self.get_map_pose()
+        if x is None:
+            return  # skip if TF not available
+
         timestamp = datetime.now().isoformat()
-        x, y, yaw = self.odom_data
 
         with open(self.csv_path, 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([
                 timestamp,
                 self.sensor_data.channels[0] if self.sensor_data.channels else -1,
-                self.sensor_data.pose_x,
-                self.sensor_data.pose_y,
-                self.sensor_data.pose_theta,
+                x,          # Pose_X in map frame
+                y,          # Pose_Y in map frame
+                yaw,        # Pose_Theta in map frame
                 *self.sensor_data.sensor_readings
             ])
 
@@ -82,14 +97,12 @@ class CSVLogger(Node):
     def start_logging(self, request, response):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.csv_path = os.path.join(self.log_dir, f'sensor_log_{timestamp}.csv')
-        # Write header
         with open(self.csv_path, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([
                 'Timestamp', 'Channel', 'Pose_X', 'Pose_Y', 'Pose_Theta',
                 'eCO2', 'TVOC', 'AQI', 'R0', 'R1', 'R2', 'R3'
             ])
-
         self.logging_enabled = True
         response.success = True
         response.message = f"Logging started: {self.csv_path}"
@@ -106,7 +119,6 @@ class CSVLogger(Node):
         self.get_logger().info(response.message)
         return response
 
-
 # -----------------------------
 # Main
 # -----------------------------
@@ -118,7 +130,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
