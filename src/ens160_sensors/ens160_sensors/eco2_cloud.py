@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from ens160_interfaces.msg import SensorData
-from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs.msg import PointCloud2, PointField, Header
 import sensor_msgs_py.point_cloud2 as pc2
 
 class ECO2CloudNode(Node):
@@ -21,7 +21,7 @@ class ECO2CloudNode(Node):
         eco2 = msg.sensor_readings[0]
         x, y = msg.pose_x, msg.pose_y
 
-        # Define fields with keyword arguments (correct for ROS2 Humble+)
+        # Define the fields correctly
         fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
@@ -29,12 +29,14 @@ class ECO2CloudNode(Node):
             PointField(name='intensity', offset=12, datatype=PointField.FLOAT32, count=1),
         ]
 
+        # Proper ROS2 Header
+        header = Header()
+        header.stamp = self.get_clock().now().to_msg()
+        header.frame_id = 'map'
+
         # Create PointCloud2 message
         cloud = pc2.create_cloud(
-            header=type(
-                'Header', (), 
-                {'frame_id': 'map', 'stamp': self.get_clock().now().to_msg()}
-            ),
+            header=header,
             fields=fields,
             points=[(x, y, 0.0, eco2)]
         )
