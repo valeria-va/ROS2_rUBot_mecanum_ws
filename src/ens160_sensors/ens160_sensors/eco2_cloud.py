@@ -15,18 +15,21 @@ class ECO2CloudNode(Node):
             10
         )
         self.pub = self.create_publisher(PointCloud2, '/eco2_cloud', 10)
+        self.get_logger().info("ECO2CloudNode initialized and subscribed to /ens160_data")
 
     def cb(self, msg: SensorData):
         eco2 = msg.sensor_readings[0]
         x, y = msg.pose_x, msg.pose_y
 
+        # Define fields with keyword arguments (correct for ROS2 Humble+)
         fields = [
-            PointField('x', 0, PointField.FLOAT32, 1),
-            PointField('y', 4, PointField.FLOAT32, 1),
-            PointField('z', 8, PointField.FLOAT32, 1),
-            PointField('intensity', 12, PointField.FLOAT32, 1),
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='intensity', offset=12, datatype=PointField.FLOAT32, count=1),
         ]
 
+        # Create PointCloud2 message
         cloud = pc2.create_cloud(
             header=type(
                 'Header', (), 
@@ -37,11 +40,18 @@ class ECO2CloudNode(Node):
         )
 
         self.pub.publish(cloud)
+        self.get_logger().debug(f"Published CO2 point: x={x}, y={y}, intensity={eco2}")
 
 def main():
     rclpy.init()
-    rclpy.spin(ECO2CloudNode())
-    rclpy.shutdown()
+    node = ECO2CloudNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
