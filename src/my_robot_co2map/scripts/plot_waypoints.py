@@ -1,68 +1,51 @@
+# python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/plot_waypoints.py 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/plot_waypoints.py 
-
 # --- CONFIGURATION ---
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251216_161421.csv")
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251217_142216.csv")
 
-# --- 1. LOAD DATA USING PANDAS ---
-try:
-    # Read the CSV file. The first row is the header.
-    df = pd.read_csv(csv_path)
+# Adjustable plotting parameters
+point_size = 20       # Size of scatter points
+plot_range = None      # Set to [[xmin, xmax], [ymin, ymax]] to zoom in, or None for auto
 
-    # Check if the necessary columns exist
-    required_cols = ['Pose_X', 'Pose_Y', 'eCO2']
-    if not all(col in df.columns for col in required_cols):
-        print(f"Error: CSV is missing one or more required columns: {required_cols}")
-        print(f"Available columns: {df.columns.tolist()}")
-        exit()
+# --- 1. LOAD DATA ---
+df = pd.read_csv(csv_path)
 
-except FileNotFoundError:
-    print(f"ERROR: CSV file not found at: {csv_path}")
-    exit()
-except Exception as e:
-    print(f"An error occurred during file loading: {e}")
-    exit()
+# --- 2. GROUP BY POSE AND AVERAGE SENSOR VALUES ---
+# Average only eCO2 per pose (ignore other sensor channels for coloring)
+grouped = df.groupby(['Pose_X', 'Pose_Y'])['eCO2'].mean().reset_index()
 
+x_coords = grouped['Pose_Y'].to_numpy()  # Y-axis as horizontal
+y_coords = grouped['Pose_X'].to_numpy()  # X-axis as vertical
+co2_levels = grouped['eCO2'].to_numpy()  # Only eCO2 for color
 
-# --- 2. PREPARE DATA FOR PLOTTING ---
-# Extract the relevant columns
-x_coords = df['Pose_X'].to_numpy()
-y_coords = df['Pose_Y'].to_numpy()
-co2_levels = df['eCO2'].to_numpy()
-
-# --- 3. PLOT THE HEATMAP TRAJECTORY ---
+# --- 3. PLOT ---
 plt.figure(figsize=(10, 8))
-
-# Use a scatter plot to map colors to the eCO2 values.
-# The 'c' argument specifies the data used for coloring, and 'cmap' defines the color scheme.
 scatter = plt.scatter(x_coords, y_coords,
-                      c=co2_levels,       # Color points based on eCO2
-                      cmap='viridis',     # Colormap: Good contrast, low (blue) to high (yellow)
-                      s=50,               # Size of the points
-                      alpha=0.8,          # Transparency
+                      c=co2_levels,
+                      cmap='rainbow',
+                      s=point_size,
+                      alpha=0.8,
                       label='Trajectory Points')
 
-# Connect the points with a thin gray line to show the path
-plt.plot(x_coords, y_coords, 
-         linestyle='-', 
-         color='gray', 
-         linewidth=1, 
-         alpha=0.5,
-         zorder=0) # zorder=0 ensures the line is drawn beneath the colored points
 
-# 4. Add Colorbar for Interpretation
+# Colorbar
 cbar = plt.colorbar(scatter)
-cbar.set_label('eCO2 Level (PPM)', fontsize=12)
+cbar.set_label('Average eCO2 Level (PPM)', fontsize=12)
 
-
-# 5. Personalization and Display
-plt.title(f"Robot Trajectory Colored by eCO2 Concentration")
+# Personalization
+plt.title("Robot Trajectory Colored by Average eCO2")
 plt.xlabel("Pose X (meters)", fontsize=12)
 plt.ylabel("Pose Y (meters)", fontsize=12)
 plt.grid(True, linestyle=':')
-plt.axis('equal') # Ensure proportional scaling
+plt.axis('equal')
+
+# Apply custom range if specified
+if plot_range:
+    plt.xlim(plot_range[0])
+    plt.ylim(plot_range[1])
 
 plt.show()
