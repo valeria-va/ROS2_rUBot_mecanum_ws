@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # --- CONFIGURATION ---
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251217_142216.csv")
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251217_164439.csv")
 
 # Adjustable plotting parameters
 point_size = 20       # Size of scatter points
