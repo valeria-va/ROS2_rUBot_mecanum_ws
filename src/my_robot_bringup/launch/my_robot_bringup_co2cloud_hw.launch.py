@@ -110,10 +110,10 @@ def generate_launch_description():
         {'use_sim_time': use_sim_time}        ],
     )
 
-    csv_logger = Node(
+    csv_logger_co2cloud = Node(
         package='ens160_sensors',    
-        executable='csv_logger_exec', 
-        name='csv_logger',
+        executable='csv_logger_co2cloud_exec', 
+        name='csv_logger_co2cloud',
         output='screen',
         parameters=[
         {'enabled': LaunchConfiguration('csv_logger_enabled')},
@@ -189,7 +189,7 @@ def generate_launch_description():
     ld.add_action(start_rplidar_cmd)
     ld.add_action(start_usb_cam_cmd)
     ld.add_action(sensor_node)
-    ld.add_action(csv_logger)
+    ld.add_action(csv_logger_co2cloud)
     ld.add_action(eco2_cloud)
 
     return ld

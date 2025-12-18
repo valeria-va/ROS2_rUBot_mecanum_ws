@@ -26,6 +26,7 @@ setup(
             'ens160_sensors_sw_exec = ens160_sensors.sensor_pose_node_sw:main',
             'my_robot_control_exec = my_robot_control.my_robot_control_node:main',
             'csv_logger_exec = ens160_sensors.csv_logger:main',
+            'csv_logger_co2cloud_exec = ens160_sensors.csv_logger_co2cloud:main',
             'eco2_cloud_exec = ens160_sensors.eco2_cloud:main',
         ],
     },
