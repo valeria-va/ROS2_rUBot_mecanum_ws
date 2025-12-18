@@ -120,6 +120,18 @@ def generate_launch_description():
         {'use_sim_time': use_sim_time}        ],    
     )
 
+    # CeO2 Cloud
+    eco2_cloud = Node(
+        package='ens160_sensors',
+        executable='eco2_cloud_exec',
+        name='eco2_cloud',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time}
+        ],
+    )
+
+
     # Inclusió dels altres llançadors de drivers
     start_mecanum_driver_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -178,5 +190,6 @@ def generate_launch_description():
     ld.add_action(start_usb_cam_cmd)
     ld.add_action(sensor_node)
     ld.add_action(csv_logger)
+    ld.add_action(eco2_cloud)
 
     return ld
