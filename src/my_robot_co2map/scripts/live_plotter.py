@@ -1,5 +1,5 @@
 
-#   python3 ~/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/co2_live_plot.py
+#   python3 /home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/scripts/live_plotter.py
 
 #!/usr/bin/env python3
 import rclpy
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import time
 from collections import defaultdict, deque
 
-MAX_SECONDS = 600   # rolling window (5 minutes)
+MAX_SECONDS = 900   # rolling window (5 minutes)
 NUM_CHANNELS = 6    # adjust if needed
 
 class CO2LivePlot(Node):
