@@ -9,7 +9,7 @@ import yaml
 # -----------------------------
 # CONFIGURATION
 # -----------------------------
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251219_093522.csv")
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251216_161421.csv")
 yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/rajoles.yaml")
 
 square_size = 0.3  # meters per grid square

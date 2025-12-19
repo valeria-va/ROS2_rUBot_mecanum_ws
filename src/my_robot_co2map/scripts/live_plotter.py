@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import time
 from collections import defaultdict, deque
 
-MAX_SECONDS = 900   # rolling window (5 minutes)
+MAX_SECONDS = 1800   # rolling window (5 minutes)
 NUM_CHANNELS = 6    # adjust if needed
 
 class CO2LivePlot(Node):
