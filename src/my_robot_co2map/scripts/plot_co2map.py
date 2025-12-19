@@ -9,8 +9,8 @@ import yaml
 # -----------------------------
 # CONFIGURATION
 # -----------------------------
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251217_182052.csv")
-yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/passadis.yaml")
+csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251218_165354.csv")
+yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/rajoles.yaml")
 
 square_size = 0.3  # meters per grid square
 eco2_min, eco2_max = 400, 1200  # clamp CO2 values
