@@ -11,8 +11,8 @@ import yaml
 # -----------------------------
 # CONFIGURATION
 # -----------------------------
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251219_093522.csv")
-yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/rajoles.yaml")
+csv_path = Path(r"C:\Users\valer\Documents\TFG\ROS2_rUBot_mecanum_ws\src\my_robot_co2map\ens160_logs\processed_sensor_data_testrajoles3_1h.csv")
+yaml_path = Path(r"C:\Users\valer\Documents\TFG\ROS2_rUBot_mecanum_ws\src\Navigation_Projects\my_robot_navigation2\map\rajoles.yaml")
 
 square_size = 0.3  # meters per grid square
 eco2_min, eco2_max = 400, 1200  # clamp CO2 values
@@ -28,7 +28,7 @@ grouped = df.groupby(['Pose_X','Pose_Y'])['eCO2'].mean().reset_index()
 
 x_data = grouped['Pose_X'].to_numpy()
 y_data = grouped['Pose_Y'].to_numpy()
-co2_data = grouped['eCO2'].clip(eco2_min, eco2_max).to_numpy()  # clip to range
+co2_data = grouped['eCO2'].clip(eco2_min, eco2_max).to_numpy()
 
 # -----------------------------
 # LOAD MAP YAML
@@ -59,7 +59,7 @@ print(f"Map bounds (meters): x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]")
 x_bins = np.arange(x_min, x_max, square_size)
 y_bins = np.arange(y_min, y_max, square_size)
 
-xx, yy = np.meshgrid(x_bins + square_size/2, y_bins + square_size/2)  # center of each square
+xx, yy = np.meshgrid(x_bins + square_size/2, y_bins + square_size/2)
 grid_shape = xx.shape
 co2_grid = np.zeros(grid_shape)
 
@@ -71,27 +71,38 @@ sensor_points = np.column_stack([x_data, y_data])
 
 for i, gp in enumerate(grid_points):
     dists = np.linalg.norm(sensor_points - gp, axis=1)
-    weights = 1 / (dists**2 + 1e-6)  # avoid division by zero
+    weights = 1 / (dists**2 + 1e-6)
     co2_grid.ravel()[i] = np.sum(weights * co2_data) / np.sum(weights)
 
 # -----------------------------
 # PLOT MAP
 # -----------------------------
-plt.figure(figsize=(15, 15))
+fig = plt.figure(figsize=(13, 13), constrained_layout=True)
+plt.subplots_adjust(left=0.04, right=0.96, top=0.96, bottom=0.04)
+
 extent = [x_min, x_max, y_min, y_max]
 
-# Overlay map as grayscale background
+# Background map
 plt.imshow(np.array(img), origin='lower', extent=extent, cmap='gray', alpha=0.3)
 
-# Plot CO2 grid
-im = plt.imshow(co2_grid, origin='lower', extent=extent, cmap='rainbow',
-                interpolation='nearest', alpha=0.7, vmin=eco2_min, vmax=eco2_max, aspect='auto')
+# CO2 heatmap
+im = plt.imshow(
+    co2_grid,
+    origin='lower',
+    extent=extent,
+    cmap='jet',
+    interpolation='nearest',
+    alpha=0.7,
+    vmin=eco2_min,
+    vmax=eco2_max,
+    aspect='equal'
+)
 
-# Shorter colorbar
-cbar = plt.colorbar(im, fraction=0.03, pad=0.02)  # fraction makes it thinner/shorter, pad is spacing
-cbar.set_label('Average eCO2 Level (PPM)')
+# Colorbar
+cbar = plt.colorbar(im, fraction=0.03) #0.03 if rajoles and 0.02 if passadis
+cbar.set_label('eCO₂ (ppm)')
 
-# Plot robot path
+# Robot path
 prev_x, prev_y = None, None
 for x, y in zip(x_data, y_data):
     if prev_x is not None and np.hypot(x-prev_x, y-prev_y) < max_path_gap:
@@ -102,5 +113,5 @@ plt.title("eCO₂ Map with Robot Path")
 plt.xlabel("X (meters)")
 plt.ylabel("Y (meters)")
 plt.grid(False)
-plt.axis('equal')
+
 plt.show()

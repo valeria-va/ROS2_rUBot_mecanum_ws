@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Inverted Distance Weighted Interpolation CO2 Map Plotter"""
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,23 +11,34 @@ import yaml
 # -----------------------------
 # CONFIGURATION
 # -----------------------------
-csv_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/my_robot_co2map/ens160_logs/sensor_log_20251219_093522.csv")
-yaml_path = Path("/home/valeria/Desktop/ROS2_rUBot_mecanum_ws/src/Navigation_Projects/my_robot_navigation2/map/rajoles.yaml")
+csv_path = Path(r"C:\Users\valer\Documents\TFG\ROS2_rUBot_mecanum_ws\src\my_robot_co2map\ens160_logs\processed_sensor_data_passadis1.csv")
+yaml_path = Path(r"C:\Users\valer\Documents\TFG\ROS2_rUBot_mecanum_ws\src\Navigation_Projects\my_robot_navigation2\map\passadis.yaml")
 
-channel_to_plot = 5
-square_size = 0.3
-eco2_min, eco2_max = 400, 1200
-max_path_gap = 0.5
+square_size = 0.3  # meters per grid square
+eco2_min, eco2_max = 400, 1200  # clamp CO2 values
+max_path_gap = 0.3  # meters, don't connect points farther than this
+
+# Set to None to average all channels, or to an integer channel index
+channel_to_plot = 0     # e.g. 5 for channel 5, or None for average
 
 # -----------------------------
 # LOAD SENSOR DATA
 # -----------------------------
 df = pd.read_csv(csv_path)
-df_ch = df[df['Channel'] == channel_to_plot]
 
-x_data = df_ch['Pose_X'].to_numpy()
-y_data = df_ch['Pose_Y'].to_numpy()
-co2_data = df_ch['eCO2'].clip(eco2_min, eco2_max).to_numpy()
+if channel_to_plot is None:
+    # Group by Pose_X and Pose_Y, average eCO2 across all channels for that position
+    grouped = df.groupby(['Pose_X', 'Pose_Y'])['eCO2'].mean().reset_index()
+    title_suffix = "average over all channels"
+else:
+    # Filter by channel and do not average over channels
+    df_ch = df[df['Channel'] == channel_to_plot].copy()
+    grouped = df_ch.groupby(['Pose_X', 'Pose_Y'])['eCO2'].mean().reset_index()
+    title_suffix = f"Channel {channel_to_plot}"
+
+x_data = grouped['Pose_X'].to_numpy()
+y_data = grouped['Pose_Y'].to_numpy()
+co2_data = grouped['eCO2'].clip(eco2_min, eco2_max).to_numpy()
 
 # -----------------------------
 # LOAD MAP YAML
@@ -39,76 +52,70 @@ if not image_path.is_absolute():
 
 img = Image.open(image_path)
 img = img.transpose(Image.FLIP_TOP_BOTTOM)
-img = img.rotate(90, expand=True)  # <<< ROTATE IMAGE
-
+width_px, height_px = img.size
 res = map_yaml['resolution']
 origin_x, origin_y, _ = map_yaml['origin']
 
-# Original bounds
-orig_width_px, orig_height_px = Image.open(image_path).size
 x_min = origin_x
 y_min = origin_y
-x_max = origin_x + orig_width_px * res
-y_max = origin_y + orig_height_px * res
+x_max = origin_x + width_px * res
+y_max = origin_y + height_px * res
 
-# New bounds after rotation
-new_x_min = 0.0
-new_y_min = 0.0
-new_x_max = y_max - y_min
-new_y_max = x_max - x_min
-
-extent = [new_x_min, new_x_max, new_y_min, new_y_max]
+print(f"Map bounds (meters): x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]")
 
 # -----------------------------
-# ROTATE SENSOR DATA (90° CCW)
+# CREATE GRID COVERING FULL MAP
 # -----------------------------
-x_rot = y_max - y_data
-y_rot = x_data - x_min
+x_bins = np.arange(x_min, x_max, square_size)
+y_bins = np.arange(y_min, y_max, square_size)
+
+xx, yy = np.meshgrid(x_bins + square_size/2, y_bins + square_size/2)
+grid_shape = xx.shape
+co2_grid = np.zeros(grid_shape)
 
 # -----------------------------
-# CREATE GRID
-# -----------------------------
-x_bins = np.arange(new_x_min, new_x_max, square_size)
-y_bins = np.arange(new_y_min, new_y_max, square_size)
-xx, yy = np.meshgrid(x_bins + square_size / 2,
-                     y_bins + square_size / 2)
-
-co2_grid = np.zeros(xx.shape)
-
-# -----------------------------
-# INVERSE DISTANCE WEIGHTING
+# COMPUTE WEIGHTED CO2 USING INVERSE DISTANCE SQUARED
 # -----------------------------
 grid_points = np.column_stack([xx.ravel(), yy.ravel()])
-sensor_points = np.column_stack([x_rot, y_rot])
+sensor_points = np.column_stack([x_data, y_data])
 
 for i, gp in enumerate(grid_points):
     dists = np.linalg.norm(sensor_points - gp, axis=1)
-    weights = 1.0 / (dists**2 + 1e-6)
+    weights = 1 / (dists**2 + 1e-6)
     co2_grid.ravel()[i] = np.sum(weights * co2_data) / np.sum(weights)
 
 # -----------------------------
-# PLOT
+# PLOT MAP
 # -----------------------------
-plt.figure(figsize=(15, 15))
+fig = plt.figure(figsize=(13, 13), constrained_layout=True)
+plt.subplots_adjust(left=0.04, right=0.96, top=0.96, bottom=0.04)
+
+extent = [x_min, x_max, y_min, y_max]
+
+# Background map
 plt.imshow(np.array(img), origin='lower', extent=extent, cmap='gray', alpha=0.3)
 
-im = plt.imshow(co2_grid, origin='lower', extent=extent,
-                cmap='rainbow', interpolation='nearest',
-                alpha=0.7, vmin=eco2_min, vmax=eco2_max)
+# CO2 heatmap
+im = plt.imshow(
+    co2_grid,
+    origin='lower',
+    extent=extent,
+    cmap='jet',
+    interpolation='nearest',
+    alpha=0.7,
+    vmin=eco2_min,
+    vmax=eco2_max,
+    aspect='equal'
+)
 
-cbar = plt.colorbar(im, fraction=0.03, pad=0.02)
-cbar.set_label('Average eCO₂ (PPM)')
+# Colorbar
+cbar = plt.colorbar(im, fraction=0.03)  # 0.03 if rajoles and 0.02 if passadis
+cbar.set_label('eCO₂ (ppm)')
 
-# Rotated path
-prev_x, prev_y = None, None
-for x, y in zip(x_rot, y_rot):
-    if prev_x is not None and np.hypot(x - prev_x, y - prev_y) < max_path_gap:
-        plt.plot([prev_x, x], [prev_y, y], color='black', linewidth=2)
-    prev_x, prev_y = x, y
 
-plt.title(f"CO₂ Map (Channel {channel_to_plot}) – Rotated 90°")
+plt.title(f"eCO₂ Map ({title_suffix})")
 plt.xlabel("X (meters)")
 plt.ylabel("Y (meters)")
-plt.axis('equal')
 plt.grid(False)
+
 plt.show()
